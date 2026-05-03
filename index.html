@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ModernSnake Dev Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.07);
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        pre {
+            background: #011627 !important;
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-height: 600px;
+            font-size: 13px;
+            line-height: 1.5;
+            user-select: none; /* Zákaz manuálneho kopírovania */
+        }
+
+        .code-keyword { color: #c792ea; }
+        .code-string { color: #ecc48d; }
+        .code-comment { color: #637777; font-style: italic; }
+        .code-func { color: #82aaff; }
+        .code-number { color: #f78c6c; }
+
+        /* Modal Styles */
+        #paymentModal, #notificationModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .animate-pop {
+            animation: pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes pop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        pre::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        pre::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .btn-locked {
+            background: rgba(255, 255, 255, 0.1) !important;
+            cursor: not-allowed;
+            color: rgba(255, 255, 255, 0.5);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- Header Navigation -->
+    <nav class="max-w-7xl mx-auto mb-12 flex justify-between items-center py-6 px-8 glass">
+        <div class="text-2xl font-bold flex items-center gap-2">
+            <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                <i class="fas fa-snake text-white text-sm"></i>
+            </div>
+            <span>ModernSnake<span class="text-blue-400">Dev</span></span>
+        </div>
+        <div class="hidden md:flex gap-8 items-center text-sm font-medium">
+            <a href="#" class="hover:text-blue-400 transition">Funkcie</a>
+            <a href="#pricing" class="hover:text-blue-400 transition">Cenník</a>
+            <a href="#" class="hover:text-blue-400 transition">Dokumentácia</a>
+            <div id="premiumStatus" class="px-4 py-1 rounded-full bg-gray-800 text-xs border border-gray-700">
+                Kontrola stavu...
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto space-y-16">
+        
+        <!-- Code Section -->
+        <section class="glass p-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold mb-2">Modern Snake Engine Source</h2>
+                    <p class="text-gray-400 text-sm">Kompletný systém: Model, AI a Klient-side efekty</p>
+                </div>
+                <div class="flex flex-col items-end">
+                    <button id="copyBtn" onclick="copyCode()" class="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2">
+                        <i class="fas fa-lock"></i> Kopírovať kód
+                    </button>
+                    <p id="unlockTimer" class="text-[10px] text-gray-500 mt-2 font-mono uppercase tracking-widest"></p>
+                </div>
+            </div>
+            
+            <div class="relative group">
+                <pre id="codeBlock"><code><span class="code-keyword">local</span> workspace = game:GetService(<span class="code-string">"Workspace"</span>)
+<span class="code-keyword">local</span> starterPlayer = game:GetService(<span class="code-string">"StarterPlayer"</span>)
+<span class="code-keyword">local</span> lighting = game:GetService(<span class="code-string">"Lighting"</span>)
+
+<span class="code-comment">-- Vymaže starého hada a staré efekty</span>
+<span class="code-keyword">if</span> workspace:FindFirstChild(<span class="code-string">"ModernSnakeNPC"</span>) <span class="code-keyword">then</span> workspace.ModernSnakeNPC:Destroy() <span class="code-keyword">end</span>
+<span class="code-keyword">if</span> starterPlayer.StarterPlayerScripts:FindFirstChild(<span class="code-string">"SnakeHorrorEffects"</span>) <span class="code-keyword">then</span> starterPlayer.StarterPlayerScripts.SnakeHorrorEffects:Destroy() <span class="code-keyword">end</span>
+<span class="code-keyword">if</span> lighting:FindFirstChild(<span class="code-string">"SnakeRedGlow"</span>) <span class="code-keyword">then</span> lighting.SnakeRedGlow:Destroy() <span class="code-keyword">end</span>
+
+<span class="code-keyword">local</span> snakeModel = Instance.new(<span class="code-string">"Model"</span>)
+snakeModel.Name = <span class="code-string">"ModernSnakeNPC"</span>
+snakeModel.Parent = workspace
+
+<span class="code-comment">-- Vytvorenie Humanoida (rýchlosť necháme na 15, dá sa utiecť)</span>
+<span class="code-keyword">local</span> humanoid = Instance.new(<span class="code-string">"Humanoid"</span>)
+humanoid.RequiresNeck = <span class="code-keyword">false</span>
+humanoid.HipHeight = <span class="code-number">2</span>
+humanoid.MaxHealth = <span class="code-number">500</span>
+humanoid.Health = <span class="code-number">500</span>
+humanoid.WalkSpeed = <span class="code-number">15</span>
+humanoid.Parent = snakeModel
+
+<span class="code-keyword">local</span> numSegments = <span class="code-number">20</span>
+<span class="code-keyword">local</span> headSize = <span class="code-number">4.5</span>
+<span class="code-keyword">local</span> bodySize = <span class="code-number">2.2</span>
+<span class="code-keyword">local</span> overlap = <span class="code-number">0.85</span>
+
+<span class="code-comment">-- Vytvorenie HumanoidRootPart</span>
+<span class="code-keyword">local</span> hrp = Instance.new(<span class="code-string">"Part"</span>)
+hrp.Name = <span class="code-string">"HumanoidRootPart"</span>
+hrp.Size = Vector3.new(<span class="code-number">3, 3, 3</span>)
+hrp.Transparency = <span class="code-number">1</span>
+hrp.CanCollide = <span class="code-keyword">false</span>
+hrp.Position = Vector3.new(<span class="code-number">0, 10, 0</span>)
+hrp.Parent = snakeModel
+snakeModel.PrimaryPart = hrp
+
+<span class="code-comment">-- Vytvorenie Hlavy (Smrtiaca časť)</span>
+<span class="code-keyword">local</span> head = Instance.new(<span class="code-string">"Part"</span>)
+head.Name = <span class="code-string">"Head"</span>
+head.Shape = Enum.PartType.Ball
+head.Size = Vector3.new(headSize, headSize, headSize)
+head.Color = Color3.fromRGB(<span class="code-number">255, 255, 255</span>)
+head.Material = Enum.Material.SmoothPlastic
+head.CFrame = hrp.CFrame
+head.CustomPhysicalProperties = PhysicalProperties.new(<span class="code-number">0.5, 0.3, 0.5</span>)
+head.Parent = snakeModel
+
+<span class="code-keyword">local</span> face = Instance.new(<span class="code-string">"Decal"</span>)
+face.Texture = <span class="code-string">"rbxassetid://8320404396"</span>
+face.Face = Enum.NormalId.Front
+face.Parent = head
+
+<span class="code-keyword">local</span> weld = Instance.new(<span class="code-string">"WeldConstraint"</span>)
+weld.Part0 = hrp
+weld.Part1 = head
+weld.Parent = hrp
+
+<span class="code-keyword">local</span> parts = {head}
+
+<span class="code-comment">-- Vytvorenie Tela</span>
+<span class="code-keyword">for</span> i = <span class="code-number">1</span>, numSegments <span class="code-keyword">do</span>
+    <span class="code-keyword">local</span> segment = Instance.new(<span class="code-string">"Part"</span>)
+    segment.Name = <span class="code-string">"Body_"</span> .. i
+    segment.Shape = Enum.PartType.Ball
+    segment.Size = Vector3.new(bodySize, bodySize, bodySize)
+    segment.Color = Color3.fromRGB(<span class="code-number">10, 10, 10</span>)
+    segment.Material = Enum.Material.SmoothPlastic
+    segment.Massless = <span class="code-keyword">true</span>
+    
+    <span class="code-keyword">local</span> prevPart = parts[i]
+    <span class="code-keyword">local</span> offsetDist = (prevPart.Size.Z / <span class="code-number">2</span>) + (segment.Size.Z / <span class="code-number">2</span>)
+    segment.CFrame = prevPart.CFrame * CFrame.new(<span class="code-number">0, 0</span>, offsetDist * overlap)
+    segment.Parent = snakeModel
+    
+    table.insert(parts, segment)
+<span class="code-keyword">end</span>
+
+<span class="code-comment">-- Pospojovanie guličiek</span>
+<span class="code-keyword">for</span> i = <span class="code-number">1</span>, #parts - <span class="code-number">1</span> <span class="code-keyword">do</span>
+    <span class="code-keyword">local</span> part0 = parts[i]
+    <span class="code-keyword">local</span> part1 = parts[i+<span class="code-number">1</span>]
+    
+    <span class="code-keyword">local</span> offset0 = (part0.Size.Z / <span class="code-number">2</span>) * overlap
+    <span class="code-keyword">local</span> offset1 = (part1.Size.Z / <span class="code-number">2</span>) * overlap
+    
+    <span class="code-keyword">local</span> att0 = Instance.new(<span class="code-string">"Attachment"</span>)
+    att0.Position = Vector3.new(<span class="code-number">0, 0</span>, offset0)
+    att0.Parent = part0
+    
+    <span class="code-keyword">local</span> att1 = Instance.new(<span class="code-string">"Attachment"</span>)
+    att1.Position = Vector3.new(<span class="code-number">0, 0</span>, -offset1)
+    att1.Parent = part1
+    
+    <span class="code-keyword">local</span> ballSocket = Instance.new(<span class="code-string">"BallSocketConstraint"</span>)
+    ballSocket.Attachment0 = att0
+    ballSocket.Attachment1 = att1
+    ballSocket.LimitsEnabled = <span class="code-keyword">true</span>
+    ballSocket.UpperAngle = <span class="code-number">50</span>
+    ballSocket.TwistLimitsEnabled = <span class="code-keyword">true</span>
+    ballSocket.Parent = part0
+    
+    <span class="code-keyword">local</span> noCollision = Instance.new(<span class="code-string">"NoCollisionConstraint"</span>)
+    noCollision.Part0 = part0
+    noCollision.Part1 = part1
+    noCollision.Parent = part0
+<span class="code-keyword">end</span>
+
+<span class="code-comment">-- AI SKRIPT NA PRENASLEDOVANIE A ZABÍJANIE</span>
+<span class="code-keyword">local</span> aiScript = Instance.new(<span class="code-string">"Script"</span>)
+aiScript.Name = <span class="code-string">"KillerAI"</span>
+aiScript.Source = <span class="code-string">[[
+local npc = script.Parent
+local humanoid = npc:WaitForChild("Humanoid")
+local hrp = npc:WaitForChild("HumanoidRootPart")
+local head = npc:WaitForChild("Head")
+
+local function getNearestPlayer()
+    local nearestTarget = nil
+    local shortestDistance = math.huge
+    
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid").Health > 0 then
+            local distance = (player.Character.HumanoidRootPart.Position - hrp.Position).Magnitude
+            if distance < shortestDistance then
+                shortestDistance = distance
+                nearestTarget = player.Character.HumanoidRootPart
+            end
+        end
+    end
+    return nearestTarget
+end
+
+task.spawn(function()
+    while task.wait(0.1) do
+        local target = getNearestPlayer()
+        if target then
+            humanoid:MoveTo(target.Position)
+        end
+    end
+end)
+
+head.Touched:Connect(function(hit)
+    local character = hit.Parent
+    if character and character:FindFirstChild("Humanoid") and character.Name ~= npc.Name then
+        character.Humanoid.Health = 0 -- ZABITIE
+    end
+end)
+]]</span>
+aiScript.Parent = snakeModel
+
+<span class="code-comment">-- KLIENTSKÝ SKRIPT (HOROROVÉ EFEKTY)</span>
+<span class="code-keyword">local</span> effectsScript = Instance.new(<span class="code-string">"LocalScript"</span>)
+effectsScript.Name = <span class="code-string">"SnakeHorrorEffects"</span>
+effectsScript.Source = <span class="code-string">[[
+local runService = game:GetService("RunService")
+local players = game:GetService("Players")
+local workspace = game:GetService("Workspace")
+local lighting = game:GetService("Lighting")
+
+local player = players.LocalPlayer
+local camera = workspace.CurrentCamera
+
+local gui = Instance.new("ScreenGui")
+gui.IgnoreGuiInset = true
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local redFlash = Instance.new("Frame")
+redFlash.Size = UDim2.new(1, 0, 1, 0)
+redFlash.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+redFlash.BackgroundTransparency = 1
+redFlash.ZIndex = 10
+redFlash.Parent = gui
+
+local colorCorrection = Instance.new("ColorCorrectionEffect")
+colorCorrection.Name = "SnakeRedGlow"
+colorCorrection.Parent = lighting
+
+local heartbeatSound = Instance.new("Sound")
+heartbeatSound.SoundId = "rbxassetid://138084661"
+heartbeatSound.Looped = true
+heartbeatSound.Volume = 0
+heartbeatSound.Parent = workspace
+
+local MAX_DISTANCE = 70
+
+runService.RenderStepped:Connect(function()
+    local char = player.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") or char.Humanoid.Health <= 0 then
+        redFlash.BackgroundTransparency = 1
+        colorCorrection.TintColor = Color3.fromRGB(255, 255, 255)
+        colorCorrection.Contrast = 0
+        heartbeatSound.Volume = 0
+        return
+    end
+
+    local hrp = char.HumanoidRootPart
+    local snake = workspace:FindFirstChild("ModernSnakeNPC")
+    
+    if snake and snake:FindFirstChild("HumanoidRootPart") then
+        local distance = (snake.HumanoidRootPart.Position - hrp.Position).Magnitude
+        if distance < MAX_DISTANCE then
+            if not heartbeatSound.IsPlaying then heartbeatSound:Play() end
+            local intensity = 1 - (distance / MAX_DISTANCE)
+            local pulseSpeed = 5 + (intensity * 15)
+            local pulse = (math.sin(tick() * pulseSpeed) + 1) / 2
+            heartbeatSound.Volume = intensity * 3
+            local flashStrength = intensity * 0.5 + (pulse * intensity * 0.3)
+            redFlash.BackgroundTransparency = 1 - flashStrength
+            local colorGlow = 255 - (intensity * 180)
+            colorCorrection.TintColor = Color3.fromRGB(255, colorGlow, colorGlow)
+            colorCorrection.Contrast = intensity * 0.4
+            local shakeAmount = intensity * 0.6
+            camera.CFrame = camera.CFrame * CFrame.Angles((math.random()-0.5)*shakeAmount, (math.random()-0.5)*shakeAmount, (math.random()-0.5)*shakeAmount)
+        else
+            redFlash.BackgroundTransparency = 1
+            colorCorrection.TintColor = Color3.fromRGB(255, 255, 255)
+            colorCorrection.Contrast = 0
+            heartbeatSound.Volume = 0
+        end
+    else
+        redFlash.BackgroundTransparency = 1
+        colorCorrection.TintColor = Color3.fromRGB(255, 255, 255)
+        colorCorrection.Contrast = 0
+        heartbeatSound.Volume = 0
+    end
+end)
+]]</span>
+effectsScript.Parent = starterPlayer.StarterPlayerScripts
+
+print(<span class="code-string">"Červené hororové blikanie pripravené! Stlač Play."</span>)</code></pre>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section id="pricing" class="space-y-8">
+            <div class="text-center">
+                <h2 class="text-4xl font-extrabold mb-4">Upgrade Balíčky</h2>
+                <p class="text-gray-400">Vyberte si úroveň svojej licencie a odomknite plný potenciál.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- Plan 1 -->
+                <div class="glass-card p-8 rounded-3xl flex flex-col">
+                    <h3 class="text-xl font-bold mb-2">Basic Dev</h3>
+                    <div class="text-3xl font-bold mb-6">1,000.66€<span class="text-sm font-normal text-gray-400">/mes.</span></div>
+                    <ul class="space-y-4 mb-8 text-sm text-gray-300 flex-grow">
+                        <li><i class="fas fa-check text-green-400 mr-2"></i> Prístup k Snake API</li>
+                        <li><i class="fas fa-check text-green-400 mr-2"></i> 1 Aktívny projekt</li>
+                    </ul>
+                    <button onclick="openPayment('Basic Dev', 1000.66, 30)" class="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 transition font-bold">Kúpiť teraz</button>
+                </div>
+
+                <!-- Plan 2 (Highlighted) -->
+                <div class="glass-card p-8 rounded-3xl flex flex-col border-blue-500/50 scale-105 bg-blue-500/5">
+                    <div class="bg-blue-500 text-white text-[10px] uppercase font-bold px-3 py-1 rounded-full w-fit mb-4">Najpopulárnejšie</div>
+                    <h3 class="text-xl font-bold mb-2">Pro Snake</h3>
+                    <div class="text-3xl font-bold mb-6">2,500.00€<span class="text-sm font-normal text-gray-400">/rok</span></div>
+                    <ul class="space-y-4 mb-8 text-sm text-gray-300 flex-grow">
+                        <li><i class="fas fa-check text-green-400 mr-2"></i> Všetko v Basic</li>
+                        <li><i class="fas fa-check text-green-400 mr-2"></i> Neobmedzené projekty</li>
+                    </ul>
+                    <button onclick="openPayment('Pro Snake', 2500.00, 365)" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 transition font-bold">Získať Pro</button>
+                </div>
+
+                <!-- Plan 3 -->
+                <div class="glass-card p-8 rounded-3xl flex flex-col">
+                    <h3 class="text-xl font-bold mb-2">Enterprise</h3>
+                    <div class="text-3xl font-bold mb-6">4,999.99€<span class="text-sm font-normal text-gray-400">/2 roky</span></div>
+                    <ul class="space-y-4 mb-8 text-sm text-gray-300 flex-grow">
+                        <li><i class="fas fa-check text-green-400 mr-2"></i> Prioritný support 24/7</li>
+                        <li><i class="fas fa-check text-green-400 mr-2"></i> Licencia pre tímy</li>
+                    </ul>
+                    <button onclick="openPayment('Enterprise', 4999.99, 730)" class="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 transition font-bold">Kúpiť 2 roky</button>
+                </div>
+
+                <!-- Plan 4 -->
+                <div class="glass-card p-8 rounded-3xl flex flex-col">
+                    <h3 class="text-xl font-bold mb-2">Infinite Creator</h3>
+                    <div class="text-3xl font-bold mb-6">9,999.00€<span class="text-sm font-normal text-gray-400">/5 rokov</span></div>
+                    <ul class="space-y-4 mb-8 text-sm text-gray-300 flex-grow">
+                        <li><i class="fas fa-check text-green-400 mr-2"></i> Doživotné aktualizácie</li>
+                        <li><i class="fas fa-check text-green-400 mr-2"></i> Account Manager</li>
+                    </ul>
+                    <button onclick="openPayment('Infinite Creator', 9999.00, 1825)" class="w-full py-3 rounded-xl bg-white/10 hover:bg-white/20 transition font-bold">Získať Infinite</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal">
+        <div class="glass p-8 max-w-lg w-full mx-4 animate-pop">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold">Platobná brána</h2>
+                    <p class="text-xs text-gray-400">Šifrované pripojenie AES-256</p>
+                </div>
+                <button onclick="closePayment()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="mb-6 p-4 rounded-xl bg-blue-500/10 border border-blue-500/30">
+                <p class="text-xs text-blue-300">Zvolený balíček:</p>
+                <p class="text-lg font-bold" id="targetPlan"></p>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Meno na karte</label>
+                    <input type="text" placeholder="JOZEF MRKVIČKA" class="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-sm focus:border-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Číslo platobnej karty</label>
+                    <div class="relative">
+                        <input type="text" placeholder="4444 4444 4444 4444" class="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-sm focus:border-blue-500 outline-none pl-10">
+                        <i class="far fa-credit-card absolute left-3 top-3.5 text-gray-500"></i>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Expirácia</label>
+                        <input type="text" placeholder="MM/YY" class="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-sm focus:border-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase font-bold text-gray-400 mb-1">CVC kód</label>
+                        <input type="text" placeholder="123" class="w-full bg-black/20 border border-white/10 rounded-lg p-3 text-sm focus:border-blue-500 outline-none">
+                    </div>
+                </div>
+                <div class="flex items-start gap-2 py-2">
+                    <input type="checkbox" id="terms" class="mt-1">
+                    <label for="terms" class="text-[10px] text-gray-500 leading-tight">
+                        Súhlasím s podmienkami a beriem na vedomie, že kód bude možné skopírovať 1 rok po aktivácii licencie.
+                    </label>
+                </div>
+                <button id="processBtn" onclick="processPayment()" class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-lg shadow-lg shadow-blue-500/20 transition mt-4">
+                    Zaplatiť <span id="targetPrice"></span> €
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expiry Notification -->
+    <div id="notificationModal">
+        <div class="glass p-8 max-w-sm w-full mx-4 animate-pop text-center">
+            <div class="w-20 h-20 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
+                <i class="fas fa-clock"></i>
+            </div>
+            <h2 class="text-xl font-bold mb-2">Premium Expirovalo!</h2>
+            <p class="text-gray-400 mb-6 text-sm">Váš balíček práve skončil. Prístup k prémiovým nástrojom a databáze bol obmedzený.</p>
+            <button onclick="closeNotification()" class="w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold transition">Obnoviť teraz</button>
+        </div>
+    </div>
+
+    <script>
+        const DB_NAME = 'ModernSnakeDB';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'user_status';
+
+        let db;
+        let selectedPlan = null;
+        let isCodeUnlocked = false;
+
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onupgradeneeded = (e) => {
+            db = e.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+            }
+        };
+        request.onsuccess = (e) => {
+            db = e.target.result;
+            checkPremiumStatus();
+        };
+
+        function openPayment(name, price, days) {
+            selectedPlan = { name, price, days };
+            document.getElementById('targetPlan').innerText = name;
+            document.getElementById('targetPrice').innerText = price.toLocaleString();
+            document.getElementById('paymentModal').style.display = 'flex';
+        }
+
+        function closePayment() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        function processPayment() {
+            const btn = document.getElementById('processBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Spracovanie...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                const now = new Date();
+                const expiryDate = new Date();
+                expiryDate.setDate(expiryDate.getDate() + selectedPlan.days);
+                
+                // Odomknutie kopírovania presne o 1 rok od TERAZ (aktivácie)
+                const unlockDate = new Date();
+                unlockDate.setFullYear(unlockDate.getFullYear() + 1);
+
+                const status = {
+                    id: 'premium_info',
+                    active: true,
+                    planName: selectedPlan.name,
+                    purchasedAt: now.getTime(),
+                    expiresAt: expiryDate.getTime(),
+                    unlockAt: unlockDate.getTime()
+                };
+
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                tx.objectStore(STORE_NAME).put(status);
+                
+                tx.oncomplete = () => {
+                    closePayment();
+                    checkPremiumStatus();
+                    btn.innerHTML = 'Zaplatiť';
+                    btn.disabled = false;
+                    alert('Platba úspešná! Kód bude možné skopírovať o 1 rok.');
+                };
+            }, 1500);
+        }
+
+        function checkPremiumStatus() {
+            if (!db) return;
+
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const store = tx.objectStore(STORE_NAME);
+            const getRequest = store.get('premium_info');
+
+            getRequest.onsuccess = () => {
+                const data = getRequest.result;
+                const statusEl = document.getElementById('premiumStatus');
+                const copyBtn = document.getElementById('copyBtn');
+                const timerEl = document.getElementById('unlockTimer');
+                
+                if (data && data.active) {
+                    const now = new Date().getTime();
+                    
+                    // Kontrola expirácie predplatného
+                    if (now > data.expiresAt) {
+                        expirePremium();
+                        return;
+                    }
+
+                    // Kontrola odomknutia kódu (1 rok)
+                    if (now >= data.unlockAt) {
+                        isCodeUnlocked = true;
+                        copyBtn.innerHTML = '<i class="far fa-copy"></i> Kopírovať kód';
+                        copyBtn.classList.remove('btn-locked');
+                        timerEl.innerText = "KÓD ODOMKNUTÝ";
+                        timerEl.className = "text-[10px] text-green-400 mt-2 font-mono uppercase tracking-widest";
+                    } else {
+                        isCodeUnlocked = false;
+                        copyBtn.innerHTML = '<i class="fas fa-lock"></i> Kód zamknutý';
+                        copyBtn.classList.add('btn-locked');
+                        
+                        // Formátovanie dátumu odomknutia
+                        const date = new Date(data.unlockAt);
+                        timerEl.innerText = `DOSTUPNÉ OD: ${date.toLocaleDateString('sk-SK')}`;
+                    }
+
+                    const daysLeft = Math.ceil((data.expiresAt - now) / (1000 * 60 * 60 * 24));
+                    statusEl.innerHTML = `<span class="text-blue-400 font-bold"><i class="fas fa-crown"></i> ${data.planName} (${daysLeft} d.)</span>`;
+                    statusEl.className = "px-4 py-1 rounded-full bg-blue-500/10 text-xs border border-blue-500/50";
+                } else {
+                    // FREE VERZIA
+                    isCodeUnlocked = false;
+                    statusEl.innerText = 'Free Verzia';
+                    statusEl.className = "px-4 py-1 rounded-full bg-gray-800 text-xs border border-gray-700";
+                    copyBtn.innerHTML = '<i class="fas fa-ban"></i> Nie je možné kopírovať';
+                    copyBtn.classList.add('btn-locked');
+                    timerEl.innerText = "VYŽADUJE SA PLATBA";
+                    timerEl.className = "text-[10px] text-red-500 mt-2 font-mono uppercase tracking-widest";
+                }
+            };
+        }
+
+        function expirePremium() {
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            tx.objectStore(STORE_NAME).delete('premium_info');
+            tx.oncomplete = () => {
+                document.getElementById('notificationModal').style.display = 'flex';
+                checkPremiumStatus();
+            };
+        }
+
+        function closeNotification() {
+            document.getElementById('notificationModal').style.display = 'none';
+        }
+
+        function copyCode() {
+            if (!isCodeUnlocked) {
+                alert("Kód nie je možné kopírovať. Musíte mať aktívne Premium a počkať 1 rok od aktivácie.");
+                return;
+            }
+
+            const code = document.getElementById('codeBlock').innerText;
+            const el = document.createElement('textarea');
+            el.value = code;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            
+            const btn = document.getElementById('copyBtn');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Skopírované!';
+            setTimeout(() => btn.innerHTML = original, 2000);
+        }
+
+        setInterval(checkPremiumStatus, 5000);
+    </script>
+</body>
+</html>
