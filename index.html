@@ -3,612 +3,771 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebNode Pro - Snake Platform</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Codex PRO - Pokročilé Programovanie (Google Gemini)</title>
+    <!-- Highlight.js pre zvýraznenie syntaxy kódu -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
-
         :root {
-            --glass: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.12);
+            --bg-main: #0d1117;
+            --bg-side: #161b22;
+            --bg-card: #21262d;
+            --border-color: #30363d;
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --accent-color: #58a6ff;
+            --accent-green: #238636;
+            --danger-color: #da3633;
+            --warning-color: #d29922;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-code: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: radial-gradient(circle at top right, #1e293b, #0f172a);
-            color: #f8fafc;
-            min-height: 100vh;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        .glass-panel {
-            background: var(--glass);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background-color: var(--bg-side);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            gap: 15px;
         }
 
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        .logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .glass-card:hover {
-            transform: translateY(-8px);
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(56, 189, 248, 0.4);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        .logo span {
+            color: var(--accent-color);
         }
 
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-        }
-
-        .premium-alert {
-            transform: translateY(-150%);
-            transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-        .premium-alert.active {
-            transform: translateY(0);
+        .btn {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        code { font-family: 'Consolas', 'Monaco', monospace; }
+        .btn:hover {
+            background-color: #30363d;
+            border-color: var(--text-secondary);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-green);
+            color: #ffffff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #2ea043;
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 9px 12px;
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            outline: none;
+            font-size: 0.85rem;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--accent-color);
+        }
+
+        select:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .model-status-badge {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: -5px;
+        }
+
+        /* Quota Box */
+        .quota-box {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: auto;
+        }
+
+        .quota-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 8px;
+            background-color: var(--bg-main);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 100%;
+            background-color: var(--accent-green);
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .quota-reset-info {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+
+        /* Main Content Area */
+        .main-chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-main);
+            position: relative;
+        }
+
+        .chat-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-side);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            max-width: 85%;
+            border-radius: 8px;
+            padding: 12px 16px;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background-color: #1f6feb;
+            color: #ffffff;
+        }
+
+        .message.assistant {
+            align-self: flex-start;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+
+        .message .sender {
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-bottom: 6px;
+            opacity: 0.8;
+        }
+
+        .message pre {
+            background-color: #0d1117;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 8px;
+            overflow-x: auto;
+            font-family: var(--font-code);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Input Container */
+        .chat-input-container {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-side);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .input-box {
+            display: flex;
+            gap: 10px;
+        }
+
+        textarea {
+            flex: 1;
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            padding: 12px;
+            resize: none;
+            height: 60px;
+            font-family: var(--font-family);
+            outline: none;
+        }
+
+        textarea:focus {
+            border-color: var(--accent-color);
+        }
+
+        /* Disabled Warning Box */
+        .limit-reached-banner {
+            display: none;
+            background-color: rgba(218, 54, 51, 0.15);
+            border: 1px solid var(--danger-color);
+            color: #ff7b72;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        /* Modal Settings */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0, 0, 0, 0.75);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background-color: var(--bg-side);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            width: 450px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .modal-header {
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .close-modal {
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
     </style>
 </head>
-<body class="p-4 lg:p-10">
+<body>
 
-    <!-- Premium Expiry Notification -->
-    <div id="expiry-alert" class="premium-alert fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md px-4">
-        <div class="glass-panel p-5 border-l-4 border-red-500 shadow-2xl flex items-center gap-4">
-            <div class="bg-red-500/20 p-3 rounded-full text-red-500">
-                <i class="fas fa-clock text-xl"></i>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            ⚡ Codex <span>PRO</span>
+        </div>
+
+        <button class="btn btn-primary" onclick="createNewChat()">+ Nový chat</button>
+
+        <button class="btn" onclick="openSettingsModal()">⚙️ Nastavenia Gemini API Kľúča</button>
+
+        <div class="section-title">Google Gemini Modely</div>
+        <select id="modelSelect" onchange="updateModelWeightInfo()" disabled>
+            <option value="">🔒 Najskôr zadajte API kľúč</option>
+        </select>
+        <div id="modelStatus" class="model-status-badge">Zadajte API kľúč v nastaveniach.</div>
+
+        <!-- Limit / Quota Display -->
+        <div class="quota-box">
+            <div class="quota-header">
+                <span>Mesačný Limit</span>
+                <strong id="quotaPercentage">100 %</strong>
             </div>
-            <div>
-                <h4 class="font-bold text-lg">Predplatné skončilo!</h4>
-                <p class="text-sm text-gray-400">Vaše Premium funkcie boli deaktivované. Prosím, obnovte si balíček.</p>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="quotaBar"></div>
+            </div>
+            <div class="quota-reset-info" id="quotaResetText">
+                Obnovenie: Načítavam...
             </div>
         </div>
     </div>
 
-    <!-- Top Navigation -->
-    <header class="max-w-7xl mx-auto mb-10 flex flex-wrap justify-between items-center glass-panel p-5 px-10 gap-4">
-        <div class="flex items-center gap-3">
-            <div class="bg-gradient-to-br from-blue-500 to-indigo-600 p-2 rounded-xl">
-                <i class="fas fa-terminal text-white"></i>
+    <!-- Main Chat Area -->
+    <div class="main-chat">
+        <div class="chat-header">
+            <div>
+                <strong>Aktivný model:</strong> <span id="currentModelDisplay" style="color: var(--accent-color);">Čakám na API kľúč...</span>
             </div>
-            <h1 class="text-2xl font-bold tracking-tight">WebNode <span class="text-blue-400">DevCenter</span></h1>
-        </div>
-        <div class="flex items-center gap-6">
-            <div id="badge" class="px-4 py-1.5 rounded-full text-xs font-bold bg-white/10 border border-white/20 uppercase tracking-widest">
-                FREE ACCOUNT
-            </div>
-            <button class="text-gray-400 hover:text-white transition"><i class="fas fa-user-circle text-2xl"></i></button>
-        </div>
-    </header>
-
-    <main class="max-w-7xl mx-auto grid grid-cols-1 xl:grid-cols-12 gap-8">
-        
-        <!-- Code Display Section (8 Columns) -->
-        <div class="xl:col-span-8 space-y-8">
-            <section class="glass-panel p-1">
-                <div class="bg-slate-900/50 rounded-[22px] overflow-hidden">
-                    <div class="flex items-center justify-between px-6 py-4 border-b border-white/5">
-                        <div class="flex items-center gap-4">
-                            <div class="flex gap-1.5">
-                                <div class="w-3 h-3 rounded-full bg-red-500/40"></div>
-                                <div class="w-3 h-3 rounded-full bg-yellow-500/40"></div>
-                                <div class="w-3 h-3 rounded-full bg-green-500/40"></div>
-                            </div>
-                            <span class="text-xs text-slate-400 font-mono italic">Roblox_Snake_System.lua</span>
-                        </div>
-                        <div class="text-[10px] text-blue-400 font-bold uppercase tracking-wider">ReadOnly Editor</div>
-                    </div>
-                    
-                    <div class="h-[600px] overflow-auto custom-scrollbar p-8 bg-slate-950/20">
-                        <pre class="text-sm leading-relaxed text-blue-200/90 font-mono"><code id="lua-code">local workspace = game:GetService("Workspace")
-local starterPlayer = game:GetService("StarterPlayer")
-local lighting = game:GetService("Lighting")
-
--- Vymaže starého hada a staré efekty
-if workspace:FindFirstChild("ModernSnakeNPC") then workspace.ModernSnakeNPC:Destroy() end
-if starterPlayer.StarterPlayerScripts:FindFirstChild("SnakeHorrorEffects") then starterPlayer.StarterPlayerScripts.SnakeHorrorEffects:Destroy() end
-if lighting:FindFirstChild("SnakeRedGlow") then lighting.SnakeRedGlow:Destroy() end
-
-local snakeModel = Instance.new("Model")
-snakeModel.Name = "ModernSnakeNPC"
-snakeModel.Parent = workspace
-
--- Vytvorenie Humanoida (rýchlosť necháme na 15, dá sa utiecť)
-local humanoid = Instance.new("Humanoid")
-humanoid.RequiresNeck = false
-humanoid.HipHeight = 2
-humanoid.MaxHealth = 500
-humanoid.Health = 500
-humanoid.WalkSpeed = 15
-humanoid.Parent = snakeModel
-
-local numSegments = 20
-local headSize = 4.5 
-local bodySize = 2.2
-local overlap = 0.85
-
--- Vytvorenie HumanoidRootPart
-local hrp = Instance.new("Part")
-hrp.Name = "HumanoidRootPart"
-hrp.Size = Vector3.new(3, 3, 3)
-hrp.Transparency = 1
-hrp.CanCollide = false
-hrp.Position = Vector3.new(0, 10, 0)
-hrp.Parent = snakeModel
-snakeModel.PrimaryPart = hrp
-
--- Vytvorenie Hlavy (Smrtiaca časť)
-local head = Instance.new("Part")
-head.Name = "Head"
-head.Shape = Enum.PartType.Ball
-head.Size = Vector3.new(headSize, headSize, headSize)
-head.Color = Color3.fromRGB(255, 255, 255)
-head.Material = Enum.Material.SmoothPlastic
-head.CFrame = hrp.CFrame
-head.CustomPhysicalProperties = PhysicalProperties.new(0.5, 0.3, 0.5)
-head.Parent = snakeModel
-
-local face = Instance.new("Decal")
-face.Texture = "rbxassetid://8320404396" 
-face.Face = Enum.NormalId.Front
-face.Parent = head
-
-local weld = Instance.new("WeldConstraint")
-weld.Part0 = hrp
-weld.Part1 = head
-weld.Parent = hrp
-
-local parts = {head}
-
--- Vytvorenie Tela
-for i = 1, numSegments do
-	local segment = Instance.new("Part")
-	segment.Name = "Body_" .. i
-	segment.Shape = Enum.PartType.Ball
-	segment.Size = Vector3.new(bodySize, bodySize, bodySize)
-	segment.Color = Color3.fromRGB(10, 10, 10)
-	segment.Material = Enum.Material.SmoothPlastic
-	segment.Massless = true
-	
-	local prevPart = parts[i]
-	local offsetDist = (prevPart.Size.Z / 2) + (segment.Size.Z / 2)
-	segment.CFrame = prevPart.CFrame * CFrame.new(0, 0, offsetDist * overlap)
-	segment.Parent = snakeModel
-	
-	table.insert(parts, segment)
-end
-
--- Pospojovanie guličiek
-for i = 1, #parts - 1 do
-	local part0 = parts[i]
-	local part1 = parts[i+1]
-	
-	local offset0 = (part0.Size.Z / 2) * overlap
-	local offset1 = (part1.Size.Z / 2) * overlap
-	
-	local att0 = Instance.new("Attachment")
-	att0.Position = Vector3.new(0, 0, offset0)
-	att0.Parent = part0
-	
-	local att1 = Instance.new("Attachment")
-	att1.Position = Vector3.new(0, 0, -offset1)
-	att1.Parent = part1
-	
-	local ballSocket = Instance.new("BallSocketConstraint")
-	ballSocket.Attachment0 = att0
-	ballSocket.Attachment1 = att1
-	ballSocket.LimitsEnabled = true
-	ballSocket.UpperAngle = 50
-	ballSocket.TwistLimitsEnabled = true
-	ballSocket.Parent = part0
-	
-	local noCollision = Instance.new("NoCollisionConstraint")
-	noCollision.Part0 = part0
-	noCollision.Part1 = part1
-	noCollision.Parent = part0
-end
-
--- AI SKRIPT NA PRENASLEDOVANIE A ZABÍJANIE
-local aiScript = Instance.new("Script")
-aiScript.Name = "KillerAI"
-aiScript.Source = [[
-local npc = script.Parent
-local humanoid = npc:WaitForChild("Humanoid")
-local hrp = npc:WaitForChild("HumanoidRootPart")
-local head = npc:WaitForChild("Head")
-
-local function getNearestPlayer()
-	local nearestTarget = nil
-	local shortestDistance = math.huge
-	
-	for _, player in pairs(game.Players:GetPlayers()) do
-		if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChild("Humanoid").Health > 0 then
-			local distance = (player.Character.HumanoidRootPart.Position - hrp.Position).Magnitude
-			if distance < shortestDistance then
-				shortestDistance = distance
-				nearestTarget = player.Character.HumanoidRootPart
-			end
-		end
-	end
-	return nearestTarget
-end
-
-task.spawn(function()
-	while task.wait(0.1) do
-		local target = getNearestPlayer()
-		if target then
-			humanoid:MoveTo(target.Position)
-		end
-	end
-end)
-
-head.Touched:Connect(function(hit)
-	local character = hit.Parent
-	if character and character:FindFirstChild("Humanoid") and character.Name ~= npc.Name then
-		character.Humanoid.Health = 0 -- ZABITIE
-	end
-end)
-]]
-aiScript.Parent = snakeModel
-
-
--- KLIENTSKÝ SKRIPT (HOROROVÉ EFEKTY)
-local effectsScript = Instance.new("LocalScript")
-effectsScript.Name = "SnakeHorrorEffects"
-effectsScript.Source = [[
-local runService = game:GetService("RunService")
-local players = game:GetService("Players")
-local workspace = game:GetService("Workspace")
-local lighting = game:GetService("Lighting")
-
-local player = players.LocalPlayer
-local camera = workspace.CurrentCamera
-
--- Vytvorenie GUI pre červené blikanie
-local gui = Instance.new("ScreenGui")
-gui.IgnoreGuiInset = true
-gui.Parent = player:WaitForChild("PlayerGui")
-
-local redFlash = Instance.new("Frame")
-redFlash.Size = UDim2.new(1, 0, 1, 0)
-redFlash.BackgroundColor3 = Color3.fromRGB(255, 0, 0) -- Žiarivá červená
-redFlash.BackgroundTransparency = 1
-redFlash.ZIndex = 10
-redFlash.Parent = gui
-
--- Vytvorenie ColorCorrection pre zmenu farby celého sveta
-local colorCorrection = Instance.new("ColorCorrectionEffect")
-colorCorrection.Name = "SnakeRedGlow"
-colorCorrection.Parent = lighting
-
--- Zvuk srdca
-local heartbeatSound = Instance.new("Sound")
-heartbeatSound.SoundId = "rbxassetid://138084661"
-heartbeatSound.Looped = true
-heartbeatSound.Volume = 0
-heartbeatSound.Parent = workspace
-
-local MAX_DISTANCE = 70 -- Od kedy začnú efekty
-
-runService.RenderStepped:Connect(function()
-	local char = player.Character
-	if not char or not char:FindFirstChild("HumanoidRootPart") or char.Humanoid.Health <= 0 then
-		redFlash.BackgroundTransparency = 1
-		colorCorrection.TintColor = Color3.fromRGB(255, 255, 255)
-		colorCorrection.Contrast = 0
-		heartbeatSound.Volume = 0
-		return
-	end
-
-	local hrp = char.HumanoidRootPart
-	local snake = workspace:FindFirstChild("ModernSnakeNPC")
-	
-	if snake and snake:FindFirstChild("HumanoidRootPart") then
-		local distance = (snake.HumanoidRootPart.Position - hrp.Position).Magnitude
-		
-		if distance < MAX_DISTANCE then
-			if not heartbeatSound.IsPlaying then heartbeatSound:Play() end
-			
-			-- Intenzita (0 = ďaleko, 1 = úplne pri tebe)
-			local intensity = 1 - (distance / MAX_DISTANCE)
-			
-			-- Pulzovanie svetla (vytvára efekt núdzového blikania / tlkotu)
-			local pulseSpeed = 5 + (intensity * 15) -- Čím bližšie, tým rýchlejšie bliká
-			local pulse = (math.sin(tick() * pulseSpeed) + 1) / 2
-			
-			-- Hlasitosť srdca
-			heartbeatSound.Volume = intensity * 3
-			
-			-- BLIKANIE OBRAZOVKY
-			local flashStrength = intensity * 0.5 + (pulse * intensity * 0.3)
-			redFlash.BackgroundTransparency = 1 - flashStrength
-			
-			-- FARBA SVETA (Svet okolo sčervená a stmavne)
-			local colorGlow = 255 - (intensity * 180) -- Uberá zelenú a modrú farbu
-			colorCorrection.TintColor = Color3.fromRGB(255, colorGlow, colorGlow)
-			colorCorrection.Contrast = intensity * 0.4 -- Pridáva "temný" hororový tieň
-			
-			-- TRASENIE KAMERY (Silnejšie keď je bližšie)
-			local shakeAmount = intensity * 0.6
-			local rx = (math.random() - 0.5) * shakeAmount
-			local ry = (math.random() - 0.5) * shakeAmount
-			local rz = (math.random() - 0.5) * shakeAmount
-			camera.CFrame = camera.CFrame * CFrame.Angles(rx, ry, rz)
-		else
-			-- Keď je ďaleko, efekty sa vypnú
-			redFlash.BackgroundTransparency = 1
-			colorCorrection.TintColor = Color3.fromRGB(255, 255, 255)
-			colorCorrection.Contrast = 0
-			heartbeatSound.Volume = 0
-		end
-	else
-		redFlash.BackgroundTransparency = 1
-		colorCorrection.TintColor = Color3.fromRGB(255, 255, 255)
-		colorCorrection.Contrast = 0
-		heartbeatSound.Volume = 0
-	end
-end)
-]]
-effectsScript.Parent = starterPlayer.StarterPlayerScripts
-
-print("Červené hororové blikanie pripravené! Stlač Play.")</code></pre>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 4 Upgrade Packages -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-12">
-                <!-- Package 1: 5.00 EUR -->
-                <div class="glass-card p-8 rounded-3xl flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-xl font-bold mb-2">Basic Access</h3>
-                        <p class="text-3xl font-extrabold text-blue-400 mb-6">5,00 €</p>
-                        <ul class="space-y-3 text-sm text-gray-400 mb-8">
-                            <li><i class="fas fa-check-circle text-blue-500 mr-2"></i> Základný prístup ku kódu</li>
-                            <li><i class="fas fa-check-circle text-blue-500 mr-2"></i> Community podpora</li>
-                            <li><i class="fas fa-check-circle text-blue-500 mr-2"></i> Trvanie: 1 mesiac</li>
-                        </ul>
-                    </div>
-                    <button onclick="openPayment('Basic Access', 5.00, 1)" class="w-full py-4 bg-white/5 hover:bg-white/15 border border-white/10 rounded-2xl font-bold transition">Vybrať za 5€</button>
-                </div>
-
-                <!-- Package 2: 54.00 EUR -->
-                <div class="glass-card p-8 rounded-3xl border-blue-500/50 bg-blue-500/5 flex flex-col justify-between relative overflow-hidden">
-                    <div class="absolute top-0 right-0 bg-blue-500 text-white text-[10px] px-4 py-1 font-bold uppercase rotate-45 translate-x-4 translate-y-4">Populárne</div>
-                    <div>
-                        <h3 class="text-xl font-bold mb-2">Standard Plus</h3>
-                        <p class="text-3xl font-extrabold text-blue-400 mb-6">54,00 €</p>
-                        <ul class="space-y-3 text-sm text-gray-400 mb-8">
-                            <li><i class="fas fa-check-circle text-blue-500 mr-2"></i> Kompletný Snake NPC skript</li>
-                            <li><i class="fas fa-check-circle text-blue-500 mr-2"></i> Hororové efekty</li>
-                            <li><i class="fas fa-check-circle text-blue-500 mr-2"></i> Trvanie: 1 mesiac</li>
-                        </ul>
-                    </div>
-                    <button onclick="openPayment('Standard Plus', 54.00, 1)" class="w-full py-4 bg-blue-500 hover:bg-blue-600 rounded-2xl font-bold transition shadow-lg shadow-blue-500/20">Aktivovať za 54€</button>
-                </div>
-
-                <!-- Package 3: Original 1000.66 EUR -->
-                <div class="glass-card p-8 rounded-3xl flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-xl font-bold mb-2">Pro Edition</h3>
-                        <p class="text-3xl font-extrabold text-blue-400 mb-6">1,000.66 €</p>
-                        <ul class="space-y-3 text-sm text-gray-400 mb-8">
-                            <li><i class="fas fa-check-circle text-blue-500 mr-2"></i> Všetky funkcie editora</li>
-                            <li><i class="fas fa-check-circle text-blue-500 mr-2"></i> Cloud synchronizácia</li>
-                            <li><i class="fas fa-check-circle text-blue-500 mr-2"></i> Trvanie: 1 mesiac</li>
-                        </ul>
-                    </div>
-                    <button onclick="openPayment('Pro Edition', 1000.66, 1)" class="w-full py-4 bg-white/5 hover:bg-white/15 border border-white/10 rounded-2xl font-bold transition">Získať Pro</button>
-                </div>
-
-                <!-- Package 4: 2 Years Upgrade -->
-                <div class="glass-card p-8 rounded-3xl flex flex-col justify-between border-indigo-500/30">
-                    <div>
-                        <h3 class="text-xl font-bold mb-2">Long-term Dev</h3>
-                        <p class="text-3xl font-extrabold text-indigo-400 mb-6">3,500.00 €</p>
-                        <ul class="space-y-3 text-sm text-gray-400 mb-8">
-                            <li><i class="fas fa-check-circle text-indigo-500 mr-2"></i> Prioritná podpora</li>
-                            <li><i class="fas fa-check-circle text-indigo-500 mr-2"></i> Custom Shaders</li>
-                            <li><i class="fas fa-check-circle text-indigo-500 mr-2"></i> Trvanie: 2 roky</li>
-                        </ul>
-                    </div>
-                    <button onclick="openPayment('Long-term Dev', 3500.00, 24)" class="w-full py-4 bg-gradient-to-r from-indigo-600 to-blue-600 rounded-2xl font-bold transition">Upgrade na 2 roky</button>
-                </div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                Uložené v IndexedDB
             </div>
         </div>
 
-        <!-- Payment Gateway Sidebar (4 Columns) -->
-        <aside class="xl:col-span-4">
-            <div id="payment-gate" class="glass-panel p-8 sticky top-10 opacity-30 pointer-events-none transition-all duration-700">
-                <div class="flex items-center gap-3 mb-8">
-                    <i class="fas fa-shield-alt text-green-400"></i>
-                    <h2 class="text-xl font-bold italic tracking-tighter">SECURE GATEWAY</h2>
-                </div>
-
-                <form id="pay-form" class="space-y-4 max-h-[70vh] overflow-y-auto pr-4 custom-scrollbar">
-                    <!-- Fields 1-20 -->
-                    <div>
-                        <label class="text-[10px] text-gray-500 font-bold uppercase mb-1 block">1. Celé meno majiteľa</label>
-                        <input type="text" placeholder="John Doe" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm focus:border-blue-500 outline-none transition">
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-[10px] text-gray-500 font-bold uppercase mb-1 block">2. Typ karty</label>
-                            <select class="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-sm outline-none">
-                                <option>VISA</option>
-                                <option>MASTERCARD</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-gray-500 font-bold uppercase mb-1 block">3. Banka</label>
-                            <input type="text" placeholder="SLSP" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm outline-none">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-[10px] text-gray-500 font-bold uppercase mb-1 block">4. Číslo karty</label>
-                        <input type="text" placeholder="0000 0000 0000 0000" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm outline-none">
-                    </div>
-                    <div class="grid grid-cols-3 gap-3">
-                        <div class="col-span-2">
-                            <label class="text-[10px] text-gray-500 font-bold uppercase mb-1 block">5. Expirácia</label>
-                            <input type="text" placeholder="MM/YY" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm outline-none">
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-gray-500 font-bold uppercase mb-1 block">6. CVV</label>
-                            <input type="text" placeholder="***" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm outline-none">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-[10px] text-gray-500 font-bold uppercase mb-1 block">7. Fakturačná ulica</label>
-                        <input type="text" placeholder="Hlavná 123" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm outline-none">
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <input type="text" placeholder="8. Mesto" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm outline-none">
-                        <input type="text" placeholder="9. PSČ" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm outline-none">
-                    </div>
-                    <input type="text" placeholder="10. Štát / Región" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm outline-none">
-                    <input type="email" placeholder="11. Kontaktný Email" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm outline-none">
-                    <input type="tel" placeholder="12. Telefón (+421)" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm outline-none">
-                    <input type="text" placeholder="13. Názov Spoločnosti" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm outline-none">
-                    <input type="text" placeholder="14. IČO / DIČ" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm outline-none">
-                    <input type="text" placeholder="15. IBAN platiteľa" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm outline-none">
-                    <input type="text" placeholder="16. BIC/SWIFT" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm outline-none">
-                    <select class="w-full bg-slate-900 border border-white/10 rounded-xl p-3 text-sm outline-none text-gray-400">
-                        <option>17. Spôsob platby: Karta</option>
-                        <option>17. Spôsob platby: Prevod</option>
-                    </select>
-                    <input type="password" placeholder="18. Bezpečnostné heslo brány" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm outline-none">
-                    <textarea placeholder="19. Poznámka k objednávke..." class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm h-20 outline-none"></textarea>
-                    
-                    <div class="flex items-start gap-3 py-2">
-                        <input type="checkbox" id="c20" class="mt-1 accent-blue-500">
-                        <label for="c20" class="text-[10px] text-gray-500 font-bold uppercase">20. Súhlasím s podmienkami a spracovaním dát WebNode Pro.</label>
-                    </div>
-
-                    <div class="pt-6">
-                        <div class="flex justify-between text-xs mb-2">
-                            <span class="text-gray-400">Položka:</span>
-                            <span id="item-name" class="font-bold">---</span>
-                        </div>
-                        <div class="flex justify-between text-lg font-bold mb-6">
-                            <span>Celkom:</span>
-                            <span class="text-blue-400"><span id="item-price">0.00</span> €</span>
-                        </div>
-                        <button type="button" onclick="finalizePayment()" class="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl font-bold text-lg hover:scale-[1.02] active:scale-95 transition shadow-2xl shadow-blue-500/30">
-                            ZAPLATIŤ BEZPEČNE
-                        </button>
-                    </div>
-                </form>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message assistant">
+                <div class="sender">Codex Assistant</div>
+                Vitajte v prostredí Codex PRO. Pre načítanie **všetkých Google Gemini a Flash modelov** kliknite na tlačidlo **⚙️ Nastavenia Gemini API Kľúča** a vložte svoj API kľúč.
             </div>
-        </aside>
-    </main>
+        </div>
 
-    <footer class="max-w-7xl mx-auto mt-20 pb-12 border-t border-white/5 pt-10 text-center">
-        <p class="text-gray-500 text-xs tracking-widest uppercase">&copy; 2026 WebNode Platform &bull; Cloud Database System &bull; Všetky práva vyhradené</p>
-    </footer>
+        <!-- Warning container when 0% limit -->
+        <div class="chat-input-container">
+            <div id="limitBanner" class="limit-reached-banner">
+                🛑 <strong>Mesačný limit 100 % bol vyčerpaný!</strong><br>
+                Písanie v chate je zablokované. Limit sa obnoví: <span id="bannerResetTime"></span>.
+            </div>
+
+            <div class="input-box" id="inputArea">
+                <textarea id="userInput" placeholder="Napíš otázku alebo požiadavku na kód... (Shift + Enter pre nový riadok)"></textarea>
+                <button class="btn btn-primary" style="padding: 0 20px;" id="sendBtn" onclick="sendMessage()">Odoslať</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>Nastavenie Gemini API</span>
+                <span class="close-modal" onclick="closeSettingsModal()">&times;</span>
+            </div>
+            <div>
+                <label style="font-size: 0.85rem; color: var(--text-secondary);">Google Gemini API Kľúč</label>
+                <input type="password" id="apiKeyInput" placeholder="AIzaSy..." style="margin-top: 5px;">
+                <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 5px;">
+                    Po uložení kľúča sa automaticky stiahne kompletný zoznam všetkých oficiálnych aj Flash modelov priamo z Google API.
+                </p>
+            </div>
+            <button class="btn btn-primary" onclick="saveSettings()">Uložiť & Načítať Modely</button>
+        </div>
+    </div>
 
     <script>
-        // --- INDEXEDDB CORE ---
-        const DB_CONFIG = { name: 'WebNodeDB', version: 1, store: 'premium_data' };
-        let db;
-        let selectedPackage = null;
-
-        const request = indexedDB.open(DB_CONFIG.name, DB_CONFIG.version);
-
-        request.onupgradeneeded = (e) => {
-            db = e.target.result;
-            if (!db.objectStoreNames.contains(DB_CONFIG.store)) {
-                db.createObjectStore(DB_CONFIG.store, { keyPath: 'id' });
-            }
+        // --- CONSTANTS & STATE ---
+        const BASE_OPENAI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/";
+        let db = null;
+        let settings = {
+            apiKey: "",
+            quota: 100.0,
+            nextReset: getNextResetTimestamp(),
+            selectedModel: ""
         };
+        let chatHistory = [];
 
-        request.onsuccess = (e) => {
-            db = e.target.result;
-            checkPremiumStatus();
-        };
+        // --- INDEXEDDB HELPER ---
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open("CodexGeminiDB", 1);
 
-        // UI Helpers
-        const gate = document.getElementById('payment-gate');
-        const badge = document.getElementById('badge');
-        const alertBox = document.getElementById('expiry-alert');
-
-        function openPayment(name, price, months) {
-            selectedPackage = { name, price, months };
-            gate.style.opacity = '1';
-            gate.style.pointerEvents = 'all';
-            document.getElementById('item-name').innerText = name;
-            document.getElementById('item-price').innerText = price.toFixed(2);
-            gate.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        async function finalizePayment() {
-            if (!selectedPackage) return;
-
-            const expiryDate = new Date();
-            expiryDate.setMonth(expiryDate.getMonth() + selectedPackage.months);
-            
-            const record = {
-                id: 'current_user',
-                tier: selectedPackage.name,
-                expiresAt: expiryDate.getTime()
-            };
-
-            const tx = db.transaction([DB_CONFIG.store], 'readwrite');
-            const store = tx.objectStore(DB_CONFIG.store);
-            store.put(record);
-
-            tx.oncomplete = () => {
-                alert(`Platba úspešná! Balík ${selectedPackage.name} aktivovaný.`);
-                location.reload();
-            };
-        }
-
-        function checkPremiumStatus() {
-            const tx = db.transaction([DB_CONFIG.store], 'readonly');
-            const store = tx.objectStore(DB_CONFIG.store);
-            const req = store.get('current_user');
-
-            req.onsuccess = () => {
-                const user = req.result;
-                if (user) {
-                    const now = Date.now();
-                    if (now > user.expiresAt) {
-                        handleExpiry();
-                    } else {
-                        badge.innerText = 'PREMIUM: ' + user.tier.toUpperCase();
-                        badge.classList.remove('bg-white/10');
-                        badge.classList.add('bg-blue-500', 'text-white', 'border-blue-400');
+                request.onupgradeneeded = (e) => {
+                    db = e.target.result;
+                    if (!db.objectStoreNames.contains("settings")) {
+                        db.createObjectStore("settings", { keyPath: "id" });
                     }
-                }
-            };
+                };
+
+                request.onsuccess = (e) => {
+                    db = e.target.result;
+                    loadSettingsFromDB().then(resolve);
+                };
+
+                request.onerror = (e) => reject(e);
+            });
         }
 
-        function handleExpiry() {
-            const tx = db.transaction([DB_CONFIG.store], 'readwrite');
-            const store = tx.objectStore(DB_CONFIG.store);
-            store.delete('current_user');
+        function saveSettingsToDB() {
+            if (!db) return;
+            const tx = db.transaction("settings", "readwrite");
+            const store = tx.objectStore("settings");
+            store.put({ id: "config", ...settings });
+        }
 
-            tx.oncomplete = () => {
-                badge.innerText = 'FREE ACCOUNT';
-                badge.classList.add('bg-red-500/20', 'text-red-400', 'border-red-500/30');
-                
-                alertBox.classList.add('active');
-                setTimeout(() => alertBox.classList.remove('active'), 10000);
-            };
+        function loadSettingsFromDB() {
+            return new Promise((resolve) => {
+                const tx = db.transaction("settings", "readonly");
+                const store = tx.objectStore("settings");
+                const request = store.get("config");
+
+                request.onsuccess = () => {
+                    if (request.result) {
+                        settings = request.result;
+                    }
+                    checkAndResetQuota();
+                    resolve();
+                };
+            });
+        }
+
+        // --- FETCH ALL GOOGLE MODELS DYNAMICALLY ---
+        async function fetchAndPopulateModels(apiKey) {
+            const modelSelect = document.getElementById("modelSelect");
+            const modelStatus = document.getElementById("modelStatus");
+
+            if (!apiKey) {
+                modelSelect.innerHTML = `<option value="">🔒 Zadajte API kľúč v nastaveniach</option>`;
+                modelSelect.disabled = true;
+                modelStatus.innerText = "❌ Chýba API kľúč.";
+                document.getElementById("currentModelDisplay").innerText = "Čakám na API kľúč...";
+                return;
+            }
+
+            modelStatus.innerText = "⏳ Načítavam všetky modely z Google...";
+
+            try {
+                // Volanie Google OpenAI endpointu pre načítanie modelov
+                const res = await fetch(`${BASE_OPENAI_URL}models`, {
+                    headers: { "Authorization": `Bearer ${apiKey}` }
+                });
+
+                if (!res.ok) throw new Error("API kľúč je neplatný alebo zlyhalo spojenie.");
+
+                const data = await res.json();
+                let models = data.data || [];
+
+                // Vyfiltrovanie iba Gemini modelov a ich zzoradenie
+                models = models.filter(m => m.id.includes("gemini"));
+                models.sort((a, b) => a.id.localeCompare(b.id));
+
+                if (models.length === 0) {
+                    models = getFallbackModels();
+                }
+
+                modelSelect.innerHTML = "";
+                models.forEach(m => {
+                    const weight = calculateModelWeight(m.id);
+                    const opt = document.createElement("option");
+                    opt.value = m.id;
+                    opt.dataset.weight = weight;
+                    opt.textContent = `${m.id} (-${weight}% / odpoveď)`;
+                    modelSelect.appendChild(opt);
+                });
+
+                modelSelect.disabled = false;
+                modelStatus.innerText = `✅ Načítaných ${models.length} modelov od Google`;
+
+                if (settings.selectedModel) {
+                    modelSelect.value = settings.selectedModel;
+                }
+                updateModelWeightInfo();
+
+            } catch (err) {
+                console.warn("Dynamické načítanie zlyhalo, načítavam záložné modely:", err);
+                populateFallbackModels();
+                modelStatus.innerText = "⚠️ Zobrazený offline zoznam všetkých modelov";
+            }
+        }
+
+        // Výpočet spotreby podľa náročnosti modelu
+        function calculateModelWeight(modelId) {
+            const id = modelId.toLowerCase();
+            if (id.includes("pro")) return 4.0;
+            if (id.includes("thinking") || id.includes("exp")) return 2.5;
+            if (id.includes("flash")) {
+                if (id.includes("lite") || id.includes("8b")) return 0.2;
+                return 1.0;
+            }
+            return 1.5;
+        }
+
+        function getFallbackModels() {
+            return [
+                { id: "gemini-2.5-pro" }, { id: "gemini-2.5-flash" },
+                { id: "gemini-2.0-flash" }, { id: "gemini-2.0-flash-lite" },
+                { id: "gemini-2.0-flash-thinking-exp" }, { id: "gemini-1.5-pro" },
+                { id: "gemini-1.5-flash" }, { id: "gemini-1.5-flash-8b" }
+            ];
+        }
+
+        function populateFallbackModels() {
+            const modelSelect = document.getElementById("modelSelect");
+            modelSelect.innerHTML = "";
+            getFallbackModels().forEach(m => {
+                const weight = calculateModelWeight(m.id);
+                const opt = document.createElement("option");
+                opt.value = m.id;
+                opt.dataset.weight = weight;
+                opt.textContent = `${m.id} (-${weight}% / odpoveď)`;
+                modelSelect.appendChild(opt);
+            });
+            modelSelect.disabled = false;
+            updateModelWeightInfo();
+        }
+
+        // --- QUOTA & LIMIT SYSTEM ---
+        function getNextResetTimestamp() {
+            const now = new Date();
+            // Prvý deň nasledujúceho mesiaca o 00:00:00
+            return new Date(now.getFullYear(), now.getMonth() + 1, 1, 0, 0, 0).getTime();
+        }
+
+        function checkAndResetQuota() {
+            const now = Date.now();
+            if (now >= settings.nextReset) {
+                settings.quota = 100.0;
+                settings.nextReset = getNextResetTimestamp();
+                saveSettingsToDB();
+            }
+            updateQuotaUI();
+        }
+
+        function deductQuota(modelKey) {
+            const selectElem = document.getElementById("modelSelect");
+            const option = selectElem.querySelector(`option[value="${modelKey}"]`);
+            const weight = option ? parseFloat(option.dataset.weight) : 1.0;
+
+            settings.quota = Math.max(0, settings.quota - weight);
+            saveSettingsToDB();
+            updateQuotaUI();
+        }
+
+        function updateQuotaUI() {
+            const quotaVal = settings.quota.toFixed(1);
+            const quotaBar = document.getElementById("quotaBar");
+            const quotaText = document.getElementById("quotaPercentage");
+            const quotaResetText = document.getElementById("quotaResetText");
+            const bannerResetTime = document.getElementById("bannerResetTime");
+            
+            quotaText.innerText = `${quotaVal} %`;
+            quotaBar.style.width = `${settings.quota}%`;
+
+            if (settings.quota > 50) {
+                quotaBar.style.backgroundColor = "var(--accent-green)";
+            } else if (settings.quota > 20) {
+                quotaBar.style.backgroundColor = "var(--warning-color)";
+            } else {
+                quotaBar.style.backgroundColor = "var(--danger-color)";
+            }
+
+            const resetDateObj = new Date(settings.nextReset);
+            const dateStr = resetDateObj.toLocaleDateString("sk-SK", {
+                day: "numeric", month: "numeric", year: "numeric"
+            });
+            const timeStr = resetDateObj.toLocaleTimeString("sk-SK", {
+                hour: "2-digit", minute: "2-digit"
+            });
+
+            const resetFormatted = `${dateStr} o ${timeStr}`;
+            quotaResetText.innerHTML = `Obnovenie limitu:<br><strong>${resetFormatted}</strong>`;
+            bannerResetTime.innerText = resetFormatted;
+
+            // Zablokovanie vstupu ak je 0%
+            const inputArea = document.getElementById("inputArea");
+            const limitBanner = document.getElementById("limitBanner");
+            const sendBtn = document.getElementById("sendBtn");
+            const userInput = document.getElementById("userInput");
+
+            if (settings.quota <= 0) {
+                inputArea.style.display = "none";
+                limitBanner.style.display = "block";
+                userInput.disabled = true;
+                sendBtn.disabled = true;
+            } else {
+                inputArea.style.display = "flex";
+                limitBanner.style.display = "none";
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+            }
+        }
+
+        // --- APP INITIALIZATION ---
+        window.addEventListener("DOMContentLoaded", async () => {
+            await initDB();
+            
+            if (settings.apiKey) {
+                await fetchAndPopulateModels(settings.apiKey);
+            }
+
+            // Enter pre odoslanie, Shift+Enter pre nový riadok
+            document.getElementById("userInput").addEventListener("keydown", (e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        });
+
+        function updateModelWeightInfo() {
+            const select = document.getElementById("modelSelect");
+            if (!select.value) return;
+            settings.selectedModel = select.value;
+            saveSettingsToDB();
+
+            const selectedText = select.options[select.selectedIndex].text;
+            document.getElementById("currentModelDisplay").innerText = selectedText.split(" (")[0];
+        }
+
+        // --- CHAT SYSTEM ---
+        async function sendMessage() {
+            if (settings.quota <= 0) {
+                alert("Mesačný limit 100% bol vyčerpaný!");
+                return;
+            }
+
+            if (!settings.apiKey) {
+                alert("Najskôr zadajte API kľúč!");
+                openSettingsModal();
+                return;
+            }
+
+            const inputField = document.getElementById("userInput");
+            const userText = inputField.value.trim();
+            if (!userText) return;
+
+            const selectedModel = document.getElementById("modelSelect").value;
+            if (!selectedModel) {
+                alert("Vyberte model zo zoznamu!");
+                return;
+            }
+
+            inputField.value = "";
+            appendMessage("user", userText);
+            chatHistory.push({ role: "user", content: userText });
+
+            const loadingId = appendMessage("assistant", "Codex generuje odpoveď...");
+
+            try {
+                const response = await fetch(`${BASE_OPENAI_URL}chat/completions`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${settings.apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: selectedModel,
+                        messages: [
+                            { role: "system", content: "Jsi expert na pokročilé programování. Odpovídej s přehlednými ukázkami kódu." },
+                            ...chatHistory
+                        ]
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error.message || "Chyba Google API");
+                }
+
+                const aiReply = data.choices[0].message.content;
+                document.getElementById(loadingId).querySelector(".msg-content").innerHTML = formatCodeBlocks(aiReply);
+                chatHistory.push({ role: "assistant", content: aiReply });
+
+                // Odčítanie limitu podla modelu
+                deductQuota(selectedModel);
+                hljs.highlightAll();
+
+            } catch (err) {
+                document.getElementById(loadingId).querySelector(".msg-content").innerText = `⚠️ Chyba: ${err.message}`;
+            }
+        }
+
+        function appendMessage(role, text) {
+            const container = document.getElementById("chatMessages");
+            const msgId = "msg-" + Date.now();
+            const div = document.createElement("div");
+            div.className = `message ${role}`;
+            div.id = msgId;
+
+            const sender = role === "user" ? "Vy" : "Codex AI";
+            div.innerHTML = `
+                <div class="sender">${sender}</div>
+                <div class="msg-content">${formatCodeBlocks(text)}</div>
+            `;
+
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            hljs.highlightAll();
+            return msgId;
+        }
+
+        function formatCodeBlocks(text) {
+            const codeBlockRegex = /```([a-z]*)\n([\s\S]*?)```/g;
+            return text.replace(codeBlockRegex, (match, lang, code) => {
+                return `<pre><code class="language-${lang}">${escapeHtml(code.trim())}</code></pre>`;
+            });
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function createNewChat() {
+            chatHistory = [];
+            const container = document.getElementById("chatMessages");
+            container.innerHTML = `
+                <div class="message assistant">
+                    <div class="sender">Codex Assistant</div>
+                    Nová konverzácia pripravená. Zvoľte model a napíšte Vašu požiadavku.
+                </div>
+            `;
+        }
+
+        // --- MODAL & SETTINGS ---
+        function openSettingsModal() {
+            document.getElementById("apiKeyInput").value = settings.apiKey || "";
+            document.getElementById("settingsModal").style.display = "flex";
+        }
+
+        function closeSettingsModal() {
+            document.getElementById("settingsModal").style.display = "none";
+        }
+
+        async function saveSettings() {
+            const key = document.getElementById("apiKeyInput").value.trim();
+            settings.apiKey = key;
+            saveSettingsToDB();
+            closeSettingsModal();
+
+            await fetchAndPopulateModels(key);
         }
     </script>
 </body>
