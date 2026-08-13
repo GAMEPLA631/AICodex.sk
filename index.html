@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Codex PRO - Pokročilé Programovanie (Google Gemini)</title>
+    <title>Codex PRO - Pokročilé Programovanie a Hudba (Google Gemini)</title>
     <!-- Highlight.js pre zvýraznenie syntaxy kódu -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
@@ -220,14 +220,54 @@
             opacity: 0.8;
         }
 
-        .message pre {
-            background-color: #0d1117;
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 8px;
-            overflow-x: auto;
-            font-family: var(--font-code);
+        /* Špeciálny obal pre Kód a Hudobné Texty s tlačidlom Kopírovať */
+        .code-block-container {
+            position: relative;
+            margin-top: 10px;
             border: 1px solid var(--border-color);
+            border-radius: 6px;
+            overflow: hidden;
+            background-color: #0d1117;
+        }
+
+        .code-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #161b22;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+            font-family: var(--font-family);
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 3px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background-color: var(--bg-card);
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .code-block-container pre {
+            margin: 0 !important;
+            padding: 12px !important;
+            border: none !important;
+            border-radius: 0 !important;
+            background-color: #0d1117 !important;
+            font-family: var(--font-code);
+            overflow-x: auto;
+            white-space: pre;
         }
 
         /* Input Container */
@@ -356,7 +396,7 @@
         <div class="chat-messages" id="chatMessages">
             <div class="message assistant">
                 <div class="sender">Codex Assistant</div>
-                Vitajte v prostredí Codex PRO. Pre načítanie **všetkých Google Gemini a Flash modelov** kliknite na tlačidlo **⚙️ Nastavenia Gemini API Kľúča** a vložte svoj API kľúč.
+                Vitajte v prostredí Codex PRO. Tento systém dokáže generovať **programovací kód** aj **hudobné texty a akordy** do špeciálnych blokov, ktoré skopírujete 1-klikom bez poškodenia textu. Zadajte API kľúč v nastaveniach pre štart.
             </div>
         </div>
 
@@ -368,7 +408,7 @@
             </div>
 
             <div class="input-box" id="inputArea">
-                <textarea id="userInput" placeholder="Napíš otázku alebo požiadavku na kód... (Shift + Enter pre nový riadok)"></textarea>
+                <textarea id="userInput" placeholder="Napíš otázku, kód alebo požiadavku na hudobný text... (Shift + Enter pre nový riadok)"></textarea>
                 <button class="btn btn-primary" style="padding: 0 20px;" id="sendBtn" onclick="sendMessage()">Odoslať</button>
             </div>
         </div>
@@ -464,7 +504,6 @@
             modelStatus.innerText = "⏳ Načítavam všetky modely z Google...";
 
             try {
-                // Volanie Google OpenAI endpointu pre načítanie modelov
                 const res = await fetch(`${BASE_OPENAI_URL}models`, {
                     headers: { "Authorization": `Bearer ${apiKey}` }
                 });
@@ -474,7 +513,6 @@
                 const data = await res.json();
                 let models = data.data || [];
 
-                // Vyfiltrovanie iba Gemini modelov a ich zzoradenie
                 models = models.filter(m => m.id.includes("gemini"));
                 models.sort((a, b) => a.id.localeCompare(b.id));
 
@@ -507,7 +545,6 @@
             }
         }
 
-        // Výpočet spotreby podľa náročnosti modelu
         function calculateModelWeight(modelId) {
             const id = modelId.toLowerCase();
             if (id.includes("pro")) return 4.0;
@@ -546,7 +583,6 @@
         // --- QUOTA & LIMIT SYSTEM ---
         function getNextResetTimestamp() {
             const now = new Date();
-            // Prvý deň nasledujúceho mesiaca o 00:00:00
             return new Date(now.getFullYear(), now.getMonth() + 1, 1, 0, 0, 0).getTime();
         }
 
@@ -600,7 +636,6 @@
             quotaResetText.innerHTML = `Obnovenie limitu:<br><strong>${resetFormatted}</strong>`;
             bannerResetTime.innerText = resetFormatted;
 
-            // Zablokovanie vstupu ak je 0%
             const inputArea = document.getElementById("inputArea");
             const limitBanner = document.getElementById("limitBanner");
             const sendBtn = document.getElementById("sendBtn");
@@ -627,7 +662,6 @@
                 await fetchAndPopulateModels(settings.apiKey);
             }
 
-            // Enter pre odoslanie, Shift+Enter pre nový riadok
             document.getElementById("userInput").addEventListener("keydown", (e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
@@ -685,7 +719,10 @@
                     body: JSON.stringify({
                         model: selectedModel,
                         messages: [
-                            { role: "system", content: "Jsi expert na pokročilé programování. Odpovídej s přehlednými ukázkami kódu." },
+                            { 
+                                role: "system", 
+                                content: "Si expert na pokročilé programovanie aj tvorbu hudobných textov/akordov. DÔLEŽITÉ: Ak generuješ kód, pesničky, hudobné texty alebo akordy, VŽDY ich vlož do textového bloku (Markdown ```), aby sa dali skopírovať naraz bez poškodenia formátovania." 
+                            },
                             ...chatHistory
                         ]
                     })
@@ -701,7 +738,6 @@
                 document.getElementById(loadingId).querySelector(".msg-content").innerHTML = formatCodeBlocks(aiReply);
                 chatHistory.push({ role: "assistant", content: aiReply });
 
-                // Odčítanie limitu podla modelu
                 deductQuota(selectedModel);
                 hljs.highlightAll();
 
@@ -729,10 +765,38 @@
             return msgId;
         }
 
+        // FUNKCIA PRE KOPÍROVANIE TEXTU Z BLOKU
+        function copyBlockText(btn) {
+            const container = btn.closest('.code-block-container');
+            const codeElement = container.querySelector('code');
+            const textToCopy = codeElement ? codeElement.innerText : '';
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = btn.innerText;
+                btn.innerText = "✓ Skopírované!";
+                btn.style.color = "var(--accent-green)";
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.style.color = "";
+                }, 2000);
+            }).catch(err => {
+                alert("Nepodarilo sa skopírovať text: " + err);
+            });
+        }
+
+        // FORMÁTOVANIE BLOKOV S TLAČIDLOM KOPÍROVAŤ
         function formatCodeBlocks(text) {
-            const codeBlockRegex = /```([a-z]*)\n([\s\S]*?)```/g;
+            const codeBlockRegex = /```([a-z0-9_-]*)\n([\s\S]*?)```/g;
             return text.replace(codeBlockRegex, (match, lang, code) => {
-                return `<pre><code class="language-${lang}">${escapeHtml(code.trim())}</code></pre>`;
+                const displayTitle = lang.trim() ? lang.trim().toUpperCase() : 'TEXT / HUDBA / KÓD';
+                return `
+                <div class="code-block-container">
+                    <div class="code-block-header">
+                        <span>🎵/💻 ${displayTitle}</span>
+                        <button class="copy-btn" onclick="copyBlockText(this)">📋 Kopírovať vše</button>
+                    </div>
+                    <pre><code class="language-${lang}">${escapeHtml(code.trim())}</code></pre>
+                </div>`;
             });
         }
 
@@ -746,7 +810,7 @@
             container.innerHTML = `
                 <div class="message assistant">
                     <div class="sender">Codex Assistant</div>
-                    Nová konverzácia pripravená. Zvoľte model a napíšte Vašu požiadavku.
+                    Nová konverzácia pripravená. Zvoľte model a napíšte Vašu požiadavku na kód alebo hudobný text.
                 </div>
             `;
         }
