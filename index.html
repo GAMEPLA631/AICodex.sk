@@ -261,6 +261,35 @@
             text-transform: uppercase;
         }
 
+        /* ANIMÁCIA UVAŽOVANIA */
+        @keyframes pulseThinking {
+            0% { opacity: 0.4; transform: scale(0.98); }
+            50% { opacity: 1; transform: scale(1.01); filter: drop-shadow(0 0 8px var(--accent-color)); }
+            100% { opacity: 0.4; transform: scale(0.98); }
+        }
+
+        .thinking-anim {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            animation: pulseThinking 1.6s infinite ease-in-out;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .thinking-dots span {
+            animation: blinkDots 1.4s infinite;
+            animation-fill-mode: both;
+        }
+        .thinking-dots span:nth-child(2) { animation-delay: .2s; }
+        .thinking-dots span:nth-child(3) { animation-delay: .4s; }
+
+        @keyframes blinkDots {
+            0% { opacity: .2; }
+            20% { opacity: 1; }
+            100% { opacity: .2; }
+        }
+
         /* Obal pre Kód a Hudobné Texty s tlačidlom Kopírovať */
         .code-block-container {
             position: relative;
@@ -466,11 +495,10 @@
             </div>
         </div>
 
-        <!-- Warning container when 0% limit -->
+        <!-- Warning container when 0% limit or 50% pause -->
         <div class="chat-input-container">
             <div id="limitBanner" class="limit-reached-banner">
-                🛑 <strong>Mesačný limit 100 % bol vyčerpaný!</strong><br>
-                Písanie v chate je zablokované. Limit sa obnoví: <span id="bannerResetTime"></span>.
+                <span id="bannerText"></span>
             </div>
 
             <div class="input-box" id="inputArea">
@@ -507,7 +535,10 @@
             quota: 100.0,
             nextReset: getNextResetTimestamp(),
             selectedModel: "",
-            reasoningLevel: "1.0"
+            reasoningLevel: "1.0",
+            requestHistory: [], // Sledovanie intervalu požiadaviek (max 12 / min)
+            pausedUntil: 0,     // Čas obnovenia pri 3-dňovej pauze (50% limit)
+            pauseTriggered: false
         };
         let chatHistory = [];
 
@@ -547,7 +578,7 @@
 
                 request.onsuccess = () => {
                     if (request.result) {
-                        settings = request.result;
+                        settings = { ...settings, ...request.result };
                         if (settings.reasoningLevel) {
                             document.getElementById("reasoningSelect").value = settings.reasoningLevel;
                         }
@@ -586,7 +617,7 @@
                 const data = await res.json();
                 let rawModels = data.data || [];
 
-                // 1. Odstránenie "models/" prefixu pre kompatibilitu s OpenAI endpointom
+                // 1. Odstránenie "models/" prefixu pre kompatibilitu
                 let cleanModels = rawModels.map(m => {
                     const rawId = m.id || m.name || "";
                     const cleanId = rawId.replace(/^models\//, "");
@@ -619,7 +650,7 @@
                 models.forEach(m => {
                     const weight = calculateModelWeight(m.id);
                     const opt = document.createElement("option");
-                    opt.value = m.id; // čistý názov bez 'models/'
+                    opt.value = m.id;
                     opt.dataset.weight = weight;
                     opt.textContent = `${m.id} (Základ: -${weight}%)`;
                     modelSelect.appendChild(opt);
@@ -678,7 +709,7 @@
             updateModelWeightInfo();
         }
 
-        // --- QUOTA & LIMIT SYSTEM ---
+        // --- QUOTA & LIMIT SYSTEM (S 50% PAUZOU NA 3 DNI) ---
         function getNextResetTimestamp() {
             const now = new Date();
             return new Date(now.getFullYear(), now.getMonth() + 1, 1, 0, 0, 0).getTime();
@@ -689,6 +720,8 @@
             if (now >= settings.nextReset) {
                 settings.quota = 100.0;
                 settings.nextReset = getNextResetTimestamp();
+                settings.pausedUntil = 0;
+                settings.pauseTriggered = false;
                 saveSettingsToDB();
             }
             updateQuotaUI();
@@ -703,6 +736,14 @@
             const totalWeight = baseWeight * reasoningMultiplier;
 
             settings.quota = Math.max(0, settings.quota - totalWeight);
+
+            // KONTROLA VYČERPANIA 50% LIMITU -> PAUZA NA 3 DNI (72 HODÍN)
+            if (settings.quota <= 50.0 && !settings.pauseTriggered) {
+                settings.pauseTriggered = true;
+                const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+                settings.pausedUntil = Date.now() + THREE_DAYS_MS;
+            }
+
             saveSettingsToDB();
             updateQuotaUI();
         }
@@ -712,7 +753,7 @@
             const quotaBar = document.getElementById("quotaBar");
             const quotaText = document.getElementById("quotaPercentage");
             const quotaResetText = document.getElementById("quotaResetText");
-            const bannerResetTime = document.getElementById("bannerResetTime");
+            const bannerText = document.getElementById("bannerText");
             
             quotaText.innerText = `${quotaVal} %`;
             quotaBar.style.width = `${settings.quota}%`;
@@ -735,14 +776,30 @@
 
             const resetFormatted = `${dateStr} o ${timeStr}`;
             quotaResetText.innerHTML = `Obnovenie limitu:<br><strong>${resetFormatted}</strong>`;
-            bannerResetTime.innerText = resetFormatted;
 
             const inputArea = document.getElementById("inputArea");
             const limitBanner = document.getElementById("limitBanner");
             const sendBtn = document.getElementById("sendBtn");
             const userInput = document.getElementById("userInput");
 
+            const now = Date.now();
+            let isBlocked = false;
+
+            // 1. Ak je vyčerpaný 100% limit
             if (settings.quota <= 0) {
+                isBlocked = true;
+                bannerText.innerHTML = `🛑 <strong>Mesačný limit 100 % bol vyčerpaný!</strong><br>Písanie v chate je zablokované. Limit sa obnoví: ${resetFormatted}.`;
+            } 
+            // 2. Ak je spustená 3-dňová pauza pri vyčerpaní 50% limitu
+            else if (settings.pausedUntil > 0 && now < settings.pausedUntil) {
+                isBlocked = true;
+                const pauseDate = new Date(settings.pausedUntil);
+                const pDateStr = pauseDate.toLocaleDateString("sk-SK", { day: "numeric", month: "numeric", year: "numeric" });
+                const pTimeStr = pauseDate.toLocaleTimeString("sk-SK", { hour: "2-digit", minute: "2-digit" });
+                bannerText.innerHTML = `🛑 <strong>3-dňová bezpečnostná pauza!</strong><br>Vyčerpali ste 50 % limitu. Systém sa z bezpečnostných dôvodov pozastavil na 3 dni. Obnovenie chatu: <strong>${pDateStr} o ${pTimeStr}</strong>.`;
+            }
+
+            if (isBlocked) {
                 inputArea.style.display = "none";
                 limitBanner.style.display = "block";
                 userInput.disabled = true;
@@ -752,6 +809,46 @@
                 limitBanner.style.display = "none";
                 userInput.disabled = false;
                 sendBtn.disabled = false;
+            }
+        }
+
+        // --- INTERVAL LIMITS (MAX 12 REQUESTS PER MINUTE) ---
+        function checkIntervalRateLimit() {
+            const now = Date.now();
+            const ONE_MINUTE = 60 * 1000;
+            
+            // Vyčistenie starších požiadaviek než 1 minúta
+            settings.requestHistory = (settings.requestHistory || []).filter(t => (now - t) < ONE_MINUTE);
+
+            if (settings.requestHistory.length >= 12) {
+                const oldest = settings.requestHistory[0];
+                const waitSeconds = Math.ceil((ONE_MINUTE - (now - oldest)) / 1000);
+                return waitSeconds;
+            }
+            return 0; // OK
+        }
+
+        function recordRequestTimestamp() {
+            if (!settings.requestHistory) settings.requestHistory = [];
+            settings.requestHistory.push(Date.now());
+            saveSettingsToDB();
+        }
+
+        // --- AUTOMATICKÉ RETRY PRE API (429 PREŤAŽENIE) ---
+        async function fetchWithRetry(url, options, maxRetries = 3) {
+            for (let attempt = 1; attempt <= maxRetries; attempt++) {
+                try {
+                    const res = await fetch(url, options);
+                    // Ak Google vráti 429 Rate Limit, počkáme 2s a zopakujeme
+                    if (res.status === 429 && attempt < maxRetries) {
+                        await new Promise(r => setTimeout(r, attempt * 2000));
+                        continue;
+                    }
+                    return res;
+                } catch (err) {
+                    if (attempt === maxRetries) throw err;
+                    await new Promise(r => setTimeout(r, attempt * 2000));
+                }
             }
         }
 
@@ -787,10 +884,22 @@
             document.getElementById("currentModelDisplay").innerText = `${selectedText} | Uvažovanie: ${reasoningText}`;
         }
 
-        // --- CHAT SYSTEM ---
+        // --- CHAT SYSTEM (OPRAVENÉ SPRÁVNE GENEROVANIE DO CHATU) ---
         async function sendMessage() {
             if (settings.quota <= 0) {
                 alert("Mesačný limit 100% bol vyčerpaný!");
+                return;
+            }
+
+            if (settings.pausedUntil > 0 && Date.now() < settings.pausedUntil) {
+                alert("Systém je dočasne pozastavený z dôvodu dosiahnutia 50% limitu!");
+                return;
+            }
+
+            // Kontrola intervalového limitu (max 12 požiadaviek / min)
+            const waitTime = checkIntervalRateLimit();
+            if (waitTime > 0) {
+                alert(`⏱️ Dosiahli ste max limit 12 požiadaviek za minútu. Prosím počkajte ${waitTime} sekúnd pre ochranu Google modelov.`);
                 return;
             }
 
@@ -810,20 +919,30 @@
                 return;
             }
 
-            // Garancia odstrihnutia "models/" prefixu
             const cleanModelName = rawSelectedModel.replace(/^models\//, "");
-
             const reasoningSelect = document.getElementById("reasoningSelect");
             const reasoningText = reasoningSelect.options[reasoningSelect.selectedIndex].text;
 
             inputField.value = "";
+            
+            // 1. Pridanie správ do chatu s unikátnym ID (zabezpečí, že sa AI neprenesie do užívateľskej správy)
             appendMessage("user", userText);
             chatHistory.push({ role: "user", content: userText });
 
-            const loadingId = appendMessage("assistant", "Codex premýšľa a generuje odpoveď...");
+            // 2. Vytvorenie samostatného bloku pre AI s animovaným efektom uvažovania
+            const loadingHTML = `
+                <div class="thinking-anim">
+                    🧠 Codex uvažuje a analyzuje požiadavku
+                    <span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span>
+                </div>
+            `;
+            const assistantMsgId = appendMessage("assistant", loadingHTML);
+
+            // Zaznamenať požiadavku pre intervalový limit
+            recordRequestTimestamp();
 
             try {
-                const response = await fetch(`${BASE_OPENAI_URL}chat/completions`, {
+                const response = await fetchWithRetry(`${BASE_OPENAI_URL}chat/completions`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -843,14 +962,13 @@
 
                 const data = await response.json().catch(() => null);
 
-                // 1. Kontrola HTTP statusu z Google API
                 if (!response.ok) {
                     const errDetail = data?.error?.message || data?.error || data?.message || `HTTP chyba status ${response.status}`;
                     throw new Error(`Google API: ${errDetail}`);
                 }
 
                 if (!data) {
-                    throw new Error("Google API nevrátilo žiadne dáta (prázdna odpoveď).");
+                    throw new Error("Google API nevrátilo žiadne dáta.");
                 }
 
                 if (data.error) {
@@ -858,7 +976,6 @@
                     throw new Error(`Google API chyba: ${errDetail}`);
                 }
 
-                // 2. Spracovanie odpovede (OpenAI choices, reasoning_content, parts alebo candidates fallback)
                 let aiReply = "";
 
                 if (data.choices && data.choices.length > 0) {
@@ -888,11 +1005,14 @@
                 }
 
                 if (!aiReply) {
-                    console.warn("Neznáma štruktúra odpovede z Google API:", data);
-                    throw new Error("Google API nevrátilo žiadny textový obsah. Skontrolujte bezpečnostné filtre alebo zvolený model.");
+                    throw new Error("Google API nevrátilo žiadny textový obsah. Skontrolujte bezpečnostné filtre alebo model.");
                 }
 
-                document.getElementById(loadingId).querySelector(".msg-content").innerHTML = formatCodeBlocks(aiReply);
+                // Vloženie odpovede výhradne do priradeného AI bloku
+                const assistantMsgElem = document.getElementById(assistantMsgId);
+                if (assistantMsgElem) {
+                    assistantMsgElem.querySelector(".msg-content").innerHTML = formatCodeBlocks(aiReply);
+                }
                 chatHistory.push({ role: "assistant", content: aiReply });
 
                 deductQuota(cleanModelName);
@@ -900,13 +1020,16 @@
 
             } catch (err) {
                 console.error("Chyba pri spracovaní odpovede Google API:", err);
-                document.getElementById(loadingId).querySelector(".msg-content").innerText = `⚠️ Chyba: ${err.message}`;
+                const assistantMsgElem = document.getElementById(assistantMsgId);
+                if (assistantMsgElem) {
+                    assistantMsgElem.querySelector(".msg-content").innerText = `⚠️ Chyba: ${err.message}`;
+                }
             }
         }
 
         function appendMessage(role, text) {
             const container = document.getElementById("chatMessages");
-            const msgId = "msg-" + Date.now();
+            const msgId = `msg-${role}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
             const div = document.createElement("div");
             div.className = `message ${role}`;
             div.id = msgId;
