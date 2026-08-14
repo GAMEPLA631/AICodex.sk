@@ -157,6 +157,70 @@
             margin-top: -6px;
         }
 
+        /* --- PRIDANÉ: Zoznam Uložených Četov --- */
+        .chat-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            max-height: 130px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 6px;
+            background-color: var(--bg-input);
+        }
+
+        .chat-item {
+            padding: 8px 10px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            background-color: var(--bg-card);
+            border: 1px solid transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .chat-item:hover, .chat-item.active {
+            border-color: var(--accent-color);
+            color: #ffffff;
+            background-color: #202b40;
+        }
+
+        .chat-item-del {
+            color: var(--danger-color);
+            cursor: pointer;
+            font-weight: bold;
+            padding: 0 4px;
+        }
+
+        /* --- PRIDANÉ: Udalosti v Kalendári --- */
+        .events-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            padding: 8px;
+            border-radius: 8px;
+            background: var(--bg-input);
+        }
+
+        .event-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+
         /* Quota Box */
         .quota-box {
             background: linear-gradient(180deg, var(--bg-card) 0%, rgba(24, 32, 48, 0.6) 100%);
@@ -447,6 +511,8 @@
             flex-direction: column;
             gap: 18px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            max-height: 85vh;
+            overflow-y: auto;
         }
 
         .modal-header {
@@ -478,7 +544,15 @@
 
         <button class="btn btn-primary" onclick="createNewChat()">+ Nový chat</button>
 
-        <button class="btn" onclick="openSettingsModal()">⚙️ Nastavenia Gemini API Kľúča</button>
+        <button class="btn" onclick="openSettingsModal()">⚙️ Nastavenia API Kľúča</button>
+        <!-- PRIDANÉ TLAČIDLO KALENDÁRA -->
+        <button class="btn" onclick="openCalendarModal()">📅 Kalendár & Sviatky</button>
+
+        <!-- PRIDANÁ HISTÓRIA ČETOV -->
+        <div class="section-title">História četov</div>
+        <div class="chat-list" id="chatListContainer">
+            <div style="font-size:0.75rem; color:var(--text-secondary); text-align:center; padding:10px;">Žiadne uložené čety</div>
+        </div>
 
         <div class="section-title">Google Gemini Modely</div>
         <select id="modelSelect" onchange="updateModelWeightInfo()" disabled>
@@ -525,7 +599,7 @@
             <div class="message assistant">
                 <div class="sender">Codex Assistant</div>
                 <div class="msg-content">
-                    Vitajte v prostredí Codex PRO. Systém podporuje **všetky Gemini a Flash modely**, **nastaviteľnú úroveň hĺbkového uvažovania** a priamu generáciu kódu/hudby do blokov na skopírovanie 1-klikom. Zadajte kľúč v nastaveniach pre štart.
+                    Vitajte v prostredí Codex PRO. Systém podporuje **všetky Gemini a Flash modely**, **ukladanie četov do lokálnej databázy**, **pamäť na narodeniny a kalendár**, a priamu generáciu kódu/hudby do blokov.
                 </div>
             </div>
         </div>
@@ -561,6 +635,29 @@
         </div>
     </div>
 
+    <!-- PRIDANÉ: Calendar Modal -->
+    <div class="modal" id="calendarModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span>📅 Kalendár, Narodeniny & Sviatky</span>
+                <span class="close-modal" onclick="closeCalendarModal()">&times;</span>
+            </div>
+            <p style="font-size:0.8rem; color:var(--text-secondary);">
+                Zadajte vaše narodeniny, meniny alebo dôležité sviatky. AI si ich zapamätá a v konverzácii bude o nich vedieť.
+            </p>
+            
+            <div class="events-list" id="eventsListContainer">
+                <!-- Dynamicky generovaný zoznam udalostí -->
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
+                <input type="text" id="eventTitleInput" placeholder="Názov (napr. Moje narodeniny, Vianoce...)">
+                <input type="date" id="eventDateInput">
+                <button class="btn btn-primary" onclick="addCalendarEvent()">+ Pridať do pamäte AI</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // --- CONSTANTS & STATE ---
         const BASE_OPENAI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/";
@@ -573,25 +670,34 @@
             reasoningLevel: "1.0",
             requestHistory: [], 
             pausedUntil: 0,     
-            pauseTriggered: false
+            pauseTriggered: false,
+            events: [] // PRIDANÉ: Pamäť na narodeniny a sviatky
         };
         let chatHistory = [];
+        let currentChatId = null; // PRIDANÉ pre DB
+        let allChats = [];        // PRIDANÉ pre DB
 
         // --- INDEXEDDB HELPER ---
         function initDB() {
             return new Promise((resolve, reject) => {
-                const request = indexedDB.open("CodexGeminiDB", 1);
+                const request = indexedDB.open("CodexGeminiDB", 2); // Verzia 2 kvôli pridaniu 'chats'
 
                 request.onupgradeneeded = (e) => {
                     db = e.target.result;
                     if (!db.objectStoreNames.contains("settings")) {
                         db.createObjectStore("settings", { keyPath: "id" });
                     }
+                    if (!db.objectStoreNames.contains("chats")) {
+                        db.createObjectStore("chats", { keyPath: "id" });
+                    }
                 };
 
                 request.onsuccess = (e) => {
                     db = e.target.result;
-                    loadSettingsFromDB().then(resolve);
+                    loadSettingsFromDB().then(() => {
+                        loadAllChatsFromDB(); // Načíta históriu četov pri štarte
+                        resolve();
+                    });
                 };
 
                 request.onerror = (e) => reject(e);
@@ -622,6 +728,91 @@
                     resolve();
                 };
             });
+        }
+
+        // --- PRIDANÉ: UKLADANIE A NAČÍTANIE ČETOV V INDEXEDDB ---
+        function saveCurrentChatToDB() {
+            if (!db || !currentChatId || chatHistory.length === 0) return;
+            
+            const firstMsg = chatHistory.find(m => m.role === 'user')?.content || "Nový chat";
+            const title = firstMsg.length > 25 ? firstMsg.substring(0, 25) + "..." : firstMsg;
+
+            const chatData = {
+                id: currentChatId,
+                title: title,
+                messages: chatHistory,
+                updatedAt: Date.now()
+            };
+
+            const tx = db.transaction("chats", "readwrite");
+            const store = tx.objectStore("chats");
+            store.put(chatData);
+
+            loadAllChatsFromDB();
+        }
+
+        function loadAllChatsFromDB() {
+            if (!db) return;
+            const tx = db.transaction("chats", "readonly");
+            const store = tx.objectStore("chats");
+            const request = store.getAll();
+
+            request.onsuccess = () => {
+                allChats = request.result || [];
+                allChats.sort((a, b) => b.updatedAt - a.updatedAt);
+                renderChatListUI();
+            };
+        }
+
+        function renderChatListUI() {
+            const container = document.getElementById("chatListContainer");
+            if (allChats.length === 0) {
+                container.innerHTML = `<div style="font-size:0.75rem; color:var(--text-secondary); text-align:center; padding:10px;">Žiadne uložené čety</div>`;
+                return;
+            }
+
+            container.innerHTML = "";
+            allChats.forEach(c => {
+                const div = document.createElement("div");
+                div.className = `chat-item ${c.id === currentChatId ? 'active' : ''}`;
+                div.innerHTML = `
+                    <span onclick="switchChat('${c.id}')" style="flex:1; overflow:hidden; text-overflow:ellipsis;">💬 ${escapeHtml(c.title)}</span>
+                    <span class="chat-item-del" onclick="deleteChat('${c.id}', event)">&times;</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function switchChat(chatId) {
+            const target = allChats.find(c => c.id === chatId);
+            if (!target) return;
+
+            currentChatId = target.id;
+            chatHistory = [...target.messages];
+
+            const container = document.getElementById("chatMessages");
+            container.innerHTML = "";
+
+            chatHistory.forEach(m => {
+                appendMessage(m.role, m.content);
+            });
+
+            renderChatListUI();
+        }
+
+        function deleteChat(chatId, e) {
+            e.stopPropagation();
+            if (!db) return;
+
+            const tx = db.transaction("chats", "readwrite");
+            const store = tx.objectStore("chats");
+            store.delete(chatId);
+
+            if (currentChatId === chatId) {
+                createNewChat();
+            } else {
+                loadAllChatsFromDB();
+            }
         }
 
         // --- FETCH ALL GOOGLE MODELS DYNAMICALLY ---
@@ -911,6 +1102,65 @@
             document.getElementById("currentModelDisplay").innerText = `${selectedText} | Uvažovanie: ${reasoningText}`;
         }
 
+        // --- PRIDANÉ: KALENDÁR & PAMÄŤ NA SVIATKY / NARODENINY ---
+        function openCalendarModal() {
+            renderEventsUI();
+            document.getElementById("calendarModal").style.display = "flex";
+        }
+
+        function closeCalendarModal() {
+            document.getElementById("calendarModal").style.display = "none";
+        }
+
+        function addCalendarEvent() {
+            const titleInput = document.getElementById("eventTitleInput");
+            const dateInput = document.getElementById("eventDateInput");
+
+            const title = titleInput.value.trim();
+            const date = dateInput.value;
+
+            if (!title || !date) {
+                alert("Vyplňte prosím názov aj dátum události.");
+                return;
+            }
+
+            if (!settings.events) settings.events = [];
+            settings.events.push({ id: Date.now(), title, date });
+            saveSettingsToDB();
+
+            titleInput.value = "";
+            dateInput.value = "";
+            renderEventsUI();
+        }
+
+        function deleteCalendarEvent(id) {
+            if (!settings.events) return;
+            settings.events = settings.events.filter(e => e.id !== id);
+            saveSettingsToDB();
+            renderEventsUI();
+        }
+
+        function renderEventsUI() {
+            const container = document.getElementById("eventsListContainer");
+            const events = settings.events || [];
+
+            if (events.length === 0) {
+                container.innerHTML = `<div style="font-size:0.8rem; color:var(--text-secondary); text-align:center; padding:10px;">Žiadne pridané narodeniny ani sviatky.</div>`;
+                return;
+            }
+
+            container.innerHTML = "";
+            events.forEach(e => {
+                const div = document.createElement("div");
+                div.className = "event-item";
+                div.innerHTML = `
+                    <span>🎉 <strong>${escapeHtml(e.title)}</strong> (${e.date})</span>
+                    <span style="color:var(--danger-color); cursor:pointer; font-weight:bold;" onclick="deleteCalendarEvent(${e.id})">&times;</span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
         // --- CHAT SYSTEM ---
         async function sendMessage() {
             if (settings.quota <= 0) {
@@ -945,6 +1195,11 @@
                 return;
             }
 
+            // Priradenie ID novému chatu pre DB
+            if (!currentChatId) {
+                currentChatId = "chat-" + Date.now();
+            }
+
             const cleanModelName = rawSelectedModel.replace(/^models\//, "");
             const reasoningSelect = document.getElementById("reasoningSelect");
             const reasoningText = reasoningSelect.options[reasoningSelect.selectedIndex].text;
@@ -953,6 +1208,7 @@
             
             appendMessage("user", userText);
             chatHistory.push({ role: "user", content: userText });
+            saveCurrentChatToDB(); // Uloženie po správe užívateľa
 
             // HTML Animácie uvažovania (posielame isRawHtml = true aby sa HTML nezakódovalo)
             const loadingHTML = `
@@ -964,6 +1220,13 @@
             const assistantMsgId = appendMessage("assistant", loadingHTML, true);
 
             recordRequestTimestamp();
+
+            // PREDPRÍPRAVA PAMÄTE PRE AI (DÁTUM, SVIATKY, NARODENINY)
+            const todayStr = new Date().toLocaleDateString("sk-SK", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            const userEvents = settings.events || [];
+            const eventsMemoryStr = userEvents.length > 0 
+                ? userEvents.map(e => `- ${e.title}: ${e.date}`).join('\n')
+                : "Žiadne uložené události v kalendári.";
 
             try {
                 const response = await fetchWithRetry(`${BASE_OPENAI_URL}chat/completions`, {
@@ -977,7 +1240,7 @@
                         messages: [
                             { 
                                 role: "system", 
-                                content: `Si expert na pokročilé programovanie aj tvorbu hudobných textov/akordov. ZVOLENÁ ÚROVEŇ UVAŽOVANIA: ${reasoningText}. Analýze požiadavky venuj primeranú hĺbku podľa tejto úrovne. DÔLEŽITÉ: Ak generuješ kód, pesničky, hudobné texty alebo akordy, VŽDY ich vlož do textového bloku (Markdown \`\`\`), aby sa dali skopírovať naraz bez poškodenia formátovania.` 
+                                content: `Si expert na pokročilé programovanie aj tvorbu hudobných textov/akordov. ZVOLENÁ ÚROVEŇ UVAŽOVANIA: ${reasoningText}. Dnešný aktuálny dátum: ${todayStr}. PAMÄŤ KALENDÁRA (NARODENINY A SVIATKY POUŽÍVATEĽA):\n${eventsMemoryStr}\nPamätaj si tieto dátumy a ak sa používateľ spýta na narodeniny alebo sviatky, použi túto pamäť. DÔLEŽITÉ: Ak generuješ kód, pesničky, hudobné texty alebo akordy, VŽDY ich vlož do textového bloku (Markdown \`\`\`), aby sa dali skopírovať naraz bez poškodenia formátovania.` 
                             },
                             ...chatHistory
                         ]
@@ -1037,6 +1300,7 @@
                     assistantMsgElem.querySelector(".msg-content").innerHTML = formatCodeBlocks(aiReply);
                 }
                 chatHistory.push({ role: "assistant", content: aiReply });
+                saveCurrentChatToDB(); // Uloženie po správe AI
 
                 deductQuota(cleanModelName);
                 hljs.highlightAll();
@@ -1145,6 +1409,7 @@
         }
 
         function createNewChat() {
+            currentChatId = "chat-" + Date.now();
             chatHistory = [];
             const container = document.getElementById("chatMessages");
             container.innerHTML = `
@@ -1153,6 +1418,7 @@
                     <div class="msg-content">Nová konverzácia pripravená. Zvoľte model, úroveň uvažovania a napíšte požiadavku.</div>
                 </div>
             `;
+            renderChatListUI();
         }
 
         // --- MODAL & SETTINGS ---
