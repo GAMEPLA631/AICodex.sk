@@ -261,7 +261,7 @@
             text-transform: uppercase;
         }
 
-        /* Špeciálny obal pre Kód a Hudobné Texty s tlačidlom Kopírovať */
+        /* Obal pre Kód a Hudobné Texty s tlačidlom Kopírovať */
         .code-block-container {
             position: relative;
             margin-top: 10px;
@@ -578,12 +578,37 @@
                     headers: { "Authorization": `Bearer ${apiKey}` }
                 });
 
-                if (!res.ok) throw new Error("API kľúč je neplatný alebo zlyhalo spojenie.");
+                if (!res.ok) {
+                    const errData = await res.json().catch(() => ({}));
+                    throw new Error(errData.error?.message || errData.message || `HTTP chyba status ${res.status}`);
+                }
 
                 const data = await res.json();
-                let models = data.data || [];
+                let rawModels = data.data || [];
 
-                models = models.filter(m => m.id.includes("gemini"));
+                // 1. Odstránenie "models/" prefixu pre kompatibilitu s OpenAI endpointom
+                let cleanModels = rawModels.map(m => {
+                    const rawId = m.id || m.name || "";
+                    const cleanId = rawId.replace(/^models\//, "");
+                    return { id: cleanId };
+                });
+
+                // 2. Filtrácia chatovacích modelov (Gemini a Gemma)
+                let models = cleanModels.filter(m => {
+                    const id = m.id.toLowerCase();
+                    const isSupported = id.startsWith("gemini") || id.startsWith("gemma");
+                    const isNotMedia = !id.includes("embedding") && !id.includes("imagen") && !id.includes("aqa") && !id.includes("tts") && !id.includes("whisper");
+                    return isSupported && isNotMedia;
+                });
+
+                // 3. Odstránenie duplikátov
+                const uniqueModelsMap = new Map();
+                models.forEach(m => {
+                    if (!uniqueModelsMap.has(m.id)) {
+                        uniqueModelsMap.set(m.id, m);
+                    }
+                });
+                models = Array.from(uniqueModelsMap.values());
                 models.sort((a, b) => a.id.localeCompare(b.id));
 
                 if (models.length === 0) {
@@ -594,7 +619,7 @@
                 models.forEach(m => {
                     const weight = calculateModelWeight(m.id);
                     const opt = document.createElement("option");
-                    opt.value = m.id;
+                    opt.value = m.id; // čistý názov bez 'models/'
                     opt.dataset.weight = weight;
                     opt.textContent = `${m.id} (Základ: -${weight}%)`;
                     modelSelect.appendChild(opt);
@@ -604,14 +629,17 @@
                 modelStatus.innerText = `✅ Načítaných ${models.length} modelov od Google`;
 
                 if (settings.selectedModel) {
-                    modelSelect.value = settings.selectedModel;
+                    modelSelect.value = settings.selectedModel.replace(/^models\//, "");
+                    if (!modelSelect.value && modelSelect.options.length > 0) {
+                        modelSelect.selectedIndex = 0;
+                    }
                 }
                 updateModelWeightInfo();
 
             } catch (err) {
                 console.warn("Dynamické načítanie zlyhalo, načítavam záložné modely:", err);
                 populateFallbackModels();
-                modelStatus.innerText = "⚠️ Zobrazený offline zoznam všetkých modelov";
+                modelStatus.innerText = `⚠️ Offline zoznam modelov (${err.message})`;
             }
         }
 
@@ -776,11 +804,14 @@
             const userText = inputField.value.trim();
             if (!userText) return;
 
-            const selectedModel = document.getElementById("modelSelect").value;
-            if (!selectedModel) {
+            const rawSelectedModel = document.getElementById("modelSelect").value;
+            if (!rawSelectedModel) {
                 alert("Vyberte model zo zoznamu!");
                 return;
             }
+
+            // Garancia odstrihnutia "models/" prefixu
+            const cleanModelName = rawSelectedModel.replace(/^models\//, "");
 
             const reasoningSelect = document.getElementById("reasoningSelect");
             const reasoningText = reasoningSelect.options[reasoningSelect.selectedIndex].text;
@@ -799,7 +830,7 @@
                         "Authorization": `Bearer ${settings.apiKey}`
                     },
                     body: JSON.stringify({
-                        model: selectedModel,
+                        model: cleanModelName,
                         messages: [
                             { 
                                 role: "system", 
@@ -810,27 +841,65 @@
                     })
                 });
 
-                const data = await response.json();
+                const data = await response.json().catch(() => null);
 
-                // OPRAVA CHYBY undefined reading '0': Bezpečná kontrola odpovede API
+                // 1. Kontrola HTTP statusu z Google API
+                if (!response.ok) {
+                    const errDetail = data?.error?.message || data?.error || data?.message || `HTTP chyba status ${response.status}`;
+                    throw new Error(`Google API: ${errDetail}`);
+                }
+
+                if (!data) {
+                    throw new Error("Google API nevrátilo žiadne dáta (prázdna odpoveď).");
+                }
+
                 if (data.error) {
-                    throw new Error(data.error.message || JSON.stringify(data.error));
+                    const errDetail = typeof data.error === 'object' ? (data.error.message || JSON.stringify(data.error)) : data.error;
+                    throw new Error(`Google API chyba: ${errDetail}`);
                 }
 
-                if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-                    console.error("Neočakávaná štruktúra odpovede z API:", data);
-                    throw new Error("Google API nevrátilo platné dáta. Skontrolujte model alebo platnosť API kľúča.");
+                // 2. Spracovanie odpovede (OpenAI choices, reasoning_content, parts alebo candidates fallback)
+                let aiReply = "";
+
+                if (data.choices && data.choices.length > 0) {
+                    const choice = data.choices[0];
+                    const msg = choice.message;
+
+                    if (msg) {
+                        if (typeof msg.content === 'string' && msg.content.trim() !== '') {
+                            aiReply = msg.content;
+                        } else if (Array.isArray(msg.content)) {
+                            aiReply = msg.content.map(part => typeof part === 'string' ? part : (part.text || part.content || '')).join('\n');
+                        } else if (msg.reasoning_content) {
+                            aiReply = msg.reasoning_content;
+                        } else if (msg.refusal) {
+                            aiReply = `⚠️ Modulu bol odmietnutý vstup (Refusal): ${msg.refusal}`;
+                        }
+                    }
+
+                    if (!aiReply && choice.finish_reason && choice.finish_reason !== 'stop') {
+                        aiReply = `⚠️ Odpoveď bola prerušená z dôvodu: ${choice.finish_reason}`;
+                    }
+                } else if (data.candidates && data.candidates.length > 0) {
+                    const cand = data.candidates[0];
+                    if (cand.content && cand.content.parts) {
+                        aiReply = cand.content.parts.map(p => p.text || '').join('\n');
+                    }
                 }
 
-                const aiReply = data.choices[0].message.content || "Model nevrátil žiadny text.";
+                if (!aiReply) {
+                    console.warn("Neznáma štruktúra odpovede z Google API:", data);
+                    throw new Error("Google API nevrátilo žiadny textový obsah. Skontrolujte bezpečnostné filtre alebo zvolený model.");
+                }
+
                 document.getElementById(loadingId).querySelector(".msg-content").innerHTML = formatCodeBlocks(aiReply);
                 chatHistory.push({ role: "assistant", content: aiReply });
 
-                deductQuota(selectedModel);
+                deductQuota(cleanModelName);
                 hljs.highlightAll();
 
             } catch (err) {
-                console.error("Chyba v sendMessage:", err);
+                console.error("Chyba pri spracovaní odpovede Google API:", err);
                 document.getElementById(loadingId).querySelector(".msg-content").innerText = `⚠️ Chyba: ${err.message}`;
             }
         }
