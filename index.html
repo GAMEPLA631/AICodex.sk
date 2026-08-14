@@ -3,22 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Codex PRO - Pokročilé Programovanie a Hudba (Google Gemini)</title>
+    <title>Codex PRO - Pokročilé Programovanie, Hudba & Uvažovanie</title>
     <!-- Highlight.js pre zvýraznenie syntaxy kódu -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
         :root {
-            --bg-main: #0d1117;
-            --bg-side: #161b22;
-            --bg-card: #21262d;
-            --border-color: #30363d;
-            --text-primary: #c9d1d9;
-            --text-secondary: #8b949e;
-            --accent-color: #58a6ff;
-            --accent-green: #238636;
-            --danger-color: #da3633;
-            --warning-color: #d29922;
+            --bg-main: #090d16;
+            --bg-side: #111726;
+            --bg-card: #182030;
+            --bg-input: #0d1320;
+            --border-color: #26334d;
+            --border-focus: #3b82f6;
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --accent-color: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.25);
+            --accent-green: #22c55e;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
             --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             --font-code: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
         }
@@ -38,6 +41,22 @@
             overflow: hidden;
         }
 
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-main);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
         /* Sidebar */
         .sidebar {
             width: 320px;
@@ -45,74 +64,86 @@
             border-right: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            padding: 15px;
-            gap: 15px;
+            padding: 18px;
+            gap: 14px;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+            z-index: 10;
         }
 
         .logo {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #fff;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #ffffff;
             display: flex;
             align-items: center;
             gap: 10px;
+            letter-spacing: 0.5px;
         }
 
         .logo span {
             color: var(--accent-color);
+            text-shadow: 0 0 12px var(--accent-glow);
         }
 
         .btn {
             background-color: var(--bg-card);
             color: var(--text-primary);
             border: 1px solid var(--border-color);
-            padding: 10px;
-            border-radius: 6px;
+            padding: 10px 14px;
+            border-radius: 8px;
             cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s ease;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .btn:hover {
-            background-color: #30363d;
-            border-color: var(--text-secondary);
+            background-color: #202b40;
+            border-color: var(--accent-color);
+            transform: translateY(-1px);
         }
 
         .btn-primary {
-            background-color: var(--accent-green);
+            background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
             color: #ffffff;
             border: none;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
         }
 
         .btn-primary:hover {
-            background-color: #2ea043;
+            background: linear-gradient(135deg, #15803d 0%, #16a34a 100%);
+            box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
         }
 
         .section-title {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             text-transform: uppercase;
             color: var(--text-secondary);
-            font-weight: bold;
-            margin-top: 5px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            margin-top: 4px;
         }
 
         select, input {
             width: 100%;
-            padding: 9px 12px;
-            background-color: var(--bg-main);
+            padding: 10px 12px;
+            background-color: var(--bg-input);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 8px;
             color: var(--text-primary);
             outline: none;
             font-size: 0.85rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         select:focus, input:focus {
-            border-color: var(--accent-color);
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
 
         select:disabled {
@@ -123,16 +154,17 @@
         .model-status-badge {
             font-size: 0.75rem;
             color: var(--text-secondary);
-            margin-top: -5px;
+            margin-top: -6px;
         }
 
         /* Quota Box */
         .quota-box {
-            background-color: var(--bg-card);
+            background: linear-gradient(180deg, var(--bg-card) 0%, rgba(24, 32, 48, 0.6) 100%);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 12px;
+            border-radius: 10px;
+            padding: 14px;
             margin-top: auto;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
         .quota-header {
@@ -140,28 +172,31 @@
             justify-content: space-between;
             font-size: 0.85rem;
             margin-bottom: 8px;
+            font-weight: 600;
         }
 
         .progress-bar-bg {
             width: 100%;
-            height: 8px;
+            height: 10px;
             background-color: var(--bg-main);
-            border-radius: 4px;
+            border-radius: 5px;
             overflow: hidden;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
         }
 
         .progress-bar-fill {
             height: 100%;
             width: 100%;
             background-color: var(--accent-green);
-            transition: width 0.3s ease, background-color 0.3s ease;
+            transition: width 0.4s ease, background-color 0.4s ease;
+            box-shadow: 0 0 8px currentColor;
         }
 
         .quota-reset-info {
             font-size: 0.75rem;
             color: var(--text-secondary);
-            line-height: 1.3;
+            line-height: 1.4;
         }
 
         /* Main Content Area */
@@ -174,18 +209,19 @@
         }
 
         .chat-header {
-            padding: 15px 20px;
+            padding: 16px 24px;
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
             background-color: var(--bg-side);
+            backdrop-filter: blur(8px);
         }
 
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -195,29 +231,34 @@
             display: flex;
             flex-direction: column;
             max-width: 85%;
-            border-radius: 8px;
-            padding: 12px 16px;
-            line-height: 1.5;
+            border-radius: 12px;
+            padding: 14px 18px;
+            line-height: 1.6;
             font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .message.user {
             align-self: flex-end;
-            background-color: #1f6feb;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
             color: #ffffff;
+            border-bottom-right-radius: 2px;
         }
 
         .message.assistant {
             align-self: flex-start;
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
+            border-bottom-left-radius: 2px;
         }
 
         .message .sender {
             font-size: 0.75rem;
-            font-weight: bold;
+            font-weight: 700;
             margin-bottom: 6px;
-            opacity: 0.8;
+            opacity: 0.85;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         /* Špeciálny obal pre Kód a Hudobné Texty s tlačidlom Kopírovať */
@@ -225,93 +266,101 @@
             position: relative;
             margin-top: 10px;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 8px;
             overflow: hidden;
-            background-color: #0d1117;
+            background-color: #060911;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
         }
 
         .code-block-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: #161b22;
-            padding: 6px 12px;
+            background-color: #111827;
+            padding: 8px 14px;
             font-size: 0.75rem;
             color: var(--text-secondary);
             border-bottom: 1px solid var(--border-color);
             font-family: var(--font-family);
+            font-weight: 600;
         }
 
         .copy-btn {
-            background: transparent;
+            background: var(--bg-card);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
-            padding: 3px 8px;
-            border-radius: 4px;
+            padding: 4px 10px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 0.75rem;
+            font-weight: 600;
             transition: all 0.2s ease;
         }
 
         .copy-btn:hover {
-            background-color: var(--bg-card);
+            background-color: #202b40;
             color: var(--accent-color);
             border-color: var(--accent-color);
         }
 
         .code-block-container pre {
             margin: 0 !important;
-            padding: 12px !important;
+            padding: 14px !important;
             border: none !important;
             border-radius: 0 !important;
-            background-color: #0d1117 !important;
+            background-color: #060911 !important;
             font-family: var(--font-code);
             overflow-x: auto;
             white-space: pre;
+            line-height: 1.5;
         }
 
         /* Input Container */
         .chat-input-container {
-            padding: 15px 20px;
+            padding: 18px 24px;
             border-top: 1px solid var(--border-color);
             background-color: var(--bg-side);
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
         .input-box {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         textarea {
             flex: 1;
-            background-color: var(--bg-main);
+            background-color: var(--bg-input);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
+            border-radius: 10px;
             color: var(--text-primary);
-            padding: 12px;
+            padding: 12px 16px;
             resize: none;
-            height: 60px;
+            height: 65px;
             font-family: var(--font-family);
             outline: none;
+            font-size: 0.95rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         textarea:focus {
-            border-color: var(--accent-color);
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
 
         /* Disabled Warning Box */
         .limit-reached-banner {
             display: none;
-            background-color: rgba(218, 54, 51, 0.15);
+            background-color: rgba(239, 68, 68, 0.12);
             border: 1px solid var(--danger-color);
-            color: #ff7b72;
-            padding: 12px 16px;
-            border-radius: 6px;
+            color: #fca5a5;
+            padding: 14px 18px;
+            border-radius: 8px;
             font-size: 0.9rem;
             text-align: center;
+            line-height: 1.5;
         }
 
         /* Modal Settings */
@@ -319,7 +368,8 @@
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.75);
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
             align-items: center;
             justify-content: center;
             z-index: 100;
@@ -328,24 +378,31 @@
         .modal-content {
             background-color: var(--bg-side);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
-            width: 450px;
-            padding: 20px;
+            border-radius: 12px;
+            width: 460px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 18px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
 
         .modal-header {
-            font-weight: bold;
-            font-size: 1.1rem;
+            font-weight: 700;
+            font-size: 1.15rem;
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
 
         .close-modal {
             cursor: pointer;
             color: var(--text-secondary);
+            font-size: 1.3rem;
+            line-height: 1;
+        }
+        .close-modal:hover {
+            color: var(--text-primary);
         }
     </style>
 </head>
@@ -366,6 +423,15 @@
             <option value="">🔒 Najskôr zadajte API kľúč</option>
         </select>
         <div id="modelStatus" class="model-status-badge">Zadajte API kľúč v nastaveniach.</div>
+
+        <!-- HLBKOVE UVAZOVANIE -->
+        <div class="section-title">🧠 Hĺbkové Uvažovanie AI</div>
+        <select id="reasoningSelect" onchange="updateModelWeightInfo()">
+            <option value="1.0" selected>🟢 Nízke (Základné - 1.0x spotreba)</option>
+            <option value="1.5">🟡 Stredné (Rozšírené - 1.5x spotreba)</option>
+            <option value="2.5">🟠 Vysoké (Hĺbková analýza - 2.5x spotreba)</option>
+            <option value="4.0">🔴 Maximálne (Extrémne - 4.0x spotreba)</option>
+        </select>
 
         <!-- Limit / Quota Display -->
         <div class="quota-box">
@@ -396,7 +462,7 @@
         <div class="chat-messages" id="chatMessages">
             <div class="message assistant">
                 <div class="sender">Codex Assistant</div>
-                Vitajte v prostredí Codex PRO. Tento systém dokáže generovať **programovací kód** aj **hudobné texty a akordy** do špeciálnych blokov, ktoré skopírujete 1-klikom bez poškodenia textu. Zadajte API kľúč v nastaveniach pre štart.
+                Vitajte v prostredí Codex PRO. Systém podporuje **všetky Gemini a Flash modely**, **nastaviteľnú úroveň hĺbkového uvažovania** a priamu generáciu kódu/hudby do blokov na skopírovanie 1-klikom. Zadajte kľúč v nastaveniach pre štart.
             </div>
         </div>
 
@@ -409,7 +475,7 @@
 
             <div class="input-box" id="inputArea">
                 <textarea id="userInput" placeholder="Napíš otázku, kód alebo požiadavku na hudobný text... (Shift + Enter pre nový riadok)"></textarea>
-                <button class="btn btn-primary" style="padding: 0 20px;" id="sendBtn" onclick="sendMessage()">Odoslať</button>
+                <button class="btn btn-primary" style="padding: 0 24px;" id="sendBtn" onclick="sendMessage()">Odoslať</button>
             </div>
         </div>
     </div>
@@ -423,8 +489,8 @@
             </div>
             <div>
                 <label style="font-size: 0.85rem; color: var(--text-secondary);">Google Gemini API Kľúč</label>
-                <input type="password" id="apiKeyInput" placeholder="AIzaSy..." style="margin-top: 5px;">
-                <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 5px;">
+                <input type="password" id="apiKeyInput" placeholder="AIzaSy..." style="margin-top: 6px;">
+                <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 6px;">
                     Po uložení kľúča sa automaticky stiahne kompletný zoznam všetkých oficiálnych aj Flash modelov priamo z Google API.
                 </p>
             </div>
@@ -440,7 +506,8 @@
             apiKey: "",
             quota: 100.0,
             nextReset: getNextResetTimestamp(),
-            selectedModel: ""
+            selectedModel: "",
+            reasoningLevel: "1.0"
         };
         let chatHistory = [];
 
@@ -481,6 +548,9 @@
                 request.onsuccess = () => {
                     if (request.result) {
                         settings = request.result;
+                        if (settings.reasoningLevel) {
+                            document.getElementById("reasoningSelect").value = settings.reasoningLevel;
+                        }
                     }
                     checkAndResetQuota();
                     resolve();
@@ -526,7 +596,7 @@
                     const opt = document.createElement("option");
                     opt.value = m.id;
                     opt.dataset.weight = weight;
-                    opt.textContent = `${m.id} (-${weight}% / odpoveď)`;
+                    opt.textContent = `${m.id} (Základ: -${weight}%)`;
                     modelSelect.appendChild(opt);
                 });
 
@@ -573,7 +643,7 @@
                 const opt = document.createElement("option");
                 opt.value = m.id;
                 opt.dataset.weight = weight;
-                opt.textContent = `${m.id} (-${weight}% / odpoveď)`;
+                opt.textContent = `${m.id} (Základ: -${weight}%)`;
                 modelSelect.appendChild(opt);
             });
             modelSelect.disabled = false;
@@ -599,9 +669,12 @@
         function deductQuota(modelKey) {
             const selectElem = document.getElementById("modelSelect");
             const option = selectElem.querySelector(`option[value="${modelKey}"]`);
-            const weight = option ? parseFloat(option.dataset.weight) : 1.0;
+            const baseWeight = option ? parseFloat(option.dataset.weight) : 1.0;
 
-            settings.quota = Math.max(0, settings.quota - weight);
+            const reasoningMultiplier = parseFloat(document.getElementById("reasoningSelect").value || "1.0");
+            const totalWeight = baseWeight * reasoningMultiplier;
+
+            settings.quota = Math.max(0, settings.quota - totalWeight);
             saveSettingsToDB();
             updateQuotaUI();
         }
@@ -672,12 +745,18 @@
 
         function updateModelWeightInfo() {
             const select = document.getElementById("modelSelect");
+            const reasoningSelect = document.getElementById("reasoningSelect");
+            
+            settings.reasoningLevel = reasoningSelect.value;
+
             if (!select.value) return;
             settings.selectedModel = select.value;
             saveSettingsToDB();
 
-            const selectedText = select.options[select.selectedIndex].text;
-            document.getElementById("currentModelDisplay").innerText = selectedText.split(" (")[0];
+            const selectedText = select.options[select.selectedIndex].text.split(" (")[0];
+            const reasoningText = reasoningSelect.options[reasoningSelect.selectedIndex].text.split(" (")[0];
+            
+            document.getElementById("currentModelDisplay").innerText = `${selectedText} | Uvažovanie: ${reasoningText}`;
         }
 
         // --- CHAT SYSTEM ---
@@ -703,11 +782,14 @@
                 return;
             }
 
+            const reasoningSelect = document.getElementById("reasoningSelect");
+            const reasoningText = reasoningSelect.options[reasoningSelect.selectedIndex].text;
+
             inputField.value = "";
             appendMessage("user", userText);
             chatHistory.push({ role: "user", content: userText });
 
-            const loadingId = appendMessage("assistant", "Codex generuje odpoveď...");
+            const loadingId = appendMessage("assistant", "Codex premýšľa a generuje odpoveď...");
 
             try {
                 const response = await fetch(`${BASE_OPENAI_URL}chat/completions`, {
@@ -721,7 +803,7 @@
                         messages: [
                             { 
                                 role: "system", 
-                                content: "Si expert na pokročilé programovanie aj tvorbu hudobných textov/akordov. DÔLEŽITÉ: Ak generuješ kód, pesničky, hudobné texty alebo akordy, VŽDY ich vlož do textového bloku (Markdown ```), aby sa dali skopírovať naraz bez poškodenia formátovania." 
+                                content: `Si expert na pokročilé programovanie aj tvorbu hudobných textov/akordov. ZVOLENÁ ÚROVEŇ UVAŽOVANIA: ${reasoningText}. Analýze požiadavky venuj primeranú hĺbku podľa tejto úrovne. DÔLEŽITÉ: Ak generuješ kód, pesničky, hudobné texty alebo akordy, VŽDY ich vlož do textového bloku (Markdown \`\`\`), aby sa dali skopírovať naraz bez poškodenia formátovania.` 
                             },
                             ...chatHistory
                         ]
@@ -730,11 +812,17 @@
 
                 const data = await response.json();
 
+                // OPRAVA CHYBY undefined reading '0': Bezpečná kontrola odpovede API
                 if (data.error) {
-                    throw new Error(data.error.message || "Chyba Google API");
+                    throw new Error(data.error.message || JSON.stringify(data.error));
                 }
 
-                const aiReply = data.choices[0].message.content;
+                if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+                    console.error("Neočakávaná štruktúra odpovede z API:", data);
+                    throw new Error("Google API nevrátilo platné dáta. Skontrolujte model alebo platnosť API kľúča.");
+                }
+
+                const aiReply = data.choices[0].message.content || "Model nevrátil žiadny text.";
                 document.getElementById(loadingId).querySelector(".msg-content").innerHTML = formatCodeBlocks(aiReply);
                 chatHistory.push({ role: "assistant", content: aiReply });
 
@@ -742,6 +830,7 @@
                 hljs.highlightAll();
 
             } catch (err) {
+                console.error("Chyba v sendMessage:", err);
                 document.getElementById(loadingId).querySelector(".msg-content").innerText = `⚠️ Chyba: ${err.message}`;
             }
         }
@@ -765,7 +854,6 @@
             return msgId;
         }
 
-        // FUNKCIA PRE KOPÍROVANIE TEXTU Z BLOKU
         function copyBlockText(btn) {
             const container = btn.closest('.code-block-container');
             const codeElement = container.querySelector('code');
@@ -784,7 +872,6 @@
             });
         }
 
-        // FORMÁTOVANIE BLOKOV S TLAČIDLOM KOPÍROVAŤ
         function formatCodeBlocks(text) {
             const codeBlockRegex = /```([a-z0-9_-]*)\n([\s\S]*?)```/g;
             return text.replace(codeBlockRegex, (match, lang, code) => {
@@ -810,7 +897,7 @@
             container.innerHTML = `
                 <div class="message assistant">
                     <div class="sender">Codex Assistant</div>
-                    Nová konverzácia pripravená. Zvoľte model a napíšte Vašu požiadavku na kód alebo hudobný text.
+                    Nová konverzácia pripravená. Zvoľte model, úroveň uvažovania a napíšte požiadavku.
                 </div>
             `;
         }
