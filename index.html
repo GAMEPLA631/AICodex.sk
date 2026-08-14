@@ -225,59 +225,84 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
+            align-items: center;
         }
 
         .message {
             display: flex;
             flex-direction: column;
-            max-width: 85%;
+            width: 100%;
+            max-width: 820px;
             border-radius: 12px;
-            padding: 14px 18px;
+            padding: 16px 20px;
             line-height: 1.6;
             font-size: 0.95rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .message.user {
-            align-self: flex-end;
+            align-self: center;
             background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
             color: #ffffff;
-            border-bottom-right-radius: 2px;
         }
 
         .message.assistant {
-            align-self: flex-start;
+            align-self: center;
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-bottom-left-radius: 2px;
         }
 
         .message .sender {
             font-size: 0.75rem;
             font-weight: 700;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             opacity: 0.85;
             letter-spacing: 0.5px;
             text-transform: uppercase;
         }
 
-        /* ANIMÁCIA UVAŽOVANIA */
-        @keyframes pulseThinking {
-            0% { opacity: 0.4; transform: scale(0.98); }
-            50% { opacity: 1; transform: scale(1.01); filter: drop-shadow(0 0 8px var(--accent-color)); }
-            100% { opacity: 0.4; transform: scale(0.98); }
+        .msg-content {
+            word-break: break-word;
+        }
+
+        /* --- VYLEPŠENÁ ANIMÁCIA UVAŽOVANIA AI --- */
+        @keyframes pulseGlow {
+            0% { opacity: 0.5; filter: drop-shadow(0 0 2px var(--accent-color)); transform: scale(0.99); }
+            50% { opacity: 1; filter: drop-shadow(0 0 10px var(--accent-color)); transform: scale(1.01); }
+            100% { opacity: 0.5; filter: drop-shadow(0 0 2px var(--accent-color)); transform: scale(0.99); }
+        }
+
+        @keyframes rotateBrain {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(-8deg); }
+            75% { transform: rotate(8deg); }
+            100% { transform: rotate(0deg); }
         }
 
         .thinking-anim {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            animation: pulseThinking 1.6s infinite ease-in-out;
+            gap: 10px;
+            padding: 8px 14px;
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 8px;
+            animation: pulseGlow 1.5s infinite ease-in-out;
             color: var(--accent-color);
             font-weight: 600;
+            font-size: 0.92rem;
+            margin: 4px 0;
+        }
+
+        .thinking-icon {
+            display: inline-block;
+            font-size: 1.1rem;
+            animation: rotateBrain 2s infinite ease-in-out;
         }
 
         .thinking-dots span {
+            display: inline-block;
+            font-size: 1.2rem;
             animation: blinkDots 1.4s infinite;
             animation-fill-mode: both;
         }
@@ -285,20 +310,22 @@
         .thinking-dots span:nth-child(3) { animation-delay: .4s; }
 
         @keyframes blinkDots {
-            0% { opacity: .2; }
-            20% { opacity: 1; }
-            100% { opacity: .2; }
+            0% { opacity: .1; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(-2px); }
+            100% { opacity: .1; transform: translateY(0); }
         }
 
         /* Obal pre Kód a Hudobné Texty s tlačidlom Kopírovať */
         .code-block-container {
             position: relative;
-            margin-top: 10px;
+            margin-top: 12px;
+            margin-bottom: 12px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             overflow: hidden;
             background-color: #060911;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            width: 100%;
         }
 
         .code-block-header {
@@ -352,6 +379,12 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
+            align-items: center;
+        }
+
+        .input-box, .limit-reached-banner {
+            width: 100%;
+            max-width: 820px;
         }
 
         .input-box {
@@ -491,7 +524,9 @@
         <div class="chat-messages" id="chatMessages">
             <div class="message assistant">
                 <div class="sender">Codex Assistant</div>
-                Vitajte v prostredí Codex PRO. Systém podporuje **všetky Gemini a Flash modely**, **nastaviteľnú úroveň hĺbkového uvažovania** a priamu generáciu kódu/hudby do blokov na skopírovanie 1-klikom. Zadajte kľúč v nastaveniach pre štart.
+                <div class="msg-content">
+                    Vitajte v prostredí Codex PRO. Systém podporuje **všetky Gemini a Flash modely**, **nastaviteľnú úroveň hĺbkového uvažovania** a priamu generáciu kódu/hudby do blokov na skopírovanie 1-klikom. Zadajte kľúč v nastaveniach pre štart.
+                </div>
             </div>
         </div>
 
@@ -536,8 +571,8 @@
             nextReset: getNextResetTimestamp(),
             selectedModel: "",
             reasoningLevel: "1.0",
-            requestHistory: [], // Sledovanie intervalu požiadaviek (max 12 / min)
-            pausedUntil: 0,     // Čas obnovenia pri 3-dňovej pauze (50% limit)
+            requestHistory: [], 
+            pausedUntil: 0,     
             pauseTriggered: false
         };
         let chatHistory = [];
@@ -617,14 +652,12 @@
                 const data = await res.json();
                 let rawModels = data.data || [];
 
-                // 1. Odstránenie "models/" prefixu pre kompatibilitu
                 let cleanModels = rawModels.map(m => {
                     const rawId = m.id || m.name || "";
                     const cleanId = rawId.replace(/^models\//, "");
                     return { id: cleanId };
                 });
 
-                // 2. Filtrácia chatovacích modelov (Gemini a Gemma)
                 let models = cleanModels.filter(m => {
                     const id = m.id.toLowerCase();
                     const isSupported = id.startsWith("gemini") || id.startsWith("gemma");
@@ -632,7 +665,6 @@
                     return isSupported && isNotMedia;
                 });
 
-                // 3. Odstránenie duplikátov
                 const uniqueModelsMap = new Map();
                 models.forEach(m => {
                     if (!uniqueModelsMap.has(m.id)) {
@@ -709,7 +741,7 @@
             updateModelWeightInfo();
         }
 
-        // --- QUOTA & LIMIT SYSTEM (S 50% PAUZOU NA 3 DNI) ---
+        // --- QUOTA & LIMIT SYSTEM ---
         function getNextResetTimestamp() {
             const now = new Date();
             return new Date(now.getFullYear(), now.getMonth() + 1, 1, 0, 0, 0).getTime();
@@ -737,7 +769,6 @@
 
             settings.quota = Math.max(0, settings.quota - totalWeight);
 
-            // KONTROLA VYČERPANIA 50% LIMITU -> PAUZA NA 3 DNI (72 HODÍN)
             if (settings.quota <= 50.0 && !settings.pauseTriggered) {
                 settings.pauseTriggered = true;
                 const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
@@ -785,12 +816,10 @@
             const now = Date.now();
             let isBlocked = false;
 
-            // 1. Ak je vyčerpaný 100% limit
             if (settings.quota <= 0) {
                 isBlocked = true;
                 bannerText.innerHTML = `🛑 <strong>Mesačný limit 100 % bol vyčerpaný!</strong><br>Písanie v chate je zablokované. Limit sa obnoví: ${resetFormatted}.`;
             } 
-            // 2. Ak je spustená 3-dňová pauza pri vyčerpaní 50% limitu
             else if (settings.pausedUntil > 0 && now < settings.pausedUntil) {
                 isBlocked = true;
                 const pauseDate = new Date(settings.pausedUntil);
@@ -817,7 +846,6 @@
             const now = Date.now();
             const ONE_MINUTE = 60 * 1000;
             
-            // Vyčistenie starších požiadaviek než 1 minúta
             settings.requestHistory = (settings.requestHistory || []).filter(t => (now - t) < ONE_MINUTE);
 
             if (settings.requestHistory.length >= 12) {
@@ -825,7 +853,7 @@
                 const waitSeconds = Math.ceil((ONE_MINUTE - (now - oldest)) / 1000);
                 return waitSeconds;
             }
-            return 0; // OK
+            return 0;
         }
 
         function recordRequestTimestamp() {
@@ -834,12 +862,11 @@
             saveSettingsToDB();
         }
 
-        // --- AUTOMATICKÉ RETRY PRE API (429 PREŤAŽENIE) ---
+        // --- AUTOMATICKÉ RETRY PRE API ---
         async function fetchWithRetry(url, options, maxRetries = 3) {
             for (let attempt = 1; attempt <= maxRetries; attempt++) {
                 try {
                     const res = await fetch(url, options);
-                    // Ak Google vráti 429 Rate Limit, počkáme 2s a zopakujeme
                     if (res.status === 429 && attempt < maxRetries) {
                         await new Promise(r => setTimeout(r, attempt * 2000));
                         continue;
@@ -884,7 +911,7 @@
             document.getElementById("currentModelDisplay").innerText = `${selectedText} | Uvažovanie: ${reasoningText}`;
         }
 
-        // --- CHAT SYSTEM (OPRAVENÉ SPRÁVNE GENEROVANIE DO CHATU) ---
+        // --- CHAT SYSTEM ---
         async function sendMessage() {
             if (settings.quota <= 0) {
                 alert("Mesačný limit 100% bol vyčerpaný!");
@@ -896,7 +923,6 @@
                 return;
             }
 
-            // Kontrola intervalového limitu (max 12 požiadaviek / min)
             const waitTime = checkIntervalRateLimit();
             if (waitTime > 0) {
                 alert(`⏱️ Dosiahli ste max limit 12 požiadaviek za minútu. Prosím počkajte ${waitTime} sekúnd pre ochranu Google modelov.`);
@@ -925,20 +951,18 @@
 
             inputField.value = "";
             
-            // 1. Pridanie správ do chatu s unikátnym ID (zabezpečí, že sa AI neprenesie do užívateľskej správy)
             appendMessage("user", userText);
             chatHistory.push({ role: "user", content: userText });
 
-            // 2. Vytvorenie samostatného bloku pre AI s animovaným efektom uvažovania
+            // HTML Animácie uvažovania (posielame isRawHtml = true aby sa HTML nezakódovalo)
             const loadingHTML = `
                 <div class="thinking-anim">
-                    🧠 Codex uvažuje a analyzuje požiadavku
+                    <span class="thinking-icon">🧠</span> Codex uvažuje a analyzuje požiadavku
                     <span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span>
                 </div>
             `;
-            const assistantMsgId = appendMessage("assistant", loadingHTML);
+            const assistantMsgId = appendMessage("assistant", loadingHTML, true);
 
-            // Zaznamenať požiadavku pre intervalový limit
             recordRequestTimestamp();
 
             try {
@@ -1008,7 +1032,6 @@
                     throw new Error("Google API nevrátilo žiadny textový obsah. Skontrolujte bezpečnostné filtre alebo model.");
                 }
 
-                // Vloženie odpovede výhradne do priradeného AI bloku
                 const assistantMsgElem = document.getElementById(assistantMsgId);
                 if (assistantMsgElem) {
                     assistantMsgElem.querySelector(".msg-content").innerHTML = formatCodeBlocks(aiReply);
@@ -1027,7 +1050,8 @@
             }
         }
 
-        function appendMessage(role, text) {
+        // FUNKCIA PRE PRIDANIE SPRÁVY (S PODPOROU PRIAMEHO HTML PRE ANIMÁCIU)
+        function appendMessage(role, text, isRawHtml = false) {
             const container = document.getElementById("chatMessages");
             const msgId = `msg-${role}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
             const div = document.createElement("div");
@@ -1035,14 +1059,16 @@
             div.id = msgId;
 
             const sender = role === "user" ? "Vy" : "Codex AI";
+            const contentHtml = isRawHtml ? text : formatCodeBlocks(text);
+
             div.innerHTML = `
                 <div class="sender">${sender}</div>
-                <div class="msg-content">${formatCodeBlocks(text)}</div>
+                <div class="msg-content">${contentHtml}</div>
             `;
 
             container.appendChild(div);
             container.scrollTop = container.scrollHeight;
-            hljs.highlightAll();
+            if (!isRawHtml) hljs.highlightAll();
             return msgId;
         }
 
@@ -1064,11 +1090,17 @@
             });
         }
 
+        // PARSER S PODPOROU ŠTRUKTÚROVANÉHO MARKDOWNU A KÓDOVÝCH BLOKOV
         function formatCodeBlocks(text) {
-            const codeBlockRegex = /```([a-z0-9_-]*)\n([\s\S]*?)```/g;
-            return text.replace(codeBlockRegex, (match, lang, code) => {
+            if (!text) return "";
+
+            const codeBlocks = [];
+            const placeholderPrefix = "___CODE_BLOCK_PLACEHOLDER_";
+
+            let processedText = text.replace(/```([a-z0-9_-]*)\n([\s\S]*?)```/gi, (match, lang, code) => {
+                const index = codeBlocks.length;
                 const displayTitle = lang.trim() ? lang.trim().toUpperCase() : 'TEXT / HUDBA / KÓD';
-                return `
+                const blockHtml = `
                 <div class="code-block-container">
                     <div class="code-block-header">
                         <span>🎵/💻 ${displayTitle}</span>
@@ -1076,7 +1108,36 @@
                     </div>
                     <pre><code class="language-${lang}">${escapeHtml(code.trim())}</code></pre>
                 </div>`;
+                codeBlocks.push(blockHtml);
+                return `${placeholderPrefix}${index}___`;
             });
+
+            processedText = escapeHtml(processedText);
+
+            // Nadpisy
+            processedText = processedText.replace(/^### (.*$)/gim, '<h3 style="margin-top:12px; margin-bottom:6px; color:var(--text-primary); font-size:1.05rem;">$1</h3>');
+            processedText = processedText.replace(/^## (.*$)/gim, '<h2 style="margin-top:14px; margin-bottom:6px; color:var(--accent-color); font-size:1.15rem;">$1</h2>');
+            processedText = processedText.replace(/^# (.*$)/gim, '<h1 style="margin-top:16px; margin-bottom:8px; color:var(--accent-color); font-size:1.25rem;">$1</h1>');
+
+            // Tučné a kurzíva
+            processedText = processedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            processedText = processedText.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+            // Inline kód
+            processedText = processedText.replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; font-family:var(--font-code); font-size:0.85em;">$1</code>');
+
+            // Zoznamy (odrážky)
+            processedText = processedText.replace(/^\s*[\-\*]\s+(.*$)/gim, '<li style="margin-left:20px; margin-bottom:4px;">$1</li>');
+
+            // Odseky a nové riadky
+            processedText = processedText.replace(/\n\n/g, '<br><br>');
+            processedText = processedText.replace(/\n/g, '<br>');
+
+            codeBlocks.forEach((blockHtml, i) => {
+                processedText = processedText.replace(`${placeholderPrefix}${i}___`, blockHtml);
+            });
+
+            return processedText;
         }
 
         function escapeHtml(str) {
@@ -1089,7 +1150,7 @@
             container.innerHTML = `
                 <div class="message assistant">
                     <div class="sender">Codex Assistant</div>
-                    Nová konverzácia pripravená. Zvoľte model, úroveň uvažovania a napíšte požiadavku.
+                    <div class="msg-content">Nová konverzácia pripravená. Zvoľte model, úroveň uvažovania a napíšte požiadavku.</div>
                 </div>
             `;
         }
