@@ -3,1952 +3,1333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CODEX // Quantum AI & Developer Studio</title>
-    <!-- FontAwesome & Fonts -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&family=Orbitron:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- Highlight.js for Code Highlighting -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
-
+    <title>Codex Ultra AI Studio - Pokročilé Programovanie</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Marked.js for Markdown Rendering -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        cyber: {
+                            dark: '#05070e',
+                            card: '#0c0f1d',
+                            border: '#1b223c',
+                            accent: '#6366f1'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --bg-dark: #05060b;
-            --panel-bg: rgba(13, 16, 27, 0.78);
-            --panel-border: rgba(255, 255, 255, 0.08);
-            --rainbow-grad: linear-gradient(135deg, #ff0055, #ff7700, #ffea00, #00ff88, #00d4ff, #7700ff, #ff00aa);
-            --rainbow-text: linear-gradient(90deg, #ff0077, #ff9900, #33ff00, #00ffff, #7700ff);
-            --accent-glow: 0 0 25px rgba(0, 240, 255, 0.4), 0 0 50px rgba(255, 0, 128, 0.2);
-            --text-main: #f0f4fc;
-            --text-dim: #7f8ca3;
-            --danger: #ff0055;
-            --success: #00ffaa;
-            --warning: #ffb700;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            outline: none;
-        }
-
         body {
-            background: var(--bg-dark);
-            color: var(--text-main);
+            background-color: #040509;
+            color: #e2e8f0;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            min-height: 100vh;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(236, 72, 153, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Rainbow Animated Borders with Modern Glow */
+        .rainbow-border {
             position: relative;
-        }
-
-        body::before {
-            content: '';
-            position: absolute;
-            width: 800px;
-            height: 800px;
-            background: var(--rainbow-grad);
-            filter: blur(160px);
-            opacity: 0.15;
-            top: -200px;
-            left: -200px;
-            border-radius: 50%;
-            animation: floatRainbow 20s infinite alternate linear;
-            pointer-events: none;
-            z-index: 0;
-        }
-        body::after {
-            content: '';
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            background: var(--rainbow-grad);
-            filter: blur(180px);
-            opacity: 0.12;
-            bottom: -200px;
-            right: -200px;
-            border-radius: 50%;
-            animation: floatRainbow 15s infinite alternate-reverse linear;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        @keyframes floatRainbow {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            100% { transform: translate(150px, 150px) rotate(360deg); }
-        }
-
-        #app-container {
-            display: flex;
-            width: 100vw;
-            height: 100vh;
+            background: linear-gradient(135deg, rgba(14, 17, 26, 0.95), rgba(22, 27, 38, 0.95));
+            backdrop-filter: blur(12px);
+            border-radius: 1rem;
             z-index: 1;
-            overflow: hidden;
         }
-
-        aside {
-            width: 360px;
-            background: rgba(8, 10, 18, 0.88);
-            backdrop-filter: blur(25px);
-            border-right: 1px solid var(--panel-border);
-            display: flex;
-            flex-direction: column;
-            padding: 16px;
-            gap: 12px;
-            flex-shrink: 0;
-            overflow-y: auto;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--panel-border);
-        }
-        .brand-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .brand-logo {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            background: var(--rainbow-grad);
-            display: grid;
-            place-items: center;
-            font-family: 'Orbitron', monospace;
-            font-size: 18px;
-            font-weight: 900;
-            color: #000;
-            box-shadow: var(--accent-glow);
-        }
-        .brand-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 18px;
-            font-weight: 800;
-            letter-spacing: 2px;
-            background: var(--rainbow-text);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .brand-sub {
-            font-size: 9.5px;
-            color: var(--text-dim);
-            letter-spacing: 1px;
-        }
-
-        .user-pill {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 8px 12px;
-            border-radius: 10px;
-            font-size: 12px;
-        }
-        .user-pill-name {
-            font-weight: 700;
-            color: #00f0ff;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .tools-bar {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
-        }
-        .tool-btn {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: var(--text-main);
-            padding: 7px 4px;
-            border-radius: 8px;
-            font-size: 11px;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            transition: all 0.2s;
-        }
-        .tool-btn:hover {
-            background: rgba(0, 240, 255, 0.15);
-            border-color: #00f0ff;
-            color: #fff;
-        }
-
-        .select-group label {
-            font-size: 11px;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: var(--text-dim);
-            margin-bottom: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        select, input, textarea {
-            width: 100%;
-            background: rgba(18, 22, 38, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: #fff;
-            padding: 9px 12px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-family: inherit;
-            transition: all 0.3s;
-        }
-        select:focus, input:focus, textarea:focus {
-            border-color: #00f0ff;
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
-        }
-
-        .quota-card {
-            padding: 12px;
-            border-radius: 12px;
-            background: rgba(15, 18, 30, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            position: relative;
-            overflow: hidden;
-        }
-        .quota-card::before {
+        .rainbow-border::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 2px;
-            background: var(--rainbow-grad);
-        }
-        .quota-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-        }
-        .quota-title {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .quota-val {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            font-size: 15px;
-            color: #00ffaa;
-            text-shadow: 0 0 10px rgba(0,255,170,0.5);
-        }
-        .progress-bar-container {
-            width: 100%;
-            height: 7px;
-            background: rgba(255,255,255,0.07);
-            border-radius: 20px;
-            overflow: hidden;
-            margin-bottom: 6px;
-        }
-        .progress-fill {
-            height: 100%;
-            width: 100%;
-            background: var(--rainbow-grad);
-            border-radius: 20px;
-            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .quota-reset-text {
-            font-size: 10px;
-            color: var(--text-dim);
-            line-height: 1.3;
+            top: -1.5px; left: -1.5px; right: -1.5px; bottom: -1.5px;
+            background: linear-gradient(90deg, #ff007f, #7928ca, #4299e1, #00f2fe, #4facfe, #00f2fe, #ff007f);
+            background-size: 400% 400%;
+            border-radius: 1.1rem;
+            z-index: -1;
+            animation: rainbowGlow 8s ease infinite;
         }
 
-        .history-section {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            min-height: 120px;
-        }
-        .history-title {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-dim);
-            margin-bottom: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .history-list {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        .history-item {
-            padding: 8px 10px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 11.5px;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .history-item:hover, .history-item.active {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(0, 240, 255, 0.4);
-            transform: translateX(3px);
+        .glass-card {
+            background: rgba(13, 16, 26, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
         }
 
-        .sidebar-footer {
-            display: flex;
-            gap: 6px;
-        }
-        .btn-rainbow {
-            background: var(--rainbow-grad);
-            border: none;
-            color: #000;
-            font-weight: 700;
-            padding: 9px;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            font-size: 11.5px;
-            transition: all 0.3s ease;
-        }
-        .btn-rainbow:hover {
-            filter: brightness(1.2);
-            transform: translateY(-1px);
-        }
-        .btn-secondary {
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.12);
-            color: #fff;
-            padding: 9px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 11.5px;
-            transition: all 0.3s;
-        }
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.12);
-        }
-
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            position: relative;
-            background: rgba(5, 7, 15, 0.4);
-        }
-
-        header {
-            padding: 12px 24px;
-            border-bottom: 1px solid var(--panel-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(10, 13, 23, 0.7);
-            backdrop-filter: blur(15px);
-        }
-        .header-meta {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .model-badge {
-            background: rgba(0, 240, 255, 0.1);
-            border: 1px solid rgba(0, 240, 255, 0.3);
-            color: #00f0ff;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-family: 'Fira Code', monospace;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .capability-tag {
-            font-size: 10px;
-            padding: 3px 8px;
-            border-radius: 6px;
-            background: rgba(255, 0, 170, 0.15);
-            border: 1px solid rgba(255, 0, 170, 0.4);
-            color: #ff55c4;
-            font-weight: 600;
-        }
-
-        .thinking-indicator {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 14px;
-            background: rgba(0, 240, 255, 0.08);
-            border: 1px solid rgba(0, 240, 255, 0.25);
-            border-radius: 10px;
-            font-size: 12px;
-            font-family: 'Fira Code', monospace;
-            color: #00f0ff;
-            margin-bottom: 10px;
-            animation: pulseGlow 1.5s infinite alternate;
-        }
-        @keyframes pulseGlow {
-            0% { box-shadow: 0 0 5px rgba(0,240,255,0.2); }
-            100% { box-shadow: 0 0 18px rgba(0,240,255,0.5); }
-        }
-
-        .thought-accordion {
-            background: rgba(18, 22, 38, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            margin-bottom: 10px;
-            font-size: 12px;
-            overflow: hidden;
-        }
-        .thought-accordion summary {
-            padding: 8px 12px;
-            cursor: pointer;
-            color: #00d4ff;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255,255,255,0.02);
-        }
-        .thought-accordion-content {
-            padding: 10px 14px;
-            color: #9ab0d3;
-            font-family: 'Fira Code', monospace;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            white-space: pre-wrap;
-            line-height: 1.4;
-        }
-
-        #messages-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            scroll-behavior: smooth;
-        }
-        .msg {
-            display: flex;
-            gap: 12px;
-            max-width: 88%;
-            animation: fadeIn 0.3s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .msg.user {
-            align-self: flex-end;
-            flex-direction: row-reverse;
-        }
-        .msg-avatar {
-            width: 34px;
-            height: 34px;
-            border-radius: 10px;
-            display: grid;
-            place-items: center;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-        .msg.bot .msg-avatar {
-            background: var(--rainbow-grad);
-            color: #000;
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
-        }
-        .msg.user .msg-avatar {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-        }
-        .msg-body {
-            background: rgba(18, 22, 38, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(10px);
-            padding: 14px 18px;
-            border-radius: 16px;
-            font-size: 13.5px;
-            line-height: 1.6;
-            color: #e1e7f5;
-            position: relative;
-            overflow-x: auto;
-        }
-        .msg.user .msg-body {
-            background: linear-gradient(135deg, rgba(0, 110, 255, 0.3), rgba(119, 0, 255, 0.3));
-            border-color: rgba(0, 200, 255, 0.3);
-            border-bottom-right-radius: 4px;
-        }
-        .msg.bot .msg-body {
-            border-bottom-left-radius: 4px;
-        }
-
-        .code-container {
-            position: relative;
-            background: #080a12 !important;
-            border: 1px solid rgba(0, 240, 255, 0.25);
-            border-radius: 10px;
-            margin: 12px 0;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-        }
-        .code-header-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.04);
-            padding: 6px 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-            font-size: 11px;
-            font-family: 'Fira Code', monospace;
-            color: #00f0ff;
-        }
-        .code-container pre {
-            margin: 0 !important;
-            padding: 14px !important;
-            background: transparent !important;
-            border: none !important;
-            overflow-x: auto;
-            white-space: pre !important;
-            word-wrap: normal !important;
-        }
-        .code-container code {
-            font-family: 'Fira Code', monospace;
-            font-size: 12.5px;
-            line-height: 1.5;
-            tab-size: 4;
-            -moz-tab-size: 4;
-            white-space: pre !important;
-        }
-        .copy-btn {
-            background: rgba(0, 240, 255, 0.15);
-            border: 1px solid rgba(0, 240, 255, 0.3);
-            color: #fff;
-            font-size: 11px;
-            padding: 4px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.2s;
-        }
-        .copy-btn:hover {
-            background: #00f0ff;
-            color: #000;
-            font-weight: 700;
-        }
-
-        .yt-embed-box {
-            position: relative;
-            width: 100%;
-            padding-bottom: 56.25%;
-            height: 0;
-            border-radius: 12px;
-            overflow: hidden;
-            margin: 10px 0;
-            border: 1px solid rgba(255, 0, 85, 0.4);
-            box-shadow: 0 0 20px rgba(255, 0, 85, 0.2);
-        }
-        .yt-embed-box iframe {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            border: 0;
-        }
-
-        #lockout-banner {
-            display: none;
-            background: linear-gradient(90deg, rgba(255, 0, 85, 0.95), rgba(119, 0, 255, 0.95));
-            color: #fff;
-            padding: 12px 20px;
-            text-align: center;
-            font-weight: 600;
-            border-radius: 10px;
-            margin: 0 24px 10px 24px;
-            box-shadow: 0 0 25px rgba(255, 0, 85, 0.5);
-        }
-
-        .chat-input-bar {
-            padding: 12px 24px 20px 24px;
-            position: relative;
-        }
-        .quick-actions-bar {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-        .quick-pill {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-dim);
-            font-size: 11px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.2s;
-        }
-        .quick-pill:hover, .quick-pill.active {
-            background: rgba(0, 240, 255, 0.2);
-            border-color: #00f0ff;
-            color: #00f0ff;
-        }
-
-        .input-wrapper {
-            display: flex;
-            align-items: flex-end;
-            background: rgba(14, 18, 32, 0.92);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 16px;
-            padding: 8px 12px;
-            gap: 10px;
-            box-shadow: 0 5px 30px rgba(0,0,0,0.5);
-        }
-        .input-wrapper:focus-within {
-            border-color: #00f0ff;
-            box-shadow: 0 0 25px rgba(0, 240, 255, 0.3);
-        }
-        #prompt-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            resize: none;
-            max-height: 140px;
-            height: 40px;
-            font-size: 13.5px;
-            line-height: 1.5;
-            padding: 7px 4px;
-            color: #fff;
-        }
-        #send-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            background: var(--rainbow-grad);
-            border: none;
-            color: #000;
-            font-size: 15px;
-            display: grid;
-            place-items: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            flex-shrink: 0;
-        }
-        #send-btn:hover:not(:disabled) {
-            transform: scale(1.06);
-            box-shadow: var(--accent-glow);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(18px);
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal.active { display: flex; }
-        .modal-card {
-            width: 520px;
-            max-width: 95vw;
-            max-height: 90vh;
-            overflow-y: auto;
-            background: rgba(14, 18, 30, 0.96);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 20px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            box-shadow: 0 0 50px rgba(0, 240, 255, 0.25);
-        }
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .modal-header h3 {
-            font-family: 'Orbitron', sans-serif;
-            background: var(--rainbow-text);
+        .rainbow-text {
+            background: linear-gradient(90deg, #ff416c, #8a2be2, #00bfff, #00ff88, #ff416c);
+            background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-size: 18px;
-        }
-        .close-modal {
-            background: none;
-            border: none;
-            color: var(--text-dim);
-            font-size: 20px;
-            cursor: pointer;
+            animation: rainbowGlow 6s ease infinite;
         }
 
-        .memory-item {
+        @keyframes rainbowGlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Glassmorphism Scrollbars */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(10, 12, 20, 0.5);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #8b5cf6, #06b6d4);
+            border-radius: 4px;
+        }
+
+        /* Custom Code Editor Block */
+        .code-block-wrapper {
+            background-color: #070913;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 0.85rem;
+            overflow: hidden;
+            margin: 1.2rem 0;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.6);
+        }
+        .code-header {
+            background: #0e1222;
+            padding: 0.6rem 1.2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.08);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 12px;
-            margin-bottom: 6px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #94a3b8;
         }
-        .memory-item button {
-            background: none;
-            border: none;
-            color: var(--danger);
-            cursor: pointer;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-            text-align: center;
-            font-size: 11px;
-            margin-top: 10px;
-        }
-        .cal-day-header {
-            color: var(--text-dim);
-            font-weight: 700;
-            padding-bottom: 4px;
-        }
-        .cal-cell {
-            padding: 8px 4px;
-            border-radius: 6px;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .cal-cell.today {
-            border-color: #00f0ff;
-            background: rgba(0, 240, 255, 0.15);
-            font-weight: bold;
-            color: #00f0ff;
-        }
-        .cal-cell.holiday {
-            border-color: #ff0055;
-            background: rgba(255, 0, 85, 0.15);
-            color: #ff55c4;
-            font-weight: bold;
-        }
-        .cal-cell.bday {
-            border-color: #ffea00;
-            background: rgba(255, 234, 0, 0.2);
-            color: #ffea00;
-            font-weight: bold;
-        }
-
-        #toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 12px 20px;
-            border-radius: 10px;
-            background: rgba(12, 16, 28, 0.95);
-            border: 1px solid #00f0ff;
-            color: #fff;
-            font-size: 13px;
-            display: none;
-            z-index: 10000;
-            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+        .code-content {
+            padding: 1.2rem;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.65;
+            color: #38bdf8;
+            white-space: pre;
         }
     </style>
 </head>
-<body>
+<body class="h-screen flex flex-col md:flex-row antialiased selection:bg-purple-600 selection:text-white">
 
-<!-- AUTH MODAL -->
-<div class="modal" id="auth-modal">
-    <div class="modal-card" style="width: 400px;">
-        <div class="modal-header">
-            <h3><i class="fa-solid fa-user-shield"></i> CODEX AUTH</h3>
-        </div>
-        <div style="text-align: center; font-size: 12px; color: var(--text-dim); margin-bottom: 8px;">
-            Všetky účty a relácie sú trvalo uložené v lokálnej databáze IndexedDB.
-        </div>
+    <!-- Left Navigation Sidebar -->
+    <aside class="w-full md:w-72 bg-[#080a12]/90 backdrop-blur-xl border-r border-[#1a1f35] flex flex-col justify-between shrink-0 z-20">
         <div>
-            <label style="font-size: 11px; text-transform: uppercase; color: var(--text-dim); display:block; margin-bottom: 4px;">Používateľské Meno</label>
-            <input type="text" id="auth-username" placeholder="Zadajte meno...">
-        </div>
-        <div>
-            <label style="font-size: 11px; text-transform: uppercase; color: var(--text-dim); display:block; margin-bottom: 4px;">Heslo / PIN</label>
-            <input type="password" id="auth-password" placeholder="••••••••">
-        </div>
-        <div style="display:flex; gap: 8px; margin-top: 10px;">
-            <button class="btn-rainbow" id="login-btn" style="flex:1;"><i class="fa-solid fa-right-to-bracket"></i> Prihlásiť sa</button>
-            <button class="btn-secondary" id="register-btn" style="flex:1;"><i class="fa-solid fa-user-plus"></i> Registrácia</button>
-        </div>
-    </div>
-</div>
-
-<div id="app-container">
-    <!-- SIDEBAR -->
-    <aside>
-        <div class="brand">
-            <div class="brand-info">
-                <div class="brand-logo"><i class="fa-solid fa-code"></i></div>
-                <div>
-                    <div class="brand-title">CODEX</div>
-                    <div class="brand-sub">QUANTUM REASONING IDE</div>
+            <!-- Logo Header -->
+            <div class="p-5 border-b border-[#1a1f35]/80 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-500 to-cyan-400 p-0.5 shadow-lg shadow-purple-500/20">
+                        <div class="w-full h-full bg-[#080a12] rounded-[10px] flex items-center justify-center">
+                            <i class="fa-solid fa-code text-cyan-400 text-lg"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="font-extrabold text-lg tracking-wider rainbow-text">CODEX ULTRA</h1>
+                        <p class="text-[9px] text-gray-400 font-mono tracking-widest uppercase">Next-Gen Studio</p>
+                    </div>
                 </div>
             </div>
-            <button class="copy-btn" id="logout-btn" title="Odhlásiť sa"><i class="fa-solid fa-power-off"></i></button>
-        </div>
 
-        <div class="user-pill">
-            <div class="user-pill-name"><i class="fa-solid fa-circle-user"></i> <span id="current-user-display">Prihlásený Používateľ</span></div>
-            <span style="font-size: 10px; color: var(--success);"><i class="fa-solid fa-database"></i> DB Permanent</span>
-        </div>
-
-        <div class="tools-bar">
-            <button class="tool-btn" id="open-memory-btn"><i class="fa-solid fa-brain" style="color:#00f0ff;"></i> Pamäť AI</button>
-            <button class="tool-btn" id="open-calendar-btn"><i class="fa-solid fa-calendar-day" style="color:#ff00aa;"></i> Kalendár</button>
-            <button class="tool-btn" id="open-search-btn"><i class="fa-solid fa-globe" style="color:#ffea00;"></i> Web / YT</button>
-        </div>
-
-        <div class="select-group">
-            <label>
-                <span><i class="fa-solid fa-microchip"></i> Architektúra Modelu</span>
-                <button id="sync-models-btn" class="copy-btn" style="padding: 2px 6px; font-size: 10px;" title="Stiahnuť najnovšie modely z Google API"><i class="fa-solid fa-arrows-rotate"></i> Live Sync</button>
-            </label>
-            <select id="model-select">
-                <optgroup label="👑 Gemini 2.5 Séria (Vlajkové lode)">
-                    <option value="gemini-2.5-pro" data-cost="2.0" data-type="deep-reasoning" selected>gemini-2.5-pro (DEEP-REASONING)</option>
-                    <option value="gemini-2.5-flash" data-cost="0.3" data-type="multimodal">gemini-2.5-flash (MULTIMODAL)</option>
-                </optgroup>
-                <optgroup label="⚡ Gemini 2.0 Séria">
-                    <option value="gemini-2.0-pro-exp-02-05" data-cost="1.8" data-type="deep-reasoning">gemini-2.0-pro-exp-02-05 (DEEP-REASONING)</option>
-                    <option value="gemini-2.0-flash" data-cost="0.4" data-type="multimodal">gemini-2.0-flash (MULTIMODAL)</option>
-                    <option value="gemini-2.0-flash-lite" data-cost="0.1" data-type="speed">gemini-2.0-flash-lite (SPEED)</option>
-                    <option value="gemini-2.0-flash-thinking-exp-01-21" data-cost="1.2" data-type="deep-reasoning">gemini-2.0-flash-thinking-exp-01-21 (DEEP-REASONING)</option>
-                </optgroup>
-                <optgroup label="🌐 Gemini 1.5 Séria">
-                    <option value="gemini-1.5-pro" data-cost="1.2" data-type="context">gemini-1.5-pro (CONTEXT)</option>
-                    <option value="gemini-1.5-flash" data-cost="0.2" data-type="speed">gemini-1.5-flash (SPEED)</option>
-                    <option value="gemini-1.5-flash-8b" data-cost="0.05" data-type="speed">gemini-1.5-flash-8b (SPEED)</option>
-                </optgroup>
-                <optgroup label="💎 Gemma & CodeGemma Séria">
-                    <option value="gemma-2-27b-it" data-cost="0.8" data-type="code">gemma-2-27b-it (CODE)</option>
-                    <option value="codegemma-7b-it" data-cost="0.4" data-type="code">codegemma-7b-it (CODE)</option>
-                </optgroup>
-                <optgroup label="🎨 Multimodálne Špeciály (Imagen & Veo)">
-                    <option value="imagen-3.0-generate-002" data-cost="4.0" data-type="image">imagen-3.0-generate-002 (IMAGE)</option>
-                    <option value="veo-2.0-generate-001" data-cost="7.0" data-type="video">veo-2.0-generate-001 (VIDEO)</option>
-                </optgroup>
-            </select>
-        </div>
-
-        <div class="quota-card">
-            <div class="quota-header">
-                <div class="quota-title"><i class="fa-solid fa-bolt" style="color:#ffcc00"></i> Mesačný Limit</div>
-                <div class="quota-val" id="quota-percent">100.0%</div>
+            <!-- User Status & Auth Launcher -->
+            <div class="p-4 border-b border-[#1a1f35]/60 bg-[#0d101d]/40">
+                <div id="user-profile-widget" class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-700 border border-purple-400/40 flex items-center justify-center text-white font-bold text-xs shadow-inner" id="avatar-initials">
+                            ?
+                        </div>
+                        <div>
+                            <p class="text-xs font-semibold text-gray-200" id="user-display-name">Neprihlásený</p>
+                            <p class="text-[10px] text-gray-400" id="user-status-text">Lokálny režim</p>
+                        </div>
+                    </div>
+                    <button onclick="openAuthModal()" class="px-2.5 py-1 text-xs bg-purple-600/10 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 rounded-lg transition duration-200">
+                        <i class="fa-solid fa-right-to-bracket mr-1"></i> Účet
+                    </button>
+                </div>
             </div>
-            <div class="progress-bar-container">
-                <div class="progress-fill" id="quota-progress-bar"></div>
-            </div>
-            <div class="quota-reset-text">
-                Obnovenie limitu: <strong id="reset-date-display">1. nasledujúceho mesiaca</strong>
-            </div>
+
+            <!-- Navigation Links -->
+            <nav class="p-3 space-y-1.5">
+                <button onclick="switchTab('chat')" id="nav-chat" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition bg-purple-600/20 text-purple-300 border border-purple-500/30 shadow-sm">
+                    <i class="fa-solid fa-comments w-5 text-indigo-400"></i>
+                    <span>Chat Studio</span>
+                </button>
+                <button onclick="switchTab('memory')" id="nav-memory" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-400 hover:bg-gray-800/40 hover:text-gray-200">
+                    <i class="fa-solid fa-brain w-5 text-purple-400"></i>
+                    <span>Pamäť AI (Memory)</span>
+                </button>
+                <button onclick="switchTab('calendar')" id="nav-calendar" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-400 hover:bg-gray-800/40 hover:text-gray-200">
+                    <i class="fa-solid fa-calendar-days w-5 text-cyan-400"></i>
+                    <span>Kalendár & Narodeniny</span>
+                </button>
+                <button onclick="switchTab('models')" id="nav-models" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-400 hover:bg-gray-800/40 hover:text-gray-200">
+                    <i class="fa-solid fa-layer-group w-5 text-emerald-400"></i>
+                    <span class="flex-1 text-left">Google Modely</span>
+                    <span id="models-count-badge" class="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded-md border border-emerald-500/30">0</span>
+                </button>
+                <button onclick="switchTab('settings')" id="nav-settings" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-400 hover:bg-gray-800/40 hover:text-gray-200">
+                    <i class="fa-solid fa-sliders w-5 text-amber-400"></i>
+                    <span>Nastavenia & API</span>
+                </button>
+            </nav>
         </div>
 
-        <div class="history-section">
-            <div class="history-title">
-                <span><i class="fa-solid fa-clock-rotate-left"></i> Relácie & Kód</span>
-                <button id="new-chat-btn" class="copy-btn" title="Nová relácia"><i class="fa-solid fa-plus"></i></button>
+        <!-- Limit & Quota Widget -->
+        <div class="p-4 m-3 rainbow-border">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-semibold text-gray-300 flex items-center">
+                    <i class="fa-solid fa-bolt text-amber-400 mr-1.5"></i> Mesačný Limit
+                </span>
+                <span class="text-xs font-mono font-bold rainbow-text" id="limit-percentage-text">100 %</span>
             </div>
-            <div class="history-list" id="history-list"></div>
-        </div>
+            
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-900/90 h-2.5 rounded-full overflow-hidden p-0.5 border border-gray-700/40">
+                <div id="limit-progress-bar" class="h-full rounded-full bg-gradient-to-r from-cyan-400 via-indigo-500 to-fuchsia-500 transition-all duration-500" style="width: 100%;"></div>
+            </div>
 
-        <div class="sidebar-footer">
-            <button class="btn-rainbow" id="settings-btn" style="flex:1;"><i class="fa-solid fa-sliders"></i> Nastavenia</button>
-            <button class="btn-secondary" id="clear-db-btn" title="Vyčistiť históriu"><i class="fa-solid fa-trash"></i></button>
+            <div class="mt-2.5 flex items-center justify-between text-[11px] text-gray-400">
+                <span>Obnova:</span>
+                <span class="font-mono text-cyan-300" id="limit-reset-date">1. deň v mesiaci 00:00</span>
+            </div>
         </div>
     </aside>
 
-    <!-- MAIN WORKSPACE -->
-    <main>
-        <header>
-            <div class="header-meta">
-                <div class="model-badge">
-                    <i class="fa-solid fa-brain"></i>
-                    <span id="active-model-name">gemini-2.5-pro</span>
+    <!-- Main Content Panel -->
+    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+
+        <!-- Banner for Exceeded Limits -->
+        <div id="limit-exceeded-banner" class="hidden bg-gradient-to-r from-red-950/90 via-pink-950/90 to-purple-950/90 border-b border-red-500/40 p-4 text-center z-30 animate-pulse backdrop-blur-md">
+            <div class="max-w-xl mx-auto flex items-center justify-center space-x-3">
+                <i class="fa-solid fa-triangle-exclamation text-amber-300 text-xl"></i>
+                <div class="text-left">
+                    <h4 class="font-bold text-sm text-white">Mesačný limit (0 %) bol úplne vyčerpaný!</h4>
+                    <p class="text-xs text-red-200">Chatovanie je zablokované. Limit sa automaticky obnoví: <span id="banner-reset-time" class="font-mono font-bold text-yellow-300">01.09.2026 00:00</span>.</p>
                 </div>
-                <div class="capability-tag" id="active-model-capability">DYNAMIC REALTIME REASONING</div>
-            </div>
-            <div style="font-size: 11.5px; color: var(--text-dim); display:flex; gap:12px; align-items:center;">
-                <span><i class="fa-solid fa-shield-halved" style="color: #00ffaa;"></i> Anti-503 Engine</span>
-                <span><i class="fa-solid fa-database" style="color: #00f0ff;"></i> IndexedDB Permanent</span>
-            </div>
-        </header>
-
-        <div id="messages-container"></div>
-
-        <div id="lockout-banner">
-            <i class="fa-solid fa-ban"></i> <strong>Limit vyčerpaný (0.0%).</strong> Písanie do chatu je zablokované.
-            <div id="lockout-time-details" style="font-size: 12px; margin-top: 4px;">Limit sa obnoví 1. dňa nasledujúceho mesiaca.</div>
-        </div>
-
-        <div class="chat-input-bar">
-            <div class="quick-actions-bar">
-                <div class="quick-pill" id="search-mode-pill"><i class="fa-solid fa-globe"></i> Web Vyhľadávanie</div>
-                <div class="quick-pill" id="yt-mode-pill"><i class="fa-brands fa-youtube" style="color:#ff0055;"></i> Hľadať na YouTube</div>
-                <div class="quick-pill" id="cal-reminder-pill"><i class="fa-solid fa-calendar-check"></i> Sviatky & Narodeniny</div>
-            </div>
-            <div class="input-wrapper">
-                <textarea id="prompt-input" rows="1" placeholder="Napíš prompt, zadaj kód, požiadaj o vyhľadávanie alebo video..."></textarea>
-                <button id="send-btn"><i class="fa-solid fa-arrow-up"></i></button>
             </div>
         </div>
+
+        <!-- TAB 1: CHAT STUDIO -->
+        <section id="tab-chat" class="flex-1 flex flex-col h-full">
+            <!-- Top Controls Bar -->
+            <header class="p-3.5 bg-[#090b14]/80 backdrop-blur-md border-b border-[#1a1f35] flex flex-wrap items-center justify-between gap-3">
+                <!-- Model Switcher -->
+                <div class="flex items-center space-x-3">
+                    <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider hidden sm:block">Model:</label>
+                    <div class="relative">
+                        <select id="model-select" class="bg-[#101424] text-xs font-semibold text-cyan-300 border border-purple-500/40 rounded-xl px-3.5 py-2 pr-8 focus:outline-none focus:border-purple-400 appearance-none cursor-pointer hover:bg-[#161b30] transition">
+                            <option value="">Zadajte API kľúč pre načítanie modelov...</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-3 top-2.5 text-xs text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+
+                <!-- Thinking / Reasoning & Web Tools Controls -->
+                <div class="flex items-center flex-wrap gap-2">
+                    <label class="flex items-center space-x-2 bg-[#101424] border border-[#202740] px-3 py-1.5 rounded-xl cursor-pointer hover:border-purple-500/40 transition">
+                        <input type="checkbox" id="toggle-reasoning" class="rounded text-purple-600 focus:ring-0 bg-gray-900 border-gray-700">
+                        <span class="text-xs text-purple-300 font-medium flex items-center">
+                            <i class="fa-solid fa-microchip mr-1.5 text-purple-400"></i> Uvažovanie AI v reálnom čase
+                        </span>
+                    </label>
+
+                    <button id="toggle-web-search" onclick="toggleSearch('web')" class="px-3 py-1.5 rounded-xl text-xs font-medium border border-gray-800 bg-[#101424] text-gray-400 hover:text-cyan-300 transition flex items-center">
+                        <i class="fa-solid fa-globe mr-1.5"></i> Web Hľadanie
+                    </button>
+
+                    <button id="toggle-yt-search" onclick="toggleSearch('yt')" class="px-3 py-1.5 rounded-xl text-xs font-medium border border-gray-800 bg-[#101424] text-gray-400 hover:text-red-400 transition flex items-center">
+                        <i class="fa-brands fa-youtube mr-1.5"></i> YouTube Search
+                    </button>
+
+                    <button onclick="clearCurrentChat()" class="p-2 text-xs text-gray-400 hover:text-red-400 bg-[#101424] border border-gray-800 rounded-xl transition" title="Vymazať tento chat">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Chat Message Output Area -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
+                <!-- Welcome Banner -->
+                <div class="max-w-3xl mx-auto rainbow-border p-6 text-center my-8 shadow-2xl">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-purple-600 via-indigo-600 to-cyan-400 flex items-center justify-center text-white text-2xl shadow-lg shadow-cyan-500/20">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </div>
+                    <h2 class="text-2xl font-extrabold text-white mb-2 tracking-wide">Vítajte v Codex Ultra Studio</h2>
+                    <p class="text-xs md:text-sm text-gray-300 mb-4 max-w-lg mx-auto leading-relaxed">
+                        Pokročilé prostredie s automatickým načítavaním všetkých najnovších Google modelov priamo z API, 7-dňovou karanténnou ochranou, dlhodobou pamäťou a IndexedDB úložiskom.
+                    </p>
+                    <div class="flex flex-wrap justify-center gap-2 text-xs">
+                        <span class="px-3 py-1 bg-purple-900/40 border border-purple-500/30 text-purple-300 rounded-full"><i class="fa-solid fa-shield-halved mr-1"></i> 503 Silent Shielding</span>
+                        <span class="px-3 py-1 bg-cyan-900/40 border border-cyan-500/30 text-cyan-300 rounded-full"><i class="fa-solid fa-database mr-1"></i> IndexedDB Trvalé Úložisko</span>
+                        <span class="px-3 py-1 bg-emerald-900/40 border border-emerald-500/30 text-emerald-300 rounded-full"><i class="fa-solid fa-clock-rotate-left mr-1"></i> 7-Dňový Karanténny Zámok Modelov</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Thinking / Reasoning Indicator Bar -->
+            <div id="reasoning-indicator" class="hidden px-6 py-2.5 bg-purple-950/40 border-t border-purple-800/40 flex items-center space-x-3 text-xs text-purple-300 backdrop-blur-md">
+                <div class="w-2.5 h-2.5 rounded-full bg-purple-400 animate-ping"></div>
+                <span class="font-mono font-medium" id="reasoning-text">AI hlboko uvažuje a analyzuje kontext...</span>
+            </div>
+
+            <!-- Input Box -->
+            <div class="p-4 bg-[#080a14]/90 backdrop-blur-lg border-t border-[#1a1f35]">
+                <form id="chat-form" onsubmit="handleChatSubmit(event)" class="max-w-4xl mx-auto relative">
+                    <div class="rainbow-border p-0.5">
+                        <div class="bg-[#0b0e1b] rounded-[0.9rem] p-2.5 flex items-end space-x-2">
+                            <textarea id="chat-input" rows="2" placeholder="Napíš správu alebo požiadavku na kód... (Ctrl+Enter pre odoslanie)" class="w-full bg-transparent text-sm text-gray-100 placeholder-gray-500 p-2 focus:outline-none resize-none font-sans" onkeydown="handleKeyDown(event)"></textarea>
+                            
+                            <div class="flex items-center space-x-2">
+                                <button type="submit" id="send-btn" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-500 to-cyan-400 hover:opacity-90 text-white flex items-center justify-center shadow-lg transition duration-200 disabled:opacity-50">
+                                    <i class="fa-solid fa-paper-plane text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- TAB 2: AI MEMORY BLOCK -->
+        <section id="tab-memory" class="hidden flex-1 p-6 overflow-y-auto">
+            <div class="max-w-4xl mx-auto space-y-6">
+                <div class="flex items-center justify-between border-b border-[#1a1f35] pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <i class="fa-solid fa-brain text-purple-400 mr-2"></i> Dlhodobá Pamäť AI (Memory Block)
+                        </h2>
+                        <p class="text-xs text-gray-400">Tieto informácie si AI zapamätá navždy a budú automaticky priložené ku každej vašej otázke.</p>
+                    </div>
+                    <button onclick="openAddMemoryModal()" class="px-4 py-2 text-xs font-semibold bg-purple-600 hover:bg-purple-500 text-white rounded-xl shadow-lg transition flex items-center">
+                        <i class="fa-solid fa-plus mr-1.5"></i> Pridať do pamäte
+                    </button>
+                </div>
+
+                <!-- Memory Items Grid -->
+                <div id="memory-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: CALENDAR & BIRTHDAYS -->
+        <section id="tab-calendar" class="hidden flex-1 p-6 overflow-y-auto">
+            <div class="max-w-4xl mx-auto space-y-6">
+                <div class="flex items-center justify-between border-b border-[#1a1f35] pb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <i class="fa-solid fa-calendar-days text-cyan-400 mr-2"></i> Kalendár, Sviatky a Narodeniny
+                        </h2>
+                        <p class="text-xs text-gray-400">AI pozná aktuálny dátum, slovenské štátne sviatky a vaše narodeniny.</p>
+                    </div>
+                    <button onclick="openAddEventModal()" class="px-4 py-2 text-xs font-semibold bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl shadow-lg transition flex items-center">
+                        <i class="fa-solid fa-plus mr-1.5"></i> Pridať Narodeniny / Udalosť
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Calendar View -->
+                    <div class="lg:col-span-2 bg-[#0c0f1e] border border-[#1a1f35] rounded-2xl p-5 rainbow-border">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-gray-200" id="calendar-month-year">August 2026</h3>
+                            <div class="flex space-x-2">
+                                <button onclick="changeMonth(-1)" class="p-1.5 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700"><i class="fa-solid fa-chevron-left"></i></button>
+                                <button onclick="changeMonth(1)" class="p-1.5 rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700"><i class="fa-solid fa-chevron-right"></i></button>
+                            </div>
+                        </div>
+
+                        <!-- Days Header -->
+                        <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs text-purple-400 mb-2">
+                            <div>Po</div><div>Ut</div><div>St</div><div>Št</div><div>Pi</div><div>So</div><div>Ne</div>
+                        </div>
+
+                        <!-- Grid -->
+                        <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-xs">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Events Sidebar -->
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-sm text-gray-300 uppercase tracking-wider flex items-center">
+                            <i class="fa-solid fa-cake-candles text-pink-400 mr-2"></i> Najbližšie udalosti & Sviatky
+                        </h3>
+                        <div id="upcoming-events-list" class="space-y-3">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: GOOGLE MODELS LIST (DYNAMIC API SYNC) -->
+        <section id="tab-models" class="hidden flex-1 p-6 overflow-y-auto">
+            <div class="max-w-5xl mx-auto space-y-6">
+                <div class="border-b border-[#1a1f35] pb-4 flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center">
+                            <i class="fa-solid fa-layer-group text-emerald-400 mr-2"></i> Všetky Google Gemini Modely
+                        </h2>
+                        <p class="text-xs text-gray-400">Modely načítané naživo z Google Gemini API s aplikovanou 7-dňovou bezpečnostnou karanténou pre novinky.</p>
+                    </div>
+                    <button onclick="fetchGoogleModelsOnline(true)" class="px-3 py-2 text-xs font-semibold bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/40 rounded-xl transition flex items-center">
+                        <i class="fa-solid fa-rotate mr-1.5"></i> Aktualizovať zoznam modelov
+                    </button>
+                </div>
+
+                <!-- API Key Reminder if empty -->
+                <div id="models-api-warning" class="hidden p-4 rounded-xl bg-amber-950/30 border border-amber-500/40 text-amber-300 text-xs flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-key"></i>
+                        <span>Pre zobrazenie všetkých najnovších Google modelov vložte svoj API kľúč v Nastaveniach.</span>
+                    </div>
+                    <button onclick="switchTab('settings')" class="underline font-bold">Prejsť do Nastavení</button>
+                </div>
+
+                <div id="all-models-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: SETTINGS & API KEY -->
+        <section id="tab-settings" class="hidden flex-1 p-6 overflow-y-auto">
+            <div class="max-w-3xl mx-auto space-y-6">
+                <div class="border-b border-[#1a1f35] pb-4">
+                    <h2 class="text-xl font-bold text-white flex items-center">
+                        <i class="fa-solid fa-sliders text-amber-400 mr-2"></i> Nastavenia Aplikácie
+                    </h2>
+                    <p class="text-xs text-gray-400">Konfigurácia Gemini API kľúča, reset limitov a správa databázy IndexedDB.</p>
+                </div>
+
+                <!-- API Key Configuration Form -->
+                <div class="glass-card rounded-2xl p-5 space-y-4 rainbow-border">
+                    <h3 class="font-bold text-sm text-amber-300 flex items-center">
+                        <i class="fa-solid fa-key mr-2"></i> Google Gemini API Kľúč
+                    </h3>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Vložte váš Google Gemini API Kľúč:</label>
+                        <input type="password" id="api-key-input" placeholder="AIzaSy..." class="w-full bg-[#101426] border border-gray-700/70 rounded-xl px-4 py-2.5 text-sm text-cyan-300 font-mono focus:outline-none focus:border-amber-400 transition">
+                    </div>
+                    <div class="flex justify-end">
+                        <button onclick="saveApiKey()" class="px-5 py-2.5 text-xs bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-gray-950 font-bold rounded-xl transition shadow-lg">
+                            Uložiť API Kľúč & Načítať Modely
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Limits Management Panel -->
+                <div class="glass-card rounded-2xl p-5 space-y-4">
+                    <h3 class="font-bold text-sm text-purple-300 flex items-center">
+                        <i class="fa-solid fa-chart-pie mr-2"></i> Správa Mesačného Limitu
+                    </h3>
+                    <p class="text-xs text-gray-400">Limit sa strháva podľa náročnosti vybraného modelu. Keď dosiahne 0 %, písanie bude zablokované.</p>
+                    
+                    <div class="flex items-center justify-between p-3.5 bg-[#101426] border border-[#1d243e] rounded-xl">
+                        <div>
+                            <p class="text-xs font-bold text-gray-200">Testovací Reset Limitu</p>
+                            <p class="text-[11px] text-gray-500">Obnoví spotrebu na 100 % pre potreby vývoja.</p>
+                        </div>
+                        <button onclick="resetMonthlyLimit()" class="px-3.5 py-1.5 text-xs bg-purple-600/30 text-purple-300 border border-purple-500/40 rounded-xl hover:bg-purple-600/50 transition">
+                            Obnoviť na 100 %
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Database Tools -->
+                <div class="glass-card border-red-900/30 rounded-2xl p-5 space-y-4">
+                    <h3 class="font-bold text-sm text-red-400 flex items-center">
+                        <i class="fa-solid fa-database mr-2"></i> Lokálna Databáza IndexedDB
+                    </h3>
+                    <p class="text-xs text-gray-400">Všetky vaše konverzácie, spomienky a nastavenia sa ukladajú výhradne vo vašom prehliadači.</p>
+                    <button onclick="clearDatabase()" class="px-4 py-2 text-xs font-semibold bg-red-900/40 hover:bg-red-800/60 text-red-300 border border-red-700/50 rounded-xl transition">
+                        Vymazať Všetky Dáta z IndexedDB
+                    </button>
+                </div>
+            </div>
+        </section>
     </main>
-</div>
 
-<!-- MEMORY VAULT MODAL -->
-<div class="modal" id="memory-modal">
-    <div class="modal-card">
-        <div class="modal-header">
-            <h3><i class="fa-solid fa-brain"></i> Trvalá Pamäť AI (Memory Vault)</h3>
-            <button class="close-modal" id="close-memory">&times;</button>
-        </div>
-        <p style="font-size: 12px; color: var(--text-dim);">
-            Všetko, čo sem pridáte, si bude AI pamätať v každom rozhovore natrvalo, dokiaľ to sami nezmažete.
-        </p>
-        <div style="display:flex; gap: 8px;">
-            <input type="text" id="new-memory-input" placeholder="Napr. Moje meno je Alex, programujem v Pythone a Rust...">
-            <button class="btn-rainbow" id="add-memory-btn"><i class="fa-solid fa-plus"></i></button>
-        </div>
-        <div id="memory-list-container" style="max-height: 250px; overflow-y: auto;"></div>
-    </div>
-</div>
-
-<!-- CALENDAR MODAL -->
-<div class="modal" id="calendar-modal">
-    <div class="modal-card">
-        <div class="modal-header">
-            <h3><i class="fa-solid fa-calendar-days"></i> Kvantový Kalendár & Sviatky</h3>
-            <button class="close-modal" id="close-calendar">&times;</button>
-        </div>
-        <div>
-            <label style="font-size: 11px; text-transform: uppercase; color: var(--text-dim); display:block; margin-bottom: 4px;">Tvoje Narodeniny</label>
-            <div style="display:flex; gap: 8px;">
-                <input type="date" id="user-birthday-input">
-                <button class="btn-rainbow" id="save-birthday-btn"><i class="fa-solid fa-save"></i> Uložiť</button>
+    <!-- AUTH MODAL -->
+    <div id="auth-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="rainbow-border w-full max-w-md p-6 space-y-5">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                <h3 class="font-bold text-lg text-white" id="auth-modal-title">Prihlásenie</h3>
+                <button onclick="closeAuthModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
-        </div>
-        <div id="calendar-view" style="margin-top: 10px;">
-            <div style="display: flex; justify-content:space-between; font-weight: bold; color:#00f0ff; margin-bottom: 6px;" id="cal-month-title"></div>
-            <div class="calendar-grid" id="calendar-grid-cells"></div>
-        </div>
-        <div style="font-size: 11.5px; color: var(--text-dim); line-height: 1.5; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
-            <strong style="color: #ff55c4;">Legenda:</strong> 
-            <span style="color:#00f0ff;">■ Dnes</span> | 
-            <span style="color:#ff0055;">■ Štátny Sviatok SR</span> | 
-            <span style="color:#ffea00;">■ Tvoje Narodeniny</span>
-        </div>
-    </div>
-</div>
-
-<!-- SEARCH / YOUTUBE MODAL -->
-<div class="modal" id="search-modal">
-    <div class="modal-card">
-        <div class="modal-header">
-            <h3><i class="fa-solid fa-globe"></i> Web & YouTube Vyhľadávanie</h3>
-            <button class="close-modal" id="close-search">&times;</button>
-        </div>
-        <div style="display:flex; gap: 8px;">
-            <input type="text" id="search-query-input" placeholder="Zadaj čo chceš nájsť na internete alebo YouTube...">
-            <button class="btn-rainbow" id="exec-search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
-        </div>
-        <div id="search-results-preview" style="font-size: 12.5px; line-height: 1.5; color:#9ab0d3;"></div>
-    </div>
-</div>
-
-<!-- SETTINGS MODAL -->
-<div class="modal" id="settings-modal">
-    <div class="modal-card">
-        <div class="modal-header">
-            <h3><i class="fa-solid fa-gear"></i> Konfigurácia CODEX</h3>
-            <button class="close-modal" id="close-settings">&times;</button>
-        </div>
-        <div>
-            <label style="font-size: 11px; text-transform: uppercase; color: var(--text-dim); display:block; margin-bottom: 6px;">Google Gemini API Kľúč</label>
-            <input type="password" id="api-key-input" placeholder="AIzaSy...">
-            <small style="color: #00ffaa; font-size: 11px; margin-top: 4px; display: block;">
-                <i class="fa-solid fa-circle-check"></i> Po zadaní sa automaticky stiahnu všetky najnovšie modely priamo z Google.
-            </small>
-        </div>
-        <div>
-            <label style="font-size: 11px; text-transform: uppercase; color: var(--text-dim); display:block; margin-bottom: 6px;">Vlastná Systémová Inštrukcia</label>
-            <textarea id="system-prompt-input" rows="3" placeholder="Si Codex, expert na pokročilé programovanie..."></textarea>
-        </div>
-        <div style="display:flex; justify-content: space-between; align-items:center; margin-top: 10px;">
-            <button class="btn-secondary" id="reset-limit-dev-btn" style="font-size: 11px;"><i class="fa-solid fa-rotate-right"></i> Reset na 100%</button>
-            <button class="btn-rainbow" id="save-settings-btn"><i class="fa-solid fa-floppy-disk"></i> Uložiť & Synchronizovať</button>
-        </div>
-    </div>
-</div>
-
-<div id="toast">Oznámenie</div>
-
-<script>
-/**
- * CODEX QUANTUM REASONING ENGINE
- * Permanent IndexedDB + OpenAI Endpoint + Real-time Thinking + Slovak Calendar & Memory
- * + Live Dynamic Model Fetching + Universal Polyglot Verification Kernel
- */
-
-// 1. IndexedDB Architecture
-const DB_NAME = "CodexQuantumDB_v2";
-const DB_VERSION = 1;
-let db = null;
-let currentUser = null;
-
-// Slovak Holidays Table
-const SLOVAK_HOLIDAYS = [
-    { m: 0, d: 1, name: "Deň vzniku Slovenskej republiky / Nový rok" },
-    { m: 0, d: 6, name: "Zjavenie Pána (Traja králi)" },
-    { m: 4, d: 1, name: "Sviatok práce" },
-    { m: 4, d: 8, name: "Deň víťazstva nad fašizmom" },
-    { m: 6, d: 5, name: "Sviatok svätého Cyrila a Metoda" },
-    { m: 7, d: 29, name: "Výročie Slovenského národného povstania" },
-    { m: 8, d: 1, name: "Deň Ústavy Slovenskej republiky" },
-    { m: 8, d: 15, name: "Sedembolestná Panna Mária" },
-    { m: 10, d: 1, name: "Sviatok všetkých svätých" },
-    { m: 10, d: 17, name: "Deň boja za slobodu a demokraciu" },
-    { m: 11, d: 24, name: "Štedrý deň" },
-    { m: 11, d: 25, name: "Prvý sviatok vianočný" },
-    { m: 11, d: 26, name: "Druhý sviatok vianočný" }
-];
-
-async function initDB() {
-    return new Promise((resolve, reject) => {
-        const req = indexedDB.open(DB_NAME, DB_VERSION);
-        req.onupgradeneeded = (e) => {
-            const dbInstance = e.target.result;
-            const stores = ["users", "settings", "quota", "sessions", "memory", "calendar"];
-            stores.forEach(s => {
-                if (!dbInstance.objectStoreNames.contains(s)) {
-                    dbInstance.createObjectStore(s, { keyPath: "id" });
-                }
-            });
-        };
-        req.onsuccess = (e) => {
-            db = e.target.result;
-            resolve(db);
-        };
-        req.onerror = (e) => reject(e);
-    });
-}
-
-async function dbGet(storeName, id) {
-    return new Promise((resolve) => {
-        const tx = db.transaction(storeName, "readonly");
-        const store = tx.objectStore(storeName);
-        const req = store.get(id);
-        req.onsuccess = () => resolve(req.result ? req.result.value : null);
-        req.onerror = () => resolve(null);
-    });
-}
-
-async function dbSet(storeName, id, value) {
-    return new Promise((resolve) => {
-        const tx = db.transaction(storeName, "readwrite");
-        const store = tx.objectStore(storeName);
-        store.put({ id, value });
-        tx.oncomplete = () => resolve(true);
-    });
-}
-
-async function dbDelete(storeName, id) {
-    return new Promise((resolve) => {
-        const tx = db.transaction(storeName, "readwrite");
-        const store = tx.objectStore(storeName);
-        store.delete(id);
-        tx.oncomplete = () => resolve(true);
-    });
-}
-
-async function dbGetAll(storeName) {
-    return new Promise((resolve) => {
-        const tx = db.transaction(storeName, "readonly");
-        const store = tx.objectStore(storeName);
-        const req = store.getAll();
-        req.onsuccess = () => resolve(req.result || []);
-        req.onerror = () => resolve([]);
-    });
-}
-
-// 2. Dynamic Live Google Model Synchronizer
-function determineModelProperties(modelId) {
-    const id = modelId.toLowerCase();
-    let cost = 0.5;
-    let type = "multimodal";
-    let group = "⚡ Ostatné / Nové Modely Google";
-
-    if (id.includes("2.5") || id.includes("exp") || id.includes("thinking") || id.includes("pro")) {
-        cost = 2.0;
-        type = "deep-reasoning";
-        if (id.includes("2.5")) group = "👑 Gemini 2.5 Séria (Vlajkové lode)";
-        else if (id.includes("2.0")) group = "⚡ Gemini 2.0 Séria";
-        else group = "🧪 Google Experimental & Thinking";
-    } else if (id.includes("1.5-pro")) {
-        cost = 1.2;
-        type = "context";
-        group = "🌐 Gemini 1.5 Pro Séria";
-    } else if (id.includes("1.5-flash-8b") || id.includes("flash-lite")) {
-        cost = 0.1;
-        type = "speed";
-        group = "⚡ Gemini Flash Lite & 8B (Bleskové)";
-    } else if (id.includes("1.5-flash") || id.includes("flash")) {
-        cost = 0.3;
-        type = "multimodal";
-        group = "⚡ Gemini 1.5 Flash Séria";
-    } else if (id.includes("imagen") || id.includes("image")) {
-        cost = 4.0;
-        type = "image";
-        group = "🎨 Multimodálne Vizuály (Imagen)";
-    } else if (id.includes("veo") || id.includes("video")) {
-        cost = 7.0;
-        type = "video";
-        group = "🎬 Kinematické Video (Veo)";
-    } else if (id.includes("gemma") || id.includes("codegemma")) {
-        cost = 0.4;
-        type = "code";
-        group = "💎 Google Gemma & CodeGemma";
-    } else if (id.includes("embedding")) {
-        cost = 0.05;
-        type = "embedding";
-        group = "🔍 Google Embeddings";
-    }
-
-    return { cost, type, group };
-}
-
-async function fetchAndSyncLiveGoogleModels(apiKey, showNotification = true) {
-    if (!apiKey) return;
-    try {
-        const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-        if (!resp.ok) {
-            const resp2 = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/models", {
-                headers: { "Authorization": `Bearer ${apiKey}` }
-            });
-            if (!resp2.ok) throw new Error("Nepodarilo sa stiahnuť zoznam modelov z Google.");
-            const data2 = await resp2.json();
-            if (data2 && data2.data) {
-                renderDynamicModels(data2.data.map(m => m.id));
-                await dbSet("settings", "cached_google_models", data2.data.map(m => m.id));
-                if (showNotification) showToast("✅ Všetky Google modely boli úspešne stiahnuté!");
-                return;
-            }
-        }
-
-        const data = await resp.json();
-        if (data && data.models) {
-            const rawModelNames = data.models.map(m => m.name.replace(/^models\//, ""));
-            renderDynamicModels(rawModelNames);
-            await dbSet("settings", "cached_google_models", rawModelNames);
-            if (showNotification) showToast(`✅ Synchronizovaných ${rawModelNames.length} modelov od Google!`);
-        }
-    } catch (e) {
-        console.warn("Live model sync fallback: ", e);
-        const cached = await dbGet("settings", "cached_google_models");
-        if (cached && Array.isArray(cached) && cached.length > 0) {
-            renderDynamicModels(cached);
-        }
-    }
-}
-
-function renderDynamicModels(modelIdList) {
-    const select = document.getElementById("model-select");
-    const currentSelected = select.value;
-    select.innerHTML = "";
-
-    const groups = {};
-    modelIdList.forEach(rawId => {
-        const { cost, type, group } = determineModelProperties(rawId);
-        if (!groups[group]) groups[group] = [];
-        groups[group].push({ id: rawId, cost, type });
-    });
-
-    Object.keys(groups).forEach(grpName => {
-        const optGroup = document.createElement("optgroup");
-        optGroup.label = grpName;
-
-        groups[grpName].forEach(m => {
-            const opt = document.createElement("option");
-            opt.value = m.id;
-            opt.setAttribute("data-cost", m.cost);
-            opt.setAttribute("data-type", m.type);
-            opt.innerText = `${m.id} (${m.type.toUpperCase()})`;
-            if (m.id === currentSelected || m.id === "gemini-2.5-pro") opt.selected = true;
-            optGroup.appendChild(opt);
-        });
-
-        select.appendChild(optGroup);
-    });
-
-    const opt = select.options[select.selectedIndex] || select.options[0];
-    if (opt) {
-        document.getElementById("active-model-name").innerText = opt.value;
-        document.getElementById("active-model-capability").innerText = (opt.getAttribute("data-type") || "AI").toUpperCase();
-    }
-}
-
-// 3. Auth Flow
-async function checkAuth() {
-    const active = await dbGet("settings", "active_session_user");
-    if (active) {
-        currentUser = active;
-        document.getElementById("current-user-display").innerText = currentUser;
-        document.getElementById("auth-modal").classList.remove("active");
-        loadUserData();
-    } else {
-        document.getElementById("auth-modal").classList.add("active");
-    }
-}
-
-async function handleLogin() {
-    const u = document.getElementById("auth-username").value.trim();
-    const p = document.getElementById("auth-password").value.trim();
-    if (!u || !p) return showToast("Zadajte meno a heslo");
-
-    const user = await dbGet("users", u);
-    if (!user || user.password !== p) {
-        return showToast("Nesprávne meno alebo heslo!");
-    }
-
-    currentUser = u;
-    await dbSet("settings", "active_session_user", u);
-    document.getElementById("current-user-display").innerText = currentUser;
-    document.getElementById("auth-modal").classList.remove("active");
-    showToast(`Vitaj späť, ${u}!`);
-    loadUserData();
-}
-
-async function handleRegister() {
-    const u = document.getElementById("auth-username").value.trim();
-    const p = document.getElementById("auth-password").value.trim();
-    if (!u || !p) return showToast("Zadajte meno a heslo");
-
-    const existing = await dbGet("users", u);
-    if (existing) {
-        return showToast("Používateľ s týmto menom už existuje!");
-    }
-
-    await dbSet("users", u, { username: u, password: p, created: Date.now() });
-    currentUser = u;
-    await dbSet("settings", "active_session_user", u);
-    document.getElementById("current-user-display").innerText = currentUser;
-    document.getElementById("auth-modal").classList.remove("active");
-    showToast(`Účet ${u} úspešne zaregistrovaný!`);
-    loadUserData();
-}
-
-async function handleLogout() {
-    await dbDelete("settings", "active_session_user");
-    currentUser = null;
-    document.getElementById("auth-modal").classList.add("active");
-}
-
-// 4. Quota & Limits
-let currentQuota = 100.0;
-let currentSessionId = "session_" + Date.now();
-let currentMessages = [];
-
-function getNextMonthResetDate() {
-    const now = new Date();
-    return new Date(now.getFullYear(), now.getMonth() + 1, 1, 0, 0, 0, 0);
-}
-
-function formatDateToSlovak(date) {
-    const d = String(date.getDate()).padStart(2, '0');
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const y = date.getFullYear();
-    const hr = String(date.getHours()).padStart(2, '0');
-    const min = String(date.getMinutes()).padStart(2, '0');
-    const sec = String(date.getSeconds()).padStart(2, '0');
-    return `${d}.${m}.${y} o ${hr}:${min}:${sec}`;
-}
-
-async function loadQuota() {
-    const savedQuota = await dbGet("quota", `quota_${currentUser || 'default'}`);
-    const now = new Date();
-
-    if (savedQuota) {
-        if (savedQuota.month === now.getMonth()) {
-            currentQuota = Math.max(0, savedQuota.percent);
-        } else {
-            currentQuota = 100.0;
-            await saveQuota();
-        }
-    } else {
-        currentQuota = 100.0;
-        await saveQuota();
-    }
-    updateQuotaUI();
-}
-
-async function saveQuota() {
-    const now = new Date();
-    await dbSet("quota", `quota_${currentUser || 'default'}`, {
-        percent: currentQuota,
-        month: now.getMonth(),
-        year: now.getFullYear()
-    });
-}
-
-function updateQuotaUI() {
-    const quotaValElem = document.getElementById("quota-percent");
-    const quotaBar = document.getElementById("quota-progress-bar");
-    const lockoutBanner = document.getElementById("lockout-banner");
-    const promptInput = document.getElementById("prompt-input");
-    const sendBtn = document.getElementById("send-btn");
-    const resetInfo = document.getElementById("reset-date-display");
-    const lockoutDetails = document.getElementById("lockout-time-details");
-
-    const resetDate = getNextMonthResetDate();
-    const formattedReset = formatDateToSlovak(resetDate);
-
-    resetInfo.innerText = formattedReset;
-    quotaValElem.innerText = currentQuota.toFixed(1) + "%";
-    quotaBar.style.width = currentQuota + "%";
-
-    if (currentQuota <= 0) {
-        currentQuota = 0;
-        quotaValElem.style.color = "var(--danger)";
-        lockoutBanner.style.display = "block";
-        lockoutDetails.innerText = `Prísny limit dosiahnutý. Obnovenie: ${formattedReset}`;
-        promptInput.disabled = true;
-        sendBtn.disabled = true;
-        promptInput.placeholder = `🔒 CHAT ZABLOKOVANÝ (0%) - Obnovenie ${formattedReset}`;
-    } else {
-        quotaValElem.style.color = currentQuota > 30 ? "var(--success)" : "#ff9900";
-        lockoutBanner.style.display = "none";
-        promptInput.disabled = false;
-        sendBtn.disabled = false;
-        promptInput.placeholder = "Napíš prompt, zadaj kód, požiadaj o vyhľadávanie alebo video...";
-    }
-}
-
-function deductQuota(cost) {
-    currentQuota = Math.max(0, currentQuota - cost);
-    saveQuota();
-    updateQuotaUI();
-}
-
-// 5. Memory Vault Management
-async function loadMemoryList() {
-    const container = document.getElementById("memory-list-container");
-    container.innerHTML = "";
-    const items = await dbGetAll("memory");
-    const userMemories = items.filter(i => i.value && i.value.user === currentUser);
-
-    if (userMemories.length === 0) {
-        container.innerHTML = `<div style="color:var(--text-dim); font-size:11px; padding:8px;">Žiadne uložené spomienky pre účet ${currentUser}.</div>`;
-        return;
-    }
-
-    userMemories.forEach(m => {
-        const div = document.createElement("div");
-        div.className = "memory-item";
-        div.innerHTML = `
-            <span><i class="fa-solid fa-bookmark" style="color:#00f0ff; margin-right:6px;"></i> ${m.value.text}</span>
-            <button onclick="removeMemory('${m.id}')" title="Vymazať"><i class="fa-solid fa-trash"></i></button>
-        `;
-        container.appendChild(div);
-    });
-}
-
-async function addMemory() {
-    const input = document.getElementById("new-memory-input");
-    const val = input.value.trim();
-    if (!val) return;
-    const memId = "mem_" + Date.now();
-    await dbSet("memory", memId, { text: val, user: currentUser, created: Date.now() });
-    input.value = "";
-    loadMemoryList();
-    showToast("Spomienka bola natrvalo zapísaná do AI pamäte!");
-}
-
-async function removeMemory(id) {
-    await dbDelete("memory", id);
-    loadMemoryList();
-    showToast("Spomienka vymazaná.");
-}
-
-async function getFormattedMemoryContext() {
-    const items = await dbGetAll("memory");
-    const userMemories = items.filter(i => i.value && i.value.user === currentUser);
-    if (userMemories.length === 0) return "";
-    return "\n\n[TRVALÁ PAMÄŤ O POUŽÍVATEĽOVI]:\n" + userMemories.map(m => "- " + m.value.text).join("\n");
-}
-
-// 6. Calendar & Holidays Integration
-async function loadCalendarInfo() {
-    const bday = await dbGet("calendar", `bday_${currentUser}`);
-    if (bday) document.getElementById("user-birthday-input").value = bday.date;
-
-    renderCalendarWidget();
-}
-
-function renderCalendarWidget() {
-    const grid = document.getElementById("calendar-grid-cells");
-    grid.innerHTML = "";
-    const now = new Date();
-    const curYear = now.getFullYear();
-    const curMonth = now.getMonth();
-    const todayDate = now.getDate();
-
-    const monthNames = ["Január", "Február", "Marec", "Apríl", "Máj", "Jún", "Júl", "August", "September", "Október", "November", "December"];
-    document.getElementById("cal-month-title").innerText = `${monthNames[curMonth]} ${curYear}`;
-
-    const days = ["Po", "Ut", "St", "Št", "Pi", "So", "Ne"];
-    days.forEach(d => {
-        const h = document.createElement("div");
-        h.className = "cal-day-header";
-        h.innerText = d;
-        grid.appendChild(h);
-    });
-
-    const firstDayIndex = (new Date(curYear, curMonth, 1).getDay() + 6) % 7;
-    const totalDays = new Date(curYear, curMonth + 1, 0).getDate();
-
-    for (let i = 0; i < firstDayIndex; i++) {
-        const b = document.createElement("div");
-        grid.appendChild(b);
-    }
-
-    const bdayInput = document.getElementById("user-birthday-input").value;
-    let bdayDay = null, bdayMonth = null;
-    if (bdayInput) {
-        const parts = bdayInput.split("-");
-        bdayMonth = parseInt(parts[1]) - 1;
-        bdayDay = parseInt(parts[2]);
-    }
-
-    for (let d = 1; d <= totalDays; d++) {
-        const cell = document.createElement("div");
-        cell.className = "cal-cell";
-        cell.innerText = d;
-
-        const isHoliday = SLOVAK_HOLIDAYS.some(h => h.m === curMonth && h.d === d);
-        const isBday = (bdayMonth === curMonth && bdayDay === d);
-
-        if (d === todayDate) cell.classList.add("today");
-        if (isHoliday) {
-            cell.classList.add("holiday");
-            const holObj = SLOVAK_HOLIDAYS.find(h => h.m === curMonth && h.d === d);
-            cell.title = `Sviatok: ${holObj.name}`;
-        }
-        if (isBday) {
-            cell.classList.add("bday");
-            cell.title = "Tvoje Narodeniny!";
-        }
-
-        grid.appendChild(cell);
-    }
-}
-
-async function getCalendarAIContext() {
-    const now = new Date();
-    const todayStr = formatDateToSlovak(now);
-    const bday = await dbGet("calendar", `bday_${currentUser}`);
-    let holidayContext = SLOVAK_HOLIDAYS.map(h => `${h.d}.${h.m + 1} (${h.name})`).join(", ");
-
-    return `\n\n[DÁTUM & KALENDÁR SR]:
-- Aktuálny reálny čas a dátum: ${todayStr}
-- Používateľove narodeniny: ${bday ? bday.date : 'Nenastavené'}
-- Oficiálne slovenské štátne sviatky: ${holidayContext}`;
-}
-
-// 7. Resilient API Calls (Anti-503, Deterministic Multi-Language Verification)
-const BASE_OPENAI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
-
-async function executeResilientCall(apiKey, model, messages, retryCount = 0) {
-    try {
-        const response = await fetch(BASE_OPENAI_URL, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}`
-            },
-            body: JSON.stringify({
-                model: model,
-                messages: messages,
-                temperature: 0.1, // Ultra-low temperature for 100% strict syntax, zero hallucination
-                max_tokens: 8192
-            })
-        });
-
-        if (response.status === 503 || response.status === 429) {
-            if (retryCount < 3) {
-                const delay = Math.pow(2, retryCount) * 1000 + Math.random() * 500;
-                await new Promise(r => setTimeout(r, delay));
-                return executeResilientCall(apiKey, model, messages, retryCount + 1);
-            } else {
-                return executeResilientCall(apiKey, "gemini-2.5-flash", messages, 0);
-            }
-        }
-
-        if (!response.ok) {
-            const errData = await response.json().catch(() => ({}));
-            throw new Error(errData.error?.message || `Chyba spojenia (Status ${response.status})`);
-        }
-
-        const data = await response.json();
-        
-        let content = data?.choices?.[0]?.message?.content;
-        if (!content && data?.choices?.[0]?.text) {
-            content = data.choices[0].text;
-        }
-        if (!content && data?.candidates?.[0]?.content?.parts) {
-            content = data.candidates[0].content.parts.map(p => p.text).filter(Boolean).join("\n");
-        }
-        if (content === undefined || content === null) {
-            content = "Model vrátil prázdny výstup alebo bol kód vygenerovaný v neštandardnom formáte.";
-        }
-
-        return String(content);
-    } catch (err) {
-        if (retryCount < 2) {
-            await new Promise(r => setTimeout(r, 1500));
-            return executeResilientCall(apiKey, "gemini-2.5-flash", messages, retryCount + 1);
-        }
-        throw err;
-    }
-}
-
-// 8. Pristine Code & Markdown Rendering
-const rawCodeCache = new Map();
-
-function customRenderMarkdown(text) {
-    if (text === null || text === undefined) text = "";
-    if (typeof text !== "string") text = String(text);
-    if (!text.trim()) return "";
-
-    try {
-        const renderer = new marked.Renderer();
-        
-        renderer.code = function(arg1, arg2) {
-            let codeText = "";
-            let language = "";
-
-            if (typeof arg1 === "object" && arg1 !== null) {
-                codeText = arg1.text || "";
-                language = arg1.lang || "";
-            } else {
-                codeText = typeof arg1 === "string" ? arg1 : (arg1 ? String(arg1) : "");
-                language = typeof arg2 === "string" ? arg2 : "";
-            }
-
-            const codeId = "code_" + Math.random().toString(36).substr(2, 9);
-            rawCodeCache.set(codeId, codeText);
-            
-            const validLang = language && hljs.getLanguage(language) ? language : 'plaintext';
-            let highlighted = "";
-            try {
-                highlighted = hljs.highlight(codeText, { language: validLang, ignoreIllegals: true }).value;
-            } catch (e) {
-                highlighted = codeText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            }
-
-            return `
-            <div class="code-container">
-                <div class="code-header-bar">
-                    <span><i class="fa-solid fa-code"></i> ${validLang.toUpperCase()}</span>
-                    <button class="copy-btn" onclick="copyRawCode('${codeId}')"><i class="fa-solid fa-copy"></i> Kopírovať Kód</button>
+            <form onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Meno / Login:</label>
+                    <input type="text" id="auth-username" required class="w-full bg-[#101426] border border-gray-700 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-purple-500">
                 </div>
-                <pre><code class="hljs language-${validLang}">${highlighted}</code></pre>
-            </div>`;
-        };
-
-        return marked.parse(text, { renderer: renderer, breaks: true, gfm: true });
-    } catch (err) {
-        console.warn("Markdown Parser Fallback:", err);
-        return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
-    }
-}
-
-window.copyRawCode = function(codeId) {
-    const raw = rawCodeCache.get(codeId);
-    if (raw !== undefined) {
-        navigator.clipboard.writeText(raw).then(() => {
-            showToast("✅ Kód bol bezchybne skopírovaný do schránky!");
-        });
-    }
-};
-
-function appendMessage(role, text, mediaObj = null, thoughtData = null) {
-    const container = document.getElementById("messages-container");
-    const msgDiv = document.createElement("div");
-    msgDiv.className = `msg ${role}`;
-
-    const avatar = document.createElement("div");
-    avatar.className = "msg-avatar";
-    avatar.innerHTML = role === "user" ? '<i class="fa-solid fa-user"></i>' : '<i class="fa-solid fa-bolt"></i>';
-
-    const body = document.createElement("div");
-    body.className = "msg-body";
-
-    if (role === "bot") {
-        let fullHTML = "";
-        
-        if (thoughtData) {
-            fullHTML += `
-            <details class="thought-accordion" open>
-                <summary><i class="fa-solid fa-atom"></i> Interné Uvažovanie AI (${thoughtData.time}s)</summary>
-                <div class="thought-accordion-content">${thoughtData.reasoning}</div>
-            </details>`;
-        }
-
-        fullHTML += customRenderMarkdown(text);
-
-        if (mediaObj) {
-            if (mediaObj.type === "youtube") {
-                fullHTML += `
-                <div class="yt-embed-box">
-                    <iframe src="https://www.youtube-nocookie.com/embed/${mediaObj.videoId}" allowfullscreen></iframe>
-                </div>`;
-            } else if (mediaObj.type === "image") {
-                fullHTML += `<div style="margin-top:10px; border-radius:12px; overflow:hidden;"><img src="${mediaObj.url}" style="width:100%;" /></div>`;
-            } else if (mediaObj.type === "video") {
-                fullHTML += `<div style="margin-top:10px; border-radius:12px; overflow:hidden;"><video controls autoplay loop src="${mediaObj.url}" style="width:100%;"></video></div>`;
-            }
-        }
-
-        body.innerHTML = fullHTML;
-    } else {
-        body.innerText = text;
-    }
-
-    msgDiv.appendChild(avatar);
-    msgDiv.appendChild(body);
-    container.appendChild(msgDiv);
-    container.scrollTop = container.scrollHeight;
-}
-
-// 9. Core Prompt & Thinking Dispatcher (Universal Multi-Language Zero-Error Directive)
-let isThinking = false;
-
-async function handleSend() {
-    if (currentQuota <= 0 || isThinking) return;
-
-    const input = document.getElementById("prompt-input");
-    const promptText = input.value.trim();
-    if (!promptText) return;
-
-    const apiKey = await dbGet("settings", "gemini_api_key");
-    if (!apiKey) {
-        showToast("⚠️ Prosím nastavte Gemini API Kľúč v nastaveniach!");
-        document.getElementById("settings-modal").classList.add("active");
-        return;
-    }
-
-    const select = document.getElementById("model-select");
-    const selectedOption = select.options[select.selectedIndex] || select.options[0];
-    const model = selectedOption.value;
-    const cost = parseFloat(selectedOption.getAttribute("data-cost")) || 0.5;
-    const modelType = selectedOption.getAttribute("data-type");
-
-    input.value = "";
-    input.style.height = "40px";
-
-    appendMessage("user", promptText);
-    currentMessages.push({ role: "user", content: promptText });
-    deductQuota(cost);
-
-    isThinking = true;
-    const startTime = Date.now();
-    const tempId = "temp_" + Date.now();
-    const container = document.getElementById("messages-container");
-
-    const thinkingDiv = document.createElement("div");
-    thinkingDiv.id = tempId;
-    thinkingDiv.className = "msg bot";
-    thinkingDiv.innerHTML = `
-        <div class="msg-avatar"><i class="fa-solid fa-brain fa-spin"></i></div>
-        <div class="msg-body" style="flex:1;">
-            <div class="thinking-indicator">
-                <i class="fa-solid fa-spinner fa-spin"></i> 
-                <span>AI Uvažuje v reálnom čase: <strong id="live-timer-val">0.0s</strong> | Model: [${model}]</span>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Heslo:</label>
+                    <input type="password" id="auth-password" required class="w-full bg-[#101426] border border-gray-700 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-purple-500">
+                </div>
+                <button type="submit" id="auth-submit-btn" class="w-full py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-sm rounded-xl transition">
+                    Prihlásiť sa
+                </button>
+            </form>
+            <div class="text-center">
+                <button onclick="toggleAuthMode()" id="auth-toggle-btn" class="text-xs text-purple-400 hover:underline">Nemáte účet? Zaregistrujte sa</button>
             </div>
-            <div style="font-size:12px; color:var(--text-dim);">Spúšťam prísnu syntaktickú validáciu pre všetky programovacie jazyky...</div>
         </div>
-    `;
-    container.appendChild(thinkingDiv);
-    container.scrollTop = container.scrollHeight;
+    </div>
 
-    const timerInterval = setInterval(() => {
-        const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-        const timerElem = document.getElementById("live-timer-val");
-        if (timerElem) timerElem.innerText = `${elapsed}s`;
-    }, 100);
+    <!-- ADD MEMORY MODAL -->
+    <div id="memory-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-md glass-card border border-[#1a1f35] rounded-2xl p-6 space-y-4">
+            <h3 class="font-bold text-lg text-white">Pridať do pamäte AI</h3>
+            <textarea id="memory-input" rows="4" placeholder="Napr.: Pracujem v jazyku Python 3.12, preferujem async kód a mojou hlavnou databázou je PostgreSQL." class="w-full bg-[#101426] border border-gray-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-purple-500"></textarea>
+            <div class="flex justify-end space-x-2">
+                <button onclick="closeMemoryModal()" class="px-4 py-2 text-xs bg-gray-800 text-gray-300 rounded-xl">Zrušiť</button>
+                <button onclick="saveMemoryItem()" class="px-4 py-2 text-xs font-bold bg-purple-600 text-white rounded-xl">Uložiť</button>
+            </div>
+        </div>
+    </div>
 
-    try {
-        let baseSysPrompt = await dbGet("settings", "system_prompt") || 
-            `Si CODEX Quantum Engine – elitný kompilátor a softvérový architekt.
-POVINNÉ PRAVIDLÁ PRE VŠETKY JAZYKY (Luau, Python, C++, Rust, JS/TS, C#, Go atď.):
-1. Generuj VÝHRADNE 100% syntakticky a logicky správny, otestovaný, netriviálny a spustiteľný kód.
-2. V Luau/Roblox: Vždy používaj korektný --!strict režim, správne typové zúženie pred prístupom k vlastnostiam (guards), SetNetworkOwner(nil) pre NPC/fyziku a odpojovanie eventov na cleanup.
-3. V TypeScript/Python/Rust/C++: Vždy deklaruj kompletné importy, striktné typy, error-handling (pcall/try-catch/Result/Option) a dodržiavaj správu pamäte.
-4. ŽIADNE skratky, žiadne placeholder komentáre typu '// tu dopíš kód', žiadne nedokončené funkcie.
-5. Vždy vlož kód do čistého bloku s názvom jazyka (\`\`\`jazyk ... \`\`\`).`;
+    <!-- ADD EVENT / BIRTHDAY MODAL -->
+    <div id="event-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="w-full max-w-md glass-card border border-[#1a1f35] rounded-2xl p-6 space-y-4">
+            <h3 class="font-bold text-lg text-white">Pridať Udalosť alebo Narodeniny</h3>
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">Názov udalosti:</label>
+                <input type="text" id="event-title-input" placeholder="Moje narodeniny" class="w-full bg-[#101426] border border-gray-700 rounded-xl p-2.5 text-sm text-white">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">Dátum:</label>
+                <input type="date" id="event-date-input" class="w-full bg-[#101426] border border-gray-700 rounded-xl p-2.5 text-sm text-white">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">Typ:</label>
+                <select id="event-type-input" class="w-full bg-[#101426] border border-gray-700 rounded-xl p-2.5 text-sm text-cyan-300">
+                    <option value="birthday">🎂 Narodeniny</option>
+                    <option value="holiday">🎉 Sviatok / Oslava</option>
+                    <option value="event">📌 Dôležitá Udalosť</option>
+                </select>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button onclick="closeEventModal()" class="px-4 py-2 text-xs bg-gray-800 text-gray-300 rounded-xl">Zrušiť</button>
+                <button onclick="saveEventItem()" class="px-4 py-2 text-xs font-bold bg-cyan-600 text-white rounded-xl">Uložiť</button>
+            </div>
+        </div>
+    </div>
 
-        const memoryContext = await getFormattedMemoryContext();
-        const calendarContext = await getCalendarAIContext();
-        const fullSystemInstruction = baseSysPrompt + memoryContext + calendarContext;
+    <script>
+        const DB_NAME = 'CodexUltraDB';
+        const DB_VERSION = 1;
+        let db = null;
 
-        const apiMessages = [
-            { role: "system", content: fullSystemInstruction },
-            ...currentMessages.slice(-10)
+        // Base fallback models in case API is completely offline
+        const DEFAULT_MODELS = [
+            { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro (Deep Reasoning)', cost: 4.0, desc: 'Najvýkonnejší model pre náročnú matematiku a architektúru.', badge: 'Pro Výkon', releaseDate: '2025-01-01' },
+            { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', cost: 1.0, desc: 'Vyvážený univerzálny model pre všedné úlohy a kódovanie.', badge: 'Štandard', releaseDate: '2025-01-01' },
+            { id: 'gemini-3.1-flash-image', name: 'Gemini 3.1 Flash Image', cost: 1.5, desc: 'Generovanie obrazu, textu a multimodality.', badge: 'Vlajková loď', releaseDate: '2026-08-01' },
+            { id: 'gemini-3-flash-preview', name: 'Gemini 3 Flash Preview', cost: 1.0, desc: 'Ultra-rýchly model optimalizovaný pre komplexný kód.', badge: 'Rýchly', releaseDate: '2026-08-10' }
         ];
 
-        let botReply = "";
-        let mediaResult = null;
-        let thoughtData = null;
-
-        if (promptText.toLowerCase().startsWith("/yt ") || promptText.toLowerCase().includes("youtube")) {
-            const query = promptText.replace("/yt ", "").trim();
-            botReply = `🎬 **Vyhľadávanie na YouTube pre:** \`${query}\`\n\nTu je nájdené video pripravené na prehratie:`;
-            mediaResult = { type: "youtube", videoId: "dQw4w9WgXcQ" };
-        } else if (modelType === "image") {
-            botReply = `🎨 **Generovanie Obrazového Návrhu cez ${model}**\nPrompt: \`${promptText}\``;
-            mediaResult = { type: "image", url: `https://picsum.photos/seed/${encodeURIComponent(promptText)}/800/450` };
-        } else if (modelType === "video") {
-            botReply = `🎬 **Kinematická Syntéza Videa cez ${model}**\nScenár: \`${promptText}\``;
-            mediaResult = { type: "video", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" };
-        } else {
-            botReply = await executeResilientCall(apiKey, model, apiMessages);
-        }
-
-        clearInterval(timerInterval);
-        const finalDuration = ((Date.now() - startTime) / 1000).toFixed(1);
-
-        thoughtData = {
-            time: finalDuration,
-            reasoning: `Model [${model}] úspešne dokončil hĺbkovú validáciu za ${finalDuration}s.\nSyntaktická kontrola: 100% OK, Prísne typovanie overené, Runtime pravidlá splnené.`
+        const state = {
+            apiKey: '',
+            currentUser: null,
+            limitRemaining: 100.0,
+            lastResetTime: Date.now(),
+            selectedModel: 'gemini-2.5-flash',
+            enableReasoning: false,
+            enableWebSearch: false,
+            enableYtSearch: false,
+            currentMonth: new Date().getMonth(),
+            currentYear: new Date().getFullYear(),
+            activeTab: 'chat',
+            isAuthLoginMode: true,
+            chatHistory: [],
+            loadedModels: []
         };
 
-        document.getElementById(tempId)?.remove();
-        appendMessage("bot", botReply, mediaResult, thoughtData);
-        currentMessages.push({ role: "assistant", content: botReply });
-        await saveCurrentSession();
-    } catch (err) {
-        clearInterval(timerInterval);
-        document.getElementById(tempId)?.remove();
-        appendMessage("bot", `⚡ **CODEX Auto-Healing:** Spojenie bolo obnovené bez výpadku. Stav: ${err.message}`);
-    } finally {
-        isThinking = false;
-    }
-}
+        const SLOVAK_HOLIDAYS = [
+            { date: '01-01', title: 'Deň vzniku SR' },
+            { date: '01-06', title: 'Zjavenie Pána (Traja králi)' },
+            { date: '05-01', title: 'Sviatok práce' },
+            { date: '05-08', title: 'Deň víťazstva nad fašizmom' },
+            { date: '07-05', title: 'Sviatok sv. Cyrila a Metoda' },
+            { date: '08-29', title: 'Výročie SNP' },
+            { date: '09-01', title: 'Deň Ústavy SR' },
+            { date: '09-15', title: 'Sedembolestná Panna Mária' },
+            { date: '11-01', title: 'Sviatok Všetkých svätých' },
+            { date: '11-17', title: 'Deň boja za slobodu a demokraciu' },
+            { date: '12-24', title: 'Štedrý deň' },
+            { date: '12-25', title: 'Prvý sviatok vianočný' },
+            { date: '12-26', title: 'Druhý sviatok vianočný' }
+        ];
 
-// 10. Session Management
-async function saveCurrentSession() {
-    await dbSet("sessions", `${currentUser}_${currentSessionId}`, {
-        id: currentSessionId,
-        user: currentUser,
-        title: currentMessages[0]?.content.substring(0, 28) || "Nová relácia",
-        messages: currentMessages,
-        updatedAt: Date.now()
-    });
-    loadHistoryList();
-}
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                request.onupgradeneeded = (e) => {
+                    const database = e.target.result;
+                    if (!database.objectStoreNames.contains('settings')) database.createObjectStore('settings', { keyPath: 'key' });
+                    if (!database.objectStoreNames.contains('users')) database.createObjectStore('users', { keyPath: 'id' });
+                    if (!database.objectStoreNames.contains('memories')) database.createObjectStore('memories', { keyPath: 'id' });
+                    if (!database.objectStoreNames.contains('calendar')) database.createObjectStore('calendar', { keyPath: 'id' });
+                    if (!database.objectStoreNames.contains('chats')) database.createObjectStore('chats', { keyPath: 'id' });
+                    if (!database.objectStoreNames.contains('models_cache')) database.createObjectStore('models_cache', { keyPath: 'id' });
+                };
+                request.onsuccess = (e) => {
+                    db = e.target.result;
+                    resolve(db);
+                };
+                request.onerror = (e) => reject(e);
+            });
+        }
 
-async function loadHistoryList() {
-    const listElem = document.getElementById("history-list");
-    listElem.innerHTML = "";
-    const all = await dbGetAll("sessions");
-    const userSessions = all.filter(s => s.value && s.value.user === currentUser);
-    userSessions.sort((a, b) => b.value.updatedAt - a.value.updatedAt);
+        function getDBItem(storeName, key) {
+            return new Promise((resolve) => {
+                if (!db) return resolve(null);
+                const tx = db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                const req = store.get(key);
+                req.onsuccess = () => resolve(req.result ? req.result.value : null);
+                req.onerror = () => resolve(null);
+            });
+        }
 
-    userSessions.forEach(s => {
-        const item = document.createElement("div");
-        item.className = `history-item ${s.value.id === currentSessionId ? 'active' : ''}`;
-        item.innerHTML = `<i class="fa-solid fa-terminal" style="color:#00f0ff; margin-right:6px;"></i> ${s.value.title}`;
-        item.onclick = () => {
-            currentSessionId = s.value.id;
-            currentMessages = s.value.messages || [];
-            document.getElementById("messages-container").innerHTML = "";
-            currentMessages.forEach(m => appendMessage(m.role === "assistant" ? "bot" : "user", m.content));
-            loadHistoryList();
+        function setDBItem(storeName, key, value) {
+            return new Promise((resolve) => {
+                if (!db) return resolve();
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                store.put({ key, value });
+                tx.oncomplete = () => resolve();
+            });
+        }
+
+        function getAllDB(storeName) {
+            return new Promise((resolve) => {
+                if (!db) return resolve([]);
+                const tx = db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                const req = store.getAll();
+                req.onsuccess = () => resolve(req.result.map(r => r.value || r));
+                req.onerror = () => resolve([]);
+            });
+        }
+
+        function saveRecordDB(storeName, record) {
+            return new Promise((resolve) => {
+                if (!db) return resolve();
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                store.put(record);
+                tx.oncomplete = () => resolve();
+            });
+        }
+
+        function deleteRecordDB(storeName, id) {
+            return new Promise((resolve) => {
+                if (!db) return resolve();
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                store.delete(id);
+                tx.oncomplete = () => resolve();
+            });
+        }
+
+        window.onload = async function() {
+            try {
+                await initDB();
+                
+                state.apiKey = (await getDBItem('settings', 'apiKey')) || '';
+                const savedLimit = await getDBItem('settings', 'limitRemaining');
+                if (savedLimit !== null) state.limitRemaining = parseFloat(savedLimit);
+
+                document.getElementById('api-key-input').value = state.apiKey;
+
+                // Load and fetch models
+                await fetchGoogleModelsOnline(false);
+
+                // Load User
+                state.currentUser = await getDBItem('settings', 'currentUser');
+                updateUserUI();
+
+                // Load Data
+                renderMemories();
+                renderCalendar();
+                updateLimitUI();
+                loadChatHistory();
+
+            } catch(e) {
+                console.error("Initialization Error:", e);
+            }
         };
-        listElem.appendChild(item);
-    });
-}
 
-function startNewChat() {
-    currentSessionId = "session_" + Date.now();
-    currentMessages = [];
-    document.getElementById("messages-container").innerHTML = "";
-    appendMessage("bot", `👋 **CODEX Quantum IDE Pripravené pre používateľa ${currentUser}.**\nGenerátor bezchybného kódu pre všetky jazyky, trvalá pamäť a synchronizácia modelov sú aktívne.`);
-    loadHistoryList();
-}
+        // 1-WEEK (7 DAYS) QUARANTINE / LOCK CHECK FOR NEW MODELS
+        function isModelLockedDueToRelease(releaseTimestamp) {
+            if (!releaseTimestamp) return { isLocked: false, daysLeft: 0 };
+            const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+            const now = Date.now();
+            const relTime = new Date(releaseTimestamp).getTime();
+            const timePassed = now - relTime;
 
-async function loadUserData() {
-    await loadQuota();
-    await loadMemoryList();
-    await loadCalendarInfo();
-    loadHistoryList();
-    startNewChat();
-}
-
-// 11. Bootstrap & Event Bindings
-function showToast(msg) {
-    const toast = document.getElementById("toast");
-    toast.innerText = msg;
-    toast.style.display = "block";
-    setTimeout(() => { toast.style.display = "none"; }, 3200);
-}
-
-window.addEventListener("DOMContentLoaded", async () => {
-    await initDB();
-    await checkAuth();
-
-    const savedKey = await dbGet("settings", "gemini_api_key");
-    if (savedKey) {
-        document.getElementById("api-key-input").value = savedKey;
-        fetchAndSyncLiveGoogleModels(savedKey, false);
-    }
-
-    const savedSys = await dbGet("settings", "system_prompt");
-    if (savedSys) document.getElementById("system-prompt-input").value = savedSys;
-
-    document.getElementById("send-btn").addEventListener("click", handleSend);
-    document.getElementById("prompt-input").addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            handleSend();
+            if (timePassed < ONE_WEEK_MS) {
+                const msLeft = ONE_WEEK_MS - timePassed;
+                const daysLeft = Math.ceil(msLeft / (1000 * 60 * 60 * 24));
+                return { isLocked: true, daysLeft };
+            }
+            return { isLocked: false, daysLeft: 0 };
         }
-    });
 
-    document.getElementById("login-btn").onclick = handleLogin;
-    document.getElementById("register-btn").onclick = handleRegister;
-    document.getElementById("logout-btn").onclick = handleLogout;
+        // Live Dynamic Fetching of all Google Gemini models using API Key
+        async function fetchGoogleModelsOnline(showNotification = false) {
+            const warningEl = document.getElementById('models-api-warning');
+            
+            if (!state.apiKey) {
+                if (warningEl) warningEl.classList.remove('hidden');
+                // Use default local models if API key is not present yet
+                state.loadedModels = DEFAULT_MODELS;
+                populateModelsUI();
+                return;
+            }
 
-    document.getElementById("model-select").addEventListener("change", (e) => {
-        const val = e.target.value;
-        const opt = e.target.options[e.target.selectedIndex];
-        document.getElementById("active-model-name").innerText = val;
-        document.getElementById("active-model-capability").innerText = (opt.getAttribute("data-type") || "AI").toUpperCase();
-        showToast(`Model aktivovaný: ${val}`);
-    });
+            if (warningEl) warningEl.classList.add('hidden');
 
-    document.getElementById("sync-models-btn").onclick = async () => {
-        const key = await dbGet("settings", "gemini_api_key");
-        if (!key) {
-            showToast("Najprv zadajte Gemini API kľúč v nastaveniach!");
-            document.getElementById("settings-modal").classList.add("active");
-            return;
+            try {
+                // Fetch directly from Google's official Gemini API
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${state.apiKey}`);
+                if (!res.ok) throw new Error('Chyba pri sťahovaní modelov z Google API');
+
+                const data = await res.json();
+                const fetchedModels = [];
+
+                if (data.models && Array.isArray(data.models)) {
+                    // Filter chat / text generation models
+                    const validGemini = data.models.filter(m => 
+                        m.name.includes('gemini') && 
+                        (m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent'))
+                    );
+
+                    // Track discovery timestamp in IndexedDB to enforce 7-day quarantine for brand-new models
+                    const cachedTimestamps = (await getDBItem('settings', 'model_discovery_cache')) || {};
+                    let cacheUpdated = false;
+
+                    validGemini.forEach(m => {
+                        const cleanId = m.name.replace('models/', '');
+                        if (!cachedTimestamps[cleanId]) {
+                            cachedTimestamps[cleanId] = Date.now(); // First time discovered by this app!
+                            cacheUpdated = true;
+                        }
+
+                        // Determine cost
+                        let cost = 1.0;
+                        if (cleanId.includes('pro')) cost = 4.0;
+                        if (cleanId.includes('lite') || cleanId.includes('flash-8b')) cost = 0.5;
+                        if (cleanId.includes('image') || cleanId.includes('ultra')) cost = 2.0;
+
+                        // Check badge
+                        let badge = 'Oficiálny';
+                        if (cleanId.includes('preview') || cleanId.includes('exp')) badge = 'Preview / Experiment';
+                        if (cleanId.includes('pro')) badge = 'Pro Intelligence';
+                        if (cleanId.includes('flash')) badge = 'Ultra Fast';
+
+                        fetchedModels.push({
+                            id: cleanId,
+                            name: m.displayName || cleanId,
+                            desc: m.description || 'Oficiálny model umelej inteligencie Google Gemini.',
+                            cost: cost,
+                            badge: badge,
+                            discoveredAt: cachedTimestamps[cleanId]
+                        });
+                    });
+
+                    if (cacheUpdated) {
+                        await setDBItem('settings', 'model_discovery_cache', cachedTimestamps);
+                    }
+                }
+
+                state.loadedModels = fetchedModels.length > 0 ? fetchedModels : DEFAULT_MODELS;
+                populateModelsUI();
+
+                if (showNotification) {
+                    alert(`Úspešne synchronizovaných ${state.loadedModels.length} Google modelov priamo z API!`);
+                }
+            } catch (err) {
+                console.warn("Could not fetch online models, fallback to defaults.", err);
+                state.loadedModels = DEFAULT_MODELS;
+                populateModelsUI();
+            }
         }
-        showToast("Synchronizujem najnovšie modely z Google API...");
-        await fetchAndSyncLiveGoogleModels(key, true);
-    };
 
-    const memModal = document.getElementById("memory-modal");
-    document.getElementById("open-memory-btn").onclick = () => { memModal.classList.add("active"); loadMemoryList(); };
-    document.getElementById("close-memory").onclick = () => memModal.classList.remove("active");
-    document.getElementById("add-memory-btn").onclick = addMemory;
+        function populateModelsUI() {
+            const select = document.getElementById('model-select');
+            const container = document.getElementById('all-models-container');
+            const badgeCount = document.getElementById('models-count-badge');
+            
+            select.innerHTML = '';
+            container.innerHTML = '';
 
-    const calModal = document.getElementById("calendar-modal");
-    document.getElementById("open-calendar-btn").onclick = () => { calModal.classList.add("active"); loadCalendarInfo(); };
-    document.getElementById("close-calendar").onclick = () => calModal.classList.remove("active");
-    document.getElementById("save-birthday-btn").onclick = async () => {
-        const val = document.getElementById("user-birthday-input").value;
-        await dbSet("calendar", `bday_${currentUser}`, { date: val });
-        renderCalendarWidget();
-        showToast("Narodeniny boli natrvalo uložené!");
-    };
+            const models = state.loadedModels;
+            if (badgeCount) badgeCount.textContent = models.length;
 
-    const searchModal = document.getElementById("search-modal");
-    document.getElementById("open-search-btn").onclick = () => searchModal.classList.add("active");
-    document.getElementById("close-search").onclick = () => searchModal.classList.remove("active");
-    document.getElementById("exec-search-btn").onclick = () => {
-        const q = document.getElementById("search-query-input").value.trim();
-        if (!q) return;
-        document.getElementById("search-results-preview").innerHTML = `
-            <div style="padding:10px; border-radius:8px; background:rgba(0,240,255,0.1); border:1px solid #00f0ff;">
-                🌐 <strong>Hľadanie:</strong> "${q}"<br>
-                🔗 <a href="https://www.google.com/search?q=${encodeURIComponent(q)}" target="_blank" style="color:#00f0ff;">Otvoriť Google Hľadanie</a> | 
-                🎬 <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(q)}" target="_blank" style="color:#ff0055;">Otvoriť YouTube</a>
-            </div>
-        `;
-    };
+            let firstUnlocked = null;
 
-    document.getElementById("search-mode-pill").onclick = () => {
-        const input = document.getElementById("prompt-input");
-        input.value = "Vyhľadaj na internete informácie o: ";
-        input.focus();
-    };
-    document.getElementById("yt-mode-pill").onclick = () => {
-        const input = document.getElementById("prompt-input");
-        input.value = "/yt ";
-        input.focus();
-    };
-    document.getElementById("cal-reminder-pill").onclick = () => {
-        const input = document.getElementById("prompt-input");
-        input.value = "Aké slovenské sviatky nás čakajú a kedy mám narodeniny?";
-        input.focus();
-    };
+            models.forEach(m => {
+                const { isLocked, daysLeft } = isModelLockedDueToRelease(m.discoveredAt);
 
-    const setModal = document.getElementById("settings-modal");
-    document.getElementById("settings-btn").onclick = () => setModal.classList.add("active");
-    document.getElementById("close-settings").onclick = () => setModal.classList.remove("active");
-    
-    document.getElementById("save-settings-btn").onclick = async () => {
-        const key = document.getElementById("api-key-input").value.trim();
-        const sys = document.getElementById("system-prompt-input").value.trim();
-        await dbSet("settings", "gemini_api_key", key);
-        await dbSet("settings", "system_prompt", sys);
-        setModal.classList.remove("active");
-        showToast("Nastavenia natrvalo uložené v DB!");
-        if (key) await fetchAndSyncLiveGoogleModels(key, true);
-    };
+                // Populate Select Dropdown
+                const opt = document.createElement('option');
+                opt.value = m.id;
+                if (isLocked) {
+                    opt.disabled = true;
+                    opt.textContent = `🔒 [BLOKOVANÝ - Ešte ${daysLeft} dní] ${m.name} (${m.cost}% limit)`;
+                    opt.className = 'text-gray-500 bg-gray-900';
+                } else {
+                    opt.textContent = `${m.name} (${m.cost}% limit)`;
+                    if (!firstUnlocked) firstUnlocked = m.id;
+                }
+                select.appendChild(opt);
 
-    document.getElementById("reset-limit-dev-btn").onclick = async () => {
-        currentQuota = 100.0;
-        await saveQuota();
-        updateQuotaUI();
-        showToast("Limit resetovaný na 100%!");
-    };
+                // Populate Models Tab Grid
+                const card = document.createElement('div');
+                card.className = `p-4 space-y-3 rounded-2xl relative transition duration-200 border ${
+                    isLocked 
+                        ? 'bg-red-950/20 border-red-500/30 opacity-75' 
+                        : 'glass-card border-gray-800 hover:border-purple-500/50 shadow-md rainbow-border'
+                }`;
+                
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${
+                            isLocked 
+                                ? 'bg-red-900/60 text-red-300 border border-red-500/40' 
+                                : 'bg-purple-950/60 text-purple-300 border border-purple-500/30'
+                        }">
+                            ${isLocked ? `<i class="fa-solid fa-lock mr-1"></i> Nový Model (Karanténa)` : m.badge}
+                        </span>
+                        <span class="text-xs font-mono font-bold text-amber-400">Spotreba: ${m.cost}% / prompt</span>
+                    </div>
 
-    document.getElementById("new-chat-btn").onclick = startNewChat;
-    document.getElementById("clear-db-btn").onclick = async () => {
-        if (confirm("Chcete vymazať históriu správ tohto používateľa?")) {
-            const all = await dbGetAll("sessions");
-            for (let s of all) {
-                if (s.value && s.value.user === currentUser) {
-                    await dbDelete("sessions", s.id);
+                    <div>
+                        <h4 class="font-bold text-white text-sm flex items-center">
+                            ${m.name}
+                        </h4>
+                        <p class="text-xs text-gray-400 mt-1 leading-relaxed">${m.desc}</p>
+                    </div>
+
+                    <div class="pt-2 border-t border-white/5 flex items-center justify-between text-[11px] font-mono">
+                        <span class="text-cyan-400 truncate max-w-[200px]">${m.id}</span>
+                        ${
+                            isLocked 
+                                ? `<span class="text-red-400 font-semibold"><i class="fa-solid fa-hourglass-half mr-1"></i> Odblokovanie o ${daysLeft} dní</span>` 
+                                : `<span class="text-emerald-400 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i> Plne Pripravený</span>`
+                        }
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            // Set default selected model to first unlocked model
+            if (!models.find(m => m.id === state.selectedModel && !isModelLockedDueToRelease(m.discoveredAt).isLocked)) {
+                state.selectedModel = firstUnlocked || models[0].id;
+            }
+            select.value = state.selectedModel;
+
+            select.onchange = (e) => {
+                const targetModel = models.find(m => m.id === e.target.value);
+                const { isLocked, daysLeft } = isModelLockedDueToRelease(targetModel?.discoveredAt);
+                if (isLocked) {
+                    alert(`Tento nový model je aktuálne v 1-týždňovej ochrannej karanténe. Bude odblokovaný za ${daysLeft} dní.`);
+                    select.value = state.selectedModel;
+                    return;
+                }
+                state.selectedModel = e.target.value;
+            };
+        }
+
+        function switchTab(tabId) {
+            state.activeTab = tabId;
+            ['chat', 'memory', 'calendar', 'models', 'settings'].forEach(t => {
+                const tabEl = document.getElementById(`tab-${t}`);
+                const navBtn = document.getElementById(`nav-${t}`);
+                if (t === tabId) {
+                    tabEl.classList.remove('hidden');
+                    navBtn.className = 'w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition bg-purple-600/20 text-purple-300 border border-purple-500/30 shadow-sm';
+                } else {
+                    tabEl.classList.add('hidden');
+                    navBtn.className = 'w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-400 hover:bg-gray-800/40 hover:text-gray-200';
+                }
+            });
+        }
+
+        function updateLimitUI() {
+            const bar = document.getElementById('limit-progress-bar');
+            const txt = document.getElementById('limit-percentage-text');
+            const banner = document.getElementById('limit-exceeded-banner');
+            const chatInput = document.getElementById('chat-input');
+            const sendBtn = document.getElementById('send-btn');
+
+            const pct = Math.max(0, state.limitRemaining).toFixed(1);
+            txt.textContent = `${pct} %`;
+            bar.style.width = `${pct}%`;
+
+            if (state.limitRemaining <= 0) {
+                banner.classList.remove('hidden');
+                chatInput.disabled = true;
+                chatInput.placeholder = "Písanie je zablokované - Mesačný limit (0 %) vypršal.";
+                sendBtn.disabled = true;
+            } else {
+                banner.classList.add('hidden');
+                chatInput.disabled = false;
+                chatInput.placeholder = "Napíš správu alebo požiadavku na kód... (Ctrl+Enter pre odoslanie)";
+                sendBtn.disabled = false;
+            }
+        }
+
+        function deductLimitForModel(modelId) {
+            const modelObj = state.loadedModels.find(m => m.id === modelId) || { cost: 1.0 };
+            state.limitRemaining = Math.max(0, state.limitRemaining - modelObj.cost);
+            setDBItem('settings', 'limitRemaining', state.limitRemaining);
+            updateLimitUI();
+        }
+
+        function resetMonthlyLimit() {
+            state.limitRemaining = 100.0;
+            setDBItem('settings', 'limitRemaining', 100.0);
+            updateLimitUI();
+        }
+
+        async function renderMemories() {
+            const container = document.getElementById('memory-list');
+            const memories = await getAllDB('memories');
+            container.innerHTML = '';
+
+            if (memories.length === 0) {
+                container.innerHTML = `<div class="col-span-2 text-center py-8 text-xs text-gray-500">Žiadne uložené spomienky v pamäti AI.</div>`;
+                return;
+            }
+
+            memories.forEach(mem => {
+                const el = document.createElement('div');
+                el.className = 'glass-card border border-[#1a1f35] rounded-xl p-4 flex justify-between items-start space-x-3 rainbow-border';
+                el.innerHTML = `
+                    <div>
+                        <p class="text-xs text-purple-200 font-sans leading-relaxed">${escapeHtml(mem.content)}</p>
+                        <span class="text-[10px] text-gray-500 font-mono mt-2 block">Uložené: ${new Date(mem.addedAt).toLocaleDateString()}</span>
+                    </div>
+                    <button onclick="deleteMemory('${mem.id}')" class="text-xs text-gray-500 hover:text-red-400 p-1"><i class="fa-solid fa-trash"></i></button>
+                `;
+                container.appendChild(el);
+            });
+        }
+
+        function openAddMemoryModal() { document.getElementById('memory-modal').classList.remove('hidden'); }
+        function closeMemoryModal() { document.getElementById('memory-modal').classList.add('hidden'); }
+
+        async function saveMemoryItem() {
+            const val = document.getElementById('memory-input').value.trim();
+            if (!val) return;
+            const item = { id: 'mem_' + Date.now(), content: val, addedAt: Date.now() };
+            await saveRecordDB('memories', item);
+            document.getElementById('memory-input').value = '';
+            closeMemoryModal();
+            renderMemories();
+        }
+
+        async function deleteMemory(id) {
+            await deleteRecordDB('memories', id);
+            renderMemories();
+        }
+
+        async function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            const monthHeader = document.getElementById('calendar-month-year');
+            const upcomingList = document.getElementById('upcoming-events-list');
+
+            const date = new Date(state.currentYear, state.currentMonth, 1);
+            const monthNames = ["Január", "Február", "Marec", "Apríl", "Máj", "Jún", "Júl", "August", "September", "Október", "November", "December"];
+            monthHeader.textContent = `${monthNames[state.currentMonth]} ${state.currentYear}`;
+
+            grid.innerHTML = '';
+            
+            let firstDay = date.getDay() - 1;
+            if (firstDay === -1) firstDay = 6;
+
+            const daysInMonth = new Date(state.currentYear, state.currentMonth + 1, 0).getDate();
+            const customEvents = await getAllDB('calendar');
+
+            for (let i = 0; i < firstDay; i++) {
+                grid.appendChild(document.createElement('div'));
+            }
+
+            const today = new Date();
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const cell = document.createElement('div');
+                cell.className = 'h-10 border border-gray-800/40 rounded-lg p-1 flex flex-col justify-between hover:bg-gray-800/30 transition relative';
+
+                const isToday = (today.getDate() === day && today.getMonth() === state.currentMonth && today.getFullYear() === state.currentYear);
+                if (isToday) cell.classList.add('bg-purple-900/40', 'border-purple-500/50');
+
+                const num = document.createElement('span');
+                num.className = `text-[11px] font-bold ${isToday ? 'text-purple-300' : 'text-gray-400'}`;
+                num.textContent = day;
+                cell.appendChild(num);
+
+                const monthStr = String(state.currentMonth + 1).padStart(2, '0');
+                const dayStr = String(day).padStart(2, '0');
+                const key = `${monthStr}-${dayStr}`;
+
+                const holiday = SLOVAK_HOLIDAYS.find(h => h.date === key);
+                const events = customEvents.filter(e => {
+                    const eDate = new Date(e.date);
+                    return eDate.getDate() === day && eDate.getMonth() === state.currentMonth;
+                });
+
+                if (holiday || events.length > 0) {
+                    const dot = document.createElement('div');
+                    dot.className = 'w-2 h-2 rounded-full bg-cyan-400 shadow-sm shadow-cyan-400';
+                    if (holiday) dot.classList.add('bg-pink-500');
+                    cell.appendChild(dot);
+                }
+
+                grid.appendChild(cell);
+            }
+
+            upcomingList.innerHTML = '';
+            
+            SLOVAK_HOLIDAYS.forEach(h => {
+                const item = document.createElement('div');
+                item.className = 'p-3 bg-[#101426] border border-gray-800 rounded-xl flex items-center justify-between text-xs';
+                item.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-flag text-pink-400"></i>
+                        <span class="text-gray-200 font-medium">${h.title}</span>
+                    </div>
+                    <span class="font-mono text-gray-500">${h.date}</span>
+                `;
+                upcomingList.appendChild(item);
+            });
+
+            customEvents.forEach(e => {
+                const item = document.createElement('div');
+                item.className = 'p-3 bg-[#101426] border border-cyan-900/40 rounded-xl flex items-center justify-between text-xs';
+                item.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid ${e.type === 'birthday' ? 'fa-cake-candles text-amber-400' : 'fa-thumbtack text-cyan-400'}"></i>
+                        <span class="text-cyan-200 font-medium">${escapeHtml(e.title)}</span>
+                    </div>
+                    <button onclick="deleteEvent('${e.id}')" class="text-gray-500 hover:text-red-400"><i class="fa-solid fa-xmark"></i></button>
+                `;
+                upcomingList.appendChild(item);
+            });
+        }
+
+        function changeMonth(delta) {
+            state.currentMonth += delta;
+            if (state.currentMonth < 0) { state.currentMonth = 11; state.currentYear--; }
+            if (state.currentMonth > 11) { state.currentMonth = 0; state.currentYear++; }
+            renderCalendar();
+        }
+
+        function openAddEventModal() { document.getElementById('event-modal').classList.remove('hidden'); }
+        function closeEventModal() { document.getElementById('event-modal').classList.add('hidden'); }
+
+        async function saveEventItem() {
+            const title = document.getElementById('event-title-input').value.trim();
+            const date = document.getElementById('event-date-input').value;
+            const type = document.getElementById('event-type-input').value;
+            if (!title || !date) return;
+
+            const item = { id: 'evt_' + Date.now(), title, date, type };
+            await saveRecordDB('calendar', item);
+            closeEventModal();
+            renderCalendar();
+        }
+
+        async function deleteEvent(id) {
+            await deleteRecordDB('calendar', id);
+            renderCalendar();
+        }
+
+        async function fetchGeminiWithRetry(endpointUrl, payload, maxRetries = 3) {
+            let attempt = 0;
+            let delay = 1000;
+
+            while (attempt < maxRetries) {
+                try {
+                    const response = await fetch(endpointUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${state.apiKey}`
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.status === 503 || response.status === 429) {
+                        attempt++;
+                        console.warn(`Silently retrying Gemini API request (${attempt}/${maxRetries}) due to status ${response.status}...`);
+                        await new Promise(res => setTimeout(res, delay));
+                        delay *= 2;
+                        continue;
+                    }
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP Status ${response.status}`);
+                    }
+
+                    return await response.json();
+                } catch (err) {
+                    attempt++;
+                    if (attempt >= maxRetries) throw err;
+                    await new Promise(res => setTimeout(res, delay));
+                    delay *= 2;
                 }
             }
-            startNewChat();
-            showToast("História vymazaná!");
         }
-    };
-});
-</script>
+
+        function toggleSearch(type) {
+            if (type === 'web') {
+                state.enableWebSearch = !state.enableWebSearch;
+                const btn = document.getElementById('toggle-web-search');
+                btn.className = state.enableWebSearch 
+                    ? 'px-3 py-1.5 rounded-xl text-xs font-medium border border-cyan-500/50 bg-cyan-950/40 text-cyan-300 transition flex items-center'
+                    : 'px-3 py-1.5 rounded-xl text-xs font-medium border border-gray-800 bg-[#101424] text-gray-400 hover:text-cyan-300 transition flex items-center';
+            } else {
+                state.enableYtSearch = !state.enableYtSearch;
+                const btn = document.getElementById('toggle-yt-search');
+                btn.className = state.enableYtSearch 
+                    ? 'px-3 py-1.5 rounded-xl text-xs font-medium border border-red-500/50 bg-red-950/40 text-red-300 transition flex items-center'
+                    : 'px-3 py-1.5 rounded-xl text-xs font-medium border border-gray-800 bg-[#101424] text-gray-400 hover:text-red-400 transition flex items-center';
+            }
+        }
+
+        function handleKeyDown(e) {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                e.preventDefault();
+                handleChatSubmit(e);
+            }
+        }
+
+        async function handleChatSubmit(e) {
+            e.preventDefault();
+            if (state.limitRemaining <= 0) return;
+
+            const inputEl = document.getElementById('chat-input');
+            const userText = inputEl.value.trim();
+            if (!userText) return;
+
+            inputEl.value = '';
+
+            // Render User Message
+            appendMessage('user', userText);
+
+            // Deduct Limit
+            deductLimitForModel(state.selectedModel);
+
+            // Show Reasoning Indicator
+            const isReasoning = document.getElementById('toggle-reasoning').checked;
+            const reasoningInd = document.getElementById('reasoning-indicator');
+            if (isReasoning) {
+                reasoningInd.classList.remove('hidden');
+                document.getElementById('reasoning-text').textContent = `AI model [${state.selectedModel}] uvažuje a analyzuje kontext...`;
+            }
+
+            // Build Context
+            const memories = await getAllDB('memories');
+            const customEvents = await getAllDB('calendar');
+            const todayStr = new Date().toLocaleDateString('sk-SK');
+
+            let memoryContext = `Dnešný dátum je: ${todayStr}.\n`;
+            if (memories.length > 0) {
+                memoryContext += `Dlhodobé informácie o používateľovi v pamäti:\n` + memories.map(m => `- ${m.content}`).join('\n') + '\n';
+            }
+            if (customEvents.length > 0) {
+                memoryContext += `Sviatky a narodeniny používateľa:\n` + customEvents.map(e => `- ${e.title} (${e.date})`).join('\n') + '\n';
+            }
+
+            const systemPrompt = `Si Codex Ultra - najpokročilejší AI programátorský asistent. Odpovedaj prehľadne, v Markdown formáte. Každý kód vkladaj do označeného bloku (\`\`\`language ... \`\`\`).\n${memoryContext}`;
+
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`;
+            const payload = {
+                model: state.selectedModel,
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    ...state.chatHistory.map(m => ({ role: m.role, content: m.text })),
+                    { role: "user", content: userText }
+                ]
+            };
+
+            try {
+                const responseData = await fetchGeminiWithRetry(endpoint, payload);
+                reasoningInd.classList.add('hidden');
+
+                const replyText = responseData.choices?.[0]?.message?.content || "Odpoveď nebola vygenerovaná.";
+                appendMessage('assistant', replyText);
+
+            } catch (err) {
+                reasoningInd.classList.add('hidden');
+                appendMessage('assistant', `⚠️ **Systémové upozornenie**: Služba bola momentálne preťažená alebo neodpovedala. Skúste požiadavku zopakovať.\n\n\`\`\`text\nDetaily: ${err.message}\n\`\`\``);
+            }
+        }
+
+        function appendMessage(role, text) {
+            const container = document.getElementById('chat-messages');
+            state.chatHistory.push({ role, text });
+
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `flex space-x-4 max-w-4xl mx-auto ${role === 'user' ? 'justify-end' : 'justify-start'}`;
+
+            const isUser = role === 'user';
+            let formattedHtml = isUser ? escapeHtml(text).replace(/\n/g, '<br>') : marked.parse(text);
+
+            msgDiv.innerHTML = `
+                <div class="flex space-x-3 max-w-3xl ${isUser ? 'flex-row-reverse space-x-reverse' : ''}">
+                    <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 text-xs font-bold ${isUser ? 'bg-purple-600 text-white' : 'bg-gradient-to-tr from-cyan-500 to-indigo-600 text-white'}">
+                        ${isUser ? '<i class="fa-solid fa-user"></i>' : '<i class="fa-solid fa-robot"></i>'}
+                    </div>
+                    <div class="${isUser ? 'bg-purple-950/40 border border-purple-800/50' : 'bg-[#0d101d] border border-[#1e243c]'} rounded-2xl p-4 text-sm text-gray-200 shadow-md">
+                        <div class="prose prose-invert max-w-none text-xs leading-relaxed">
+                            ${formattedHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+
+            enhanceCodeBlocks(msgDiv);
+            setDBItem('chats', 'currentChat', state.chatHistory);
+        }
+
+        function enhanceCodeBlocks(parentEl) {
+            const pres = parentEl.querySelectorAll('pre');
+            pres.forEach((pre) => {
+                const code = pre.querySelector('code');
+                if (!code) return;
+
+                const wrapper = document.createElement('div');
+                wrapper.className = 'code-block-wrapper';
+
+                const header = document.createElement('div');
+                header.className = 'code-header';
+                header.innerHTML = `
+                    <span><i class="fa-solid fa-code mr-1.5 text-cyan-400"></i> Code Block</span>
+                    <button onclick="copyCode(this)" class="hover:text-cyan-300 transition text-xs flex items-center">
+                        <i class="fa-regular fa-copy mr-1"></i> Kopírovať Kód
+                    </button>
+                `;
+
+                const content = document.createElement('div');
+                content.className = 'code-content';
+                content.textContent = code.textContent;
+
+                wrapper.appendChild(header);
+                wrapper.appendChild(content);
+
+                pre.parentNode.replaceChild(wrapper, pre);
+            });
+        }
+
+        function copyCode(btn) {
+            const wrapper = btn.closest('.code-block-wrapper');
+            const codeText = wrapper.querySelector('.code-content').textContent;
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(codeText);
+            } else {
+                const ta = document.createElement('textarea');
+                ta.value = codeText;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+            }
+
+            btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400 mr-1"></i> Skopírované!`;
+            setTimeout(() => {
+                btn.innerHTML = `<i class="fa-regular fa-copy mr-1"></i> Kopírovať Kód`;
+            }, 2000);
+        }
+
+        async function loadChatHistory() {
+            const history = await getDBItem('chats', 'currentChat');
+            if (history && Array.isArray(history)) {
+                state.chatHistory = [];
+                history.forEach(m => appendMessage(m.role, m.text));
+            }
+        }
+
+        function clearCurrentChat() {
+            state.chatHistory = [];
+            document.getElementById('chat-messages').innerHTML = '';
+            setDBItem('chats', 'currentChat', []);
+        }
+
+        function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
+        function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
+
+        function toggleAuthMode() {
+            state.isAuthLoginMode = !state.isAuthLoginMode;
+            document.getElementById('auth-modal-title').textContent = state.isAuthLoginMode ? 'Prihlásenie' : 'Registrácia';
+            document.getElementById('auth-submit-btn').textContent = state.isAuthLoginMode ? 'Prihlásiť sa' : 'Vytvoriť Účet';
+            document.getElementById('auth-toggle-btn').textContent = state.isAuthLoginMode ? 'Nemáte účet? Zaregistrujte sa' : 'Už máte účet? Prihláste sa';
+        }
+
+        async function handleAuthSubmit(e) {
+            e.preventDefault();
+            const username = document.getElementById('auth-username').value.trim();
+            if (!username) return;
+
+            const userObj = { id: 'usr_' + Date.now(), username };
+            state.currentUser = userObj;
+            await setDBItem('settings', 'currentUser', userObj);
+
+            updateUserUI();
+            closeAuthModal();
+        }
+
+        function updateUserUI() {
+            if (state.currentUser) {
+                document.getElementById('user-display-name').textContent = state.currentUser.username;
+                document.getElementById('user-status-text').textContent = "Účet aktívny";
+                document.getElementById('avatar-initials').textContent = state.currentUser.username.substring(0, 2).toUpperCase();
+            }
+        }
+
+        async function saveApiKey() {
+            const key = document.getElementById('api-key-input').value.trim();
+            state.apiKey = key;
+            await setDBItem('settings', 'apiKey', key);
+            await fetchGoogleModelsOnline(true);
+        }
+
+        async function clearDatabase() {
+            if (confirm("Naozaj chcete vymazať celú databázu IndexedDB?")) {
+                indexedDB.deleteDatabase(DB_NAME);
+                location.reload();
+            }
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+    </script>
 </body>
 </html>
