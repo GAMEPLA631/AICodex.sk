@@ -196,7 +196,9 @@
             letter-spacing: 1px;
             color: var(--text-dim);
             margin-bottom: 5px;
-            display: block;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         select, input, textarea {
             width: 100%;
@@ -846,89 +848,36 @@
             <button class="tool-btn" id="open-search-btn"><i class="fa-solid fa-globe" style="color:#ffea00;"></i> Web / YT</button>
         </div>
 
-        <!-- Comprehensive Google Gemini Model Selector -->
+        <!-- Dynamic Live Google Model Selector -->
         <div class="select-group">
-            <label><i class="fa-solid fa-microchip"></i> Architektúra Modelu (Všetky Google Modely)</label>
+            <label>
+                <span><i class="fa-solid fa-microchip"></i> Architektúra Modelu</span>
+                <button id="sync-models-btn" class="copy-btn" style="padding: 2px 6px; font-size: 10px;" title="Stiahnuť najnovšie modely z Google API"><i class="fa-solid fa-arrows-rotate"></i> Live Sync</button>
+            </label>
             <select id="model-select">
-                <!-- 👑 Gemini 2.5 Séria -->
+                <!-- Will be populated dynamically & auto-synced from Google API -->
                 <optgroup label="👑 Gemini 2.5 Séria (Vlajkové lode)">
-                    <option value="gemini-2.5-pro" data-cost="2.0" data-type="deep-reasoning" selected>Gemini 2.5 Pro (Deep Reasoning, Codex & Logic)</option>
-                    <option value="gemini-2.5-pro-preview-05-06" data-cost="2.0" data-type="deep-reasoning">Gemini 2.5 Pro Preview (05-06)</option>
+                    <option value="gemini-2.5-pro" data-cost="2.0" data-type="deep-reasoning" selected>Gemini 2.5 Pro (Deep Reasoning & Codex)</option>
                     <option value="gemini-2.5-flash" data-cost="0.3" data-type="multimodal">Gemini 2.5 Flash (Superfast Multimodal)</option>
-                    <option value="gemini-2.5-flash-preview-04-17" data-cost="0.3" data-type="multimodal">Gemini 2.5 Flash Preview (04-17)</option>
                 </optgroup>
-
-                <!-- ⚡ Gemini 2.0 Séria -->
                 <optgroup label="⚡ Gemini 2.0 Séria">
-                    <option value="gemini-2.0-pro-exp-02-05" data-cost="1.8" data-type="deep-reasoning">Gemini 2.0 Pro Experimental (02-05)</option>
-                    <option value="gemini-2.0-pro-exp" data-cost="1.8" data-type="deep-reasoning">Gemini 2.0 Pro Experimental</option>
+                    <option value="gemini-2.0-pro-exp-02-05" data-cost="1.8" data-type="deep-reasoning">Gemini 2.0 Pro Experimental</option>
                     <option value="gemini-2.0-flash" data-cost="0.4" data-type="multimodal">Gemini 2.0 Flash Core (Stable)</option>
-                    <option value="gemini-2.0-flash-001" data-cost="0.4" data-type="multimodal">Gemini 2.0 Flash (001)</option>
-                    <option value="gemini-2.0-flash-lite" data-cost="0.1" data-type="speed">Gemini 2.0 Flash Lite (Ultra Low Latency)</option>
-                    <option value="gemini-2.0-flash-lite-001" data-cost="0.1" data-type="speed">Gemini 2.0 Flash Lite (001)</option>
-                    <option value="gemini-2.0-flash-lite-preview-02-05" data-cost="0.1" data-type="speed">Gemini 2.0 Flash Lite Preview (02-05)</option>
-                    <option value="gemini-2.0-flash-thinking-exp-01-21" data-cost="1.2" data-type="deep-reasoning">Gemini 2.0 Flash Thinking Exp (01-21)</option>
-                    <option value="gemini-2.0-flash-thinking-exp" data-cost="1.2" data-type="deep-reasoning">Gemini 2.0 Flash Thinking Exp</option>
-                    <option value="gemini-2.0-flash-realtime-exp" data-cost="1.5" data-type="multimodal">Gemini 2.0 Flash Realtime Experimental</option>
+                    <option value="gemini-2.0-flash-lite" data-cost="0.1" data-type="speed">Gemini 2.0 Flash Lite</option>
+                    <option value="gemini-2.0-flash-thinking-exp-01-21" data-cost="1.2" data-type="deep-reasoning">Gemini 2.0 Flash Thinking Exp</option>
                 </optgroup>
-
-                <!-- 🧪 Experimentálne & Špeciálne Modely Google -->
-                <optgroup label="🧪 Google Experimental & LearnLM">
-                    <option value="gemini-exp-1206" data-cost="1.5" data-type="code">Gemini Exp 1206</option>
-                    <option value="gemini-exp-1121" data-cost="1.5" data-type="code">Gemini Exp 1121</option>
-                    <option value="gemini-exp-1114" data-cost="1.5" data-type="code">Gemini Exp 1114</option>
-                    <option value="learnlm-1.5-pro-experimental" data-cost="1.0" data-type="education">LearnLM 1.5 Pro Experimental (Pedagogický)</option>
+                <optgroup label="🌐 Gemini 1.5 Séria">
+                    <option value="gemini-1.5-pro" data-cost="1.2" data-type="context">Gemini 1.5 Pro</option>
+                    <option value="gemini-1.5-flash" data-cost="0.2" data-type="speed">Gemini 1.5 Flash</option>
+                    <option value="gemini-1.5-flash-8b" data-cost="0.05" data-type="speed">Gemini 1.5 Flash-8B</option>
                 </optgroup>
-
-                <!-- 🌐 Gemini 1.5 Pro Séria -->
-                <optgroup label="🌐 Gemini 1.5 Pro (2M Context Architektúra)">
-                    <option value="gemini-1.5-pro" data-cost="1.2" data-type="context">Gemini 1.5 Pro (Stable)</option>
-                    <option value="gemini-1.5-pro-latest" data-cost="1.2" data-type="context">Gemini 1.5 Pro Latest</option>
-                    <option value="gemini-1.5-pro-002" data-cost="1.2" data-type="context">Gemini 1.5 Pro (002)</option>
-                    <option value="gemini-1.5-pro-001" data-cost="1.2" data-type="context">Gemini 1.5 Pro (001)</option>
-                </optgroup>
-
-                <!-- ⚡ Gemini 1.5 Flash Séria -->
-                <optgroup label="⚡ Gemini 1.5 Flash Séria">
-                    <option value="gemini-1.5-flash" data-cost="0.2" data-type="speed">Gemini 1.5 Flash (Stable)</option>
-                    <option value="gemini-1.5-flash-latest" data-cost="0.2" data-type="speed">Gemini 1.5 Flash Latest</option>
-                    <option value="gemini-1.5-flash-002" data-cost="0.2" data-type="speed">Gemini 1.5 Flash (002)</option>
-                    <option value="gemini-1.5-flash-001" data-cost="0.2" data-type="speed">Gemini 1.5 Flash (001)</option>
-                    <option value="gemini-1.5-flash-8b" data-cost="0.05" data-type="speed">Gemini 1.5 Flash-8B (Stable)</option>
-                    <option value="gemini-1.5-flash-8b-latest" data-cost="0.05" data-type="speed">Gemini 1.5 Flash-8B Latest</option>
-                    <option value="gemini-1.5-flash-8b-001" data-cost="0.05" data-type="speed">Gemini 1.5 Flash-8B (001)</option>
-                </optgroup>
-
-                <!-- 🏛️ Gemini 1.0 Legacy -->
-                <optgroup label="🏛️ Gemini 1.0 Legacy">
-                    <option value="gemini-1.0-pro" data-cost="0.5" data-type="legacy">Gemini 1.0 Pro</option>
-                    <option value="gemini-1.0-pro-001" data-cost="0.5" data-type="legacy">Gemini 1.0 Pro (001)</option>
-                    <option value="gemini-1.0-pro-vision-latest" data-cost="0.8" data-type="legacy">Gemini 1.0 Pro Vision</option>
-                    <option value="gemini-pro" data-cost="0.5" data-type="legacy">Gemini Pro</option>
-                    <option value="gemini-pro-vision" data-cost="0.8" data-type="legacy">Gemini Pro Vision</option>
-                </optgroup>
-
-                <!-- 💎 Gemma & CodeGemma Séria (Google Open Models) -->
-                <optgroup label="💎 Google Gemma & CodeGemma Séria">
+                <optgroup label="💎 Gemma & CodeGemma Séria">
                     <option value="gemma-2-27b-it" data-cost="0.8" data-type="code">Gemma 2 27B Instruct</option>
-                    <option value="gemma-2-9b-it" data-cost="0.3" data-type="code">Gemma 2 9B Instruct</option>
-                    <option value="gemma-2-2b-it" data-cost="0.1" data-type="speed">Gemma 2 2B Instruct</option>
-                    <option value="codegemma-7b-it" data-cost="0.4" data-type="code">CodeGemma 7B IT (Programátorský špeciál)</option>
+                    <option value="codegemma-7b-it" data-cost="0.4" data-type="code">CodeGemma 7B IT</option>
                 </optgroup>
-
-                <!-- 🎨 Multimodálne Vizuály & Video -->
                 <optgroup label="🎨 Multimodálne Špeciály (Imagen & Veo)">
-                    <option value="imagen-3.0-generate-002" data-cost="4.0" data-type="image">Imagen 3.0 Generate (002)</option>
-                    <option value="imagen-3.0-fast-generate-001" data-cost="2.5" data-type="image">Imagen 3.0 Fast Generate</option>
-                    <option value="imagegeneration@006" data-cost="3.0" data-type="image">Google Imagen 2 (006)</option>
-                    <option value="veo-2.0-generate-001" data-cost="7.0" data-type="video">Veo 2.0 (Kinematické 60FPS Video)</option>
-                    <option value="veo-2" data-cost="7.0" data-type="video">Google Veo 2</option>
-                </optgroup>
-
-                <!-- 🔍 Embeddings & Vektorové Modely -->
-                <optgroup label="🔍 Google Embeddings">
-                    <option value="text-embedding-004" data-cost="0.05" data-type="embedding">Text Embedding 004</option>
-                    <option value="embedding-001" data-cost="0.05" data-type="embedding">Embedding 001</option>
+                    <option value="imagen-3.0-generate-002" data-cost="4.0" data-type="image">Imagen 3.0 Generate</option>
+                    <option value="veo-2.0-generate-001" data-cost="7.0" data-type="video">Veo 2.0 Video</option>
                 </optgroup>
             </select>
         </div>
@@ -1073,6 +1022,9 @@
         <div>
             <label style="font-size: 11px; text-transform: uppercase; color: var(--text-dim); display:block; margin-bottom: 6px;">Google Gemini API Kľúč</label>
             <input type="password" id="api-key-input" placeholder="AIzaSy...">
+            <small style="color: #00ffaa; font-size: 11px; margin-top: 4px; display: block;">
+                <i class="fa-solid fa-circle-check"></i> Po zadaní sa automaticky stiahnu všetky najnovšie modely priamo z Google.
+            </small>
         </div>
         <div>
             <label style="font-size: 11px; text-transform: uppercase; color: var(--text-dim); display:block; margin-bottom: 6px;">Vlastná Systémová Inštrukcia</label>
@@ -1080,7 +1032,7 @@
         </div>
         <div style="display:flex; justify-content: space-between; align-items:center; margin-top: 10px;">
             <button class="btn-secondary" id="reset-limit-dev-btn" style="font-size: 11px;"><i class="fa-solid fa-rotate-right"></i> Reset na 100%</button>
-            <button class="btn-rainbow" id="save-settings-btn"><i class="fa-solid fa-floppy-disk"></i> Uložiť</button>
+            <button class="btn-rainbow" id="save-settings-btn"><i class="fa-solid fa-floppy-disk"></i> Uložiť & Synchronizovať</button>
         </div>
     </div>
 </div>
@@ -1091,6 +1043,7 @@
 /**
  * CODEX QUANTUM REASONING ENGINE
  * Permanent IndexedDB + OpenAI Endpoint + Real-time Thinking + Slovak Calendar & Memory
+ * + Live Dynamic Model Fetching directly from Google API
  */
 
 // 1. IndexedDB Architecture
@@ -1174,7 +1127,129 @@ async function dbGetAll(storeName) {
     });
 }
 
-// 2. Auth Flow
+// 2. Dynamic Live Google Model Synchronizer
+function determineModelProperties(modelId) {
+    const id = modelId.toLowerCase();
+    let cost = 0.5;
+    let type = "multimodal";
+    let group = "⚡ Ostatné / Nové Modely Google";
+
+    if (id.includes("2.5") || id.includes("exp") || id.includes("thinking") || id.includes("pro")) {
+        cost = 2.0;
+        type = "deep-reasoning";
+        if (id.includes("2.5")) group = "👑 Gemini 2.5 Séria (Vlajkové lode)";
+        else if (id.includes("2.0")) group = "⚡ Gemini 2.0 Séria";
+        else group = "🧪 Google Experimental & Thinking";
+    } else if (id.includes("1.5-pro")) {
+        cost = 1.2;
+        type = "context";
+        group = "🌐 Gemini 1.5 Pro Séria";
+    } else if (id.includes("1.5-flash-8b") || id.includes("flash-lite")) {
+        cost = 0.1;
+        type = "speed";
+        group = "⚡ Gemini Flash Lite & 8B (Bleskové)";
+    } else if (id.includes("1.5-flash") || id.includes("flash")) {
+        cost = 0.3;
+        type = "multimodal";
+        group = "⚡ Gemini 1.5 Flash Séria";
+    } else if (id.includes("imagen") || id.includes("image")) {
+        cost = 4.0;
+        type = "image";
+        group = "🎨 Multimodálne Vizuály (Imagen)";
+    } else if (id.includes("veo") || id.includes("video")) {
+        cost = 7.0;
+        type = "video";
+        group = "🎬 Kinematické Video (Veo)";
+    } else if (id.includes("gemma") || id.includes("codegemma")) {
+        cost = 0.4;
+        type = "code";
+        group = "💎 Google Gemma & CodeGemma";
+    } else if (id.includes("embedding")) {
+        cost = 0.05;
+        type = "embedding";
+        group = "🔍 Google Embeddings";
+    }
+
+    return { cost, type, group };
+}
+
+async function fetchAndSyncLiveGoogleModels(apiKey, showNotification = true) {
+    if (!apiKey) return;
+    try {
+        // Attempt fetch from Google models endpoint
+        const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+        if (!resp.ok) {
+            // Fallback try OpenAI models endpoint
+            const resp2 = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/models", {
+                headers: { "Authorization": `Bearer ${apiKey}` }
+            });
+            if (!resp2.ok) throw new Error("Nepodarilo sa stiahnuť zoznam modelov z Google.");
+            const data2 = await resp2.json();
+            if (data2 && data2.data) {
+                renderDynamicModels(data2.data.map(m => m.id));
+                await dbSet("settings", "cached_google_models", data2.data.map(m => m.id));
+                if (showNotification) showToast("✅ Všetky Google modely boli úspešne stiahnuté!");
+                return;
+            }
+        }
+
+        const data = await resp.json();
+        if (data && data.models) {
+            const rawModelNames = data.models.map(m => m.name.replace(/^models\//, ""));
+            renderDynamicModels(rawModelNames);
+            await dbSet("settings", "cached_google_models", rawModelNames);
+            if (showNotification) showToast(`✅ Synchronizovaných ${rawModelNames.length} modelov od Google!`);
+        }
+    } catch (e) {
+        console.warn("Live model sync fallback: ", e);
+        // Load cached if available
+        const cached = await dbGet("settings", "cached_google_models");
+        if (cached && Array.isArray(cached) && cached.length > 0) {
+            renderDynamicModels(cached);
+        }
+    }
+}
+
+function renderDynamicModels(modelIdList) {
+    const select = document.getElementById("model-select");
+    const currentSelected = select.value;
+    select.innerHTML = "";
+
+    // Group models
+    const groups = {};
+    modelIdList.forEach(rawId => {
+        const { cost, type, group } = determineModelProperties(rawId);
+        if (!groups[group]) groups[group] = [];
+        groups[group].push({ id: rawId, cost, type });
+    });
+
+    // Construct optgroups
+    Object.keys(groups).forEach(grpName => {
+        const optGroup = document.createElement("optgroup");
+        optGroup.label = grpName;
+
+        groups[grpName].forEach(m => {
+            const opt = document.createElement("option");
+            opt.value = m.id;
+            opt.setAttribute("data-cost", m.cost);
+            opt.setAttribute("data-type", m.type);
+            opt.innerText = `${m.id} (${m.type.toUpperCase()})`;
+            if (m.id === currentSelected || m.id === "gemini-2.5-pro") opt.selected = true;
+            optGroup.appendChild(opt);
+        });
+
+        select.appendChild(optGroup);
+    });
+
+    // Update active badge
+    const opt = select.options[select.selectedIndex] || select.options[0];
+    if (opt) {
+        document.getElementById("active-model-name").innerText = opt.value;
+        document.getElementById("active-model-capability").innerText = (opt.getAttribute("data-type") || "AI").toUpperCase();
+    }
+}
+
+// 3. Auth Flow
 async function checkAuth() {
     const active = await dbGet("settings", "active_session_user");
     if (active) {
@@ -1230,7 +1305,7 @@ async function handleLogout() {
     document.getElementById("auth-modal").classList.add("active");
 }
 
-// 3. Quota & Limits
+// 4. Quota & Limits
 let currentQuota = 100.0;
 let currentSessionId = "session_" + Date.now();
 let currentMessages = [];
@@ -1316,7 +1391,7 @@ function deductQuota(cost) {
     updateQuotaUI();
 }
 
-// 4. Memory Vault Management
+// 5. Memory Vault Management
 async function loadMemoryList() {
     const container = document.getElementById("memory-list-container");
     container.innerHTML = "";
@@ -1363,7 +1438,7 @@ async function getFormattedMemoryContext() {
     return "\n\n[TRVALÁ PAMÄŤ O POUŽÍVATEĽOVI]:\n" + userMemories.map(m => "- " + m.value.text).join("\n");
 }
 
-// 5. Calendar & Holidays Integration
+// 6. Calendar & Holidays Integration
 async function loadCalendarInfo() {
     const bday = await dbGet("calendar", `bday_${currentUser}`);
     if (bday) document.getElementById("user-birthday-input").value = bday.date;
@@ -1382,7 +1457,6 @@ function renderCalendarWidget() {
     const monthNames = ["Január", "Február", "Marec", "Apríl", "Máj", "Jún", "Júl", "August", "September", "Október", "November", "December"];
     document.getElementById("cal-month-title").innerText = `${monthNames[curMonth]} ${curYear}`;
 
-    // Day headers
     const days = ["Po", "Ut", "St", "Št", "Pi", "So", "Ne"];
     days.forEach(d => {
         const h = document.createElement("div");
@@ -1394,7 +1468,6 @@ function renderCalendarWidget() {
     const firstDayIndex = (new Date(curYear, curMonth, 1).getDay() + 6) % 7;
     const totalDays = new Date(curYear, curMonth + 1, 0).getDate();
 
-    // Pad blanks
     for (let i = 0; i < firstDayIndex; i++) {
         const b = document.createElement("div");
         grid.appendChild(b);
@@ -1435,8 +1508,6 @@ async function getCalendarAIContext() {
     const now = new Date();
     const todayStr = formatDateToSlovak(now);
     const bday = await dbGet("calendar", `bday_${currentUser}`);
-    
-    // Find next upcoming holiday
     let holidayContext = SLOVAK_HOLIDAYS.map(h => `${h.d}.${h.m + 1} (${h.name})`).join(", ");
 
     return `\n\n[DÁTUM & KALENDÁR SR]:
@@ -1445,7 +1516,7 @@ async function getCalendarAIContext() {
 - Oficiálne slovenské štátne sviatky: ${holidayContext}`;
 }
 
-// 6. Resilient API Calls (Anti-503, OpenAI Google Endpoint)
+// 7. Resilient API Calls (Anti-503, OpenAI Google Endpoint)
 const BASE_OPENAI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
 
 async function executeResilientCall(apiKey, model, messages, retryCount = 0) {
@@ -1490,7 +1561,7 @@ async function executeResilientCall(apiKey, model, messages, retryCount = 0) {
     }
 }
 
-// 7. Pristine Code & Markdown Rendering (No Code Corruption)
+// 8. Pristine Code & Markdown Rendering (No Code Corruption)
 const rawCodeCache = new Map();
 
 function customRenderMarkdown(text) {
@@ -1540,7 +1611,6 @@ function appendMessage(role, text, mediaObj = null, thoughtData = null) {
     if (role === "bot") {
         let fullHTML = "";
         
-        // Render Thought Accordion if available
         if (thoughtData) {
             fullHTML += `
             <details class="thought-accordion" open>
@@ -1551,7 +1621,6 @@ function appendMessage(role, text, mediaObj = null, thoughtData = null) {
 
         fullHTML += customRenderMarkdown(text);
 
-        // Media & YouTube Renderers
         if (mediaObj) {
             if (mediaObj.type === "youtube") {
                 fullHTML += `
@@ -1576,7 +1645,7 @@ function appendMessage(role, text, mediaObj = null, thoughtData = null) {
     container.scrollTop = container.scrollHeight;
 }
 
-// 8. Core Prompt & Thinking Dispatcher
+// 9. Core Prompt & Thinking Dispatcher
 let isThinking = false;
 
 async function handleSend() {
@@ -1594,7 +1663,7 @@ async function handleSend() {
     }
 
     const select = document.getElementById("model-select");
-    const selectedOption = select.options[select.selectedIndex];
+    const selectedOption = select.options[select.selectedIndex] || select.options[0];
     const model = selectedOption.value;
     const cost = parseFloat(selectedOption.getAttribute("data-cost")) || 0.5;
     const modelType = selectedOption.getAttribute("data-type");
@@ -1606,7 +1675,6 @@ async function handleSend() {
     currentMessages.push({ role: "user", content: promptText });
     deductQuota(cost);
 
-    // Dynamic Real-time Thinking Timer UI
     isThinking = true;
     const startTime = Date.now();
     const tempId = "temp_" + Date.now();
@@ -1651,7 +1719,6 @@ async function handleSend() {
         let mediaResult = null;
         let thoughtData = null;
 
-        // Check for YouTube Search Trigger
         if (promptText.toLowerCase().startsWith("/yt ") || promptText.toLowerCase().includes("youtube")) {
             const query = promptText.replace("/yt ", "").trim();
             botReply = `🎬 **Vyhľadávanie na YouTube pre:** \`${query}\`\n\nTu je nájdené video pripravené na prehratie:`;
@@ -1687,7 +1754,7 @@ async function handleSend() {
     }
 }
 
-// 9. Session Management
+// 10. Session Management
 async function saveCurrentSession() {
     await dbSet("sessions", `${currentUser}_${currentSessionId}`, {
         id: currentSessionId,
@@ -1725,7 +1792,7 @@ function startNewChat() {
     currentSessionId = "session_" + Date.now();
     currentMessages = [];
     document.getElementById("messages-container").innerHTML = "";
-    appendMessage("bot", `👋 **CODEX Quantum IDE Pripravené pre používateľa ${currentUser}.**\nTrvalá pamäť, kalendár a reálny čas uvažovania sú aktívne so všetkými Google modelmi.`);
+    appendMessage("bot", `👋 **CODEX Quantum IDE Pripravené pre používateľa ${currentUser}.**\nTrvalá pamäť, kalendár a Live Model Synchronizér sú aktívne.`);
     loadHistoryList();
 }
 
@@ -1737,7 +1804,7 @@ async function loadUserData() {
     startNewChat();
 }
 
-// 10. Bootstrap & Event Bindings
+// 11. Bootstrap & Event Bindings
 function showToast(msg) {
     const toast = document.getElementById("toast");
     toast.innerText = msg;
@@ -1751,7 +1818,11 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     // Auto-load settings
     const savedKey = await dbGet("settings", "gemini_api_key");
-    if (savedKey) document.getElementById("api-key-input").value = savedKey;
+    if (savedKey) {
+        document.getElementById("api-key-input").value = savedKey;
+        // Automatically sync models on load if API key exists
+        fetchAndSyncLiveGoogleModels(savedKey, false);
+    }
 
     const savedSys = await dbGet("settings", "system_prompt");
     if (savedSys) document.getElementById("system-prompt-input").value = savedSys;
@@ -1770,14 +1841,25 @@ window.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("register-btn").onclick = handleRegister;
     document.getElementById("logout-btn").onclick = handleLogout;
 
-    // Model Selector
+    // Model Selector Change & Live Sync
     document.getElementById("model-select").addEventListener("change", (e) => {
         const val = e.target.value;
         const opt = e.target.options[e.target.selectedIndex];
         document.getElementById("active-model-name").innerText = val;
-        document.getElementById("active-model-capability").innerText = opt.getAttribute("data-type").toUpperCase();
+        document.getElementById("active-model-capability").innerText = (opt.getAttribute("data-type") || "AI").toUpperCase();
         showToast(`Model aktivovaný: ${val}`);
     });
+
+    document.getElementById("sync-models-btn").onclick = async () => {
+        const key = await dbGet("settings", "gemini_api_key");
+        if (!key) {
+            showToast("Najprv zadajte Gemini API kľúč v nastaveniach!");
+            document.getElementById("settings-modal").classList.add("active");
+            return;
+        }
+        showToast("Synchronizujem najnovšie modely z Google API...");
+        await fetchAndSyncLiveGoogleModels(key, true);
+    };
 
     // Memory Modal Handlers
     const memModal = document.getElementById("memory-modal");
@@ -1833,12 +1915,17 @@ window.addEventListener("DOMContentLoaded", async () => {
     const setModal = document.getElementById("settings-modal");
     document.getElementById("settings-btn").onclick = () => setModal.classList.add("active");
     document.getElementById("close-settings").onclick = () => setModal.classList.remove("active");
+    
     document.getElementById("save-settings-btn").onclick = async () => {
-        await dbSet("settings", "gemini_api_key", document.getElementById("api-key-input").value.trim());
-        await dbSet("settings", "system_prompt", document.getElementById("system-prompt-input").value.trim());
+        const key = document.getElementById("api-key-input").value.trim();
+        const sys = document.getElementById("system-prompt-input").value.trim();
+        await dbSet("settings", "gemini_api_key", key);
+        await dbSet("settings", "system_prompt", sys);
         setModal.classList.remove("active");
         showToast("Nastavenia natrvalo uložené v DB!");
+        if (key) await fetchAndSyncLiveGoogleModels(key, true);
     };
+
     document.getElementById("reset-limit-dev-btn").onclick = async () => {
         currentQuota = 100.0;
         await saveQuota();
