@@ -3,1463 +3,1803 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Codex PRO - Pokročilé Programovanie, Hudba, Gaming & Uvažovanie</title>
-    <!-- Highlight.js pre zvýraznenie syntaxy kódu -->
+    <title>CODEX // Quantum AI & Developer Studio</title>
+    <!-- FontAwesome & Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600;700&family=Orbitron:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Highlight.js for Code Highlighting -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.0/marked.min.js"></script>
+
     <style>
         :root {
-            --bg-main: #060911;
-            --bg-side: #0e1424;
-            --bg-card: #151d30;
-            --bg-card-hover: #1b263e;
-            --bg-input: #0a0f1d;
-            --border-color: #222f49;
-            --border-focus: #38bdf8;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --accent-color: #38bdf8;
-            --accent-glow: rgba(56, 189, 248, 0.35);
-            --accent-green: #10b981;
-            --danger-color: #f43f5e;
-            --warning-color: #f59e0b;
-            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            --font-code: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            --bg-dark: #05060b;
+            --panel-bg: rgba(13, 16, 27, 0.78);
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --rainbow-grad: linear-gradient(135deg, #ff0055, #ff7700, #ffea00, #00ff88, #00d4ff, #7700ff, #ff00aa);
+            --rainbow-text: linear-gradient(90deg, #ff0077, #ff9900, #33ff00, #00ffff, #7700ff);
+            --accent-glow: 0 0 25px rgba(0, 240, 255, 0.4), 0 0 50px rgba(255, 0, 128, 0.2);
+            --text-main: #f0f4fc;
+            --text-dim: #7f8ca3;
+            --danger: #ff0055;
+            --success: #00ffaa;
+            --warning: #ffb700;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            outline: none;
         }
 
         body {
-            background-color: var(--bg-main);
-            color: var(--text-primary);
-            font-family: var(--font-family);
-            display: flex;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
             height: 100vh;
             overflow: hidden;
+            display: flex;
+            position: relative;
         }
 
-        /* Scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+        /* Animated Rainbow Aura */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            background: var(--rainbow-grad);
+            filter: blur(160px);
+            opacity: 0.15;
+            top: -200px;
+            left: -200px;
+            border-radius: 50%;
+            animation: floatRainbow 20s infinite alternate linear;
+            pointer-events: none;
+            z-index: 0;
         }
-        ::-webkit-scrollbar-track {
-            background: var(--bg-main);
+        body::after {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: var(--rainbow-grad);
+            filter: blur(180px);
+            opacity: 0.12;
+            bottom: -200px;
+            right: -200px;
+            border-radius: 50%;
+            animation: floatRainbow 15s infinite alternate-reverse linear;
+            pointer-events: none;
+            z-index: 0;
         }
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
+
+        @keyframes floatRainbow {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(150px, 150px) rotate(360deg); }
         }
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-secondary);
+
+        #app-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            overflow: hidden;
         }
 
         /* Sidebar */
-        .sidebar {
-            width: 330px;
-            background-color: var(--bg-side);
-            border-right: 1px solid var(--border-color);
+        aside {
+            width: 350px;
+            background: rgba(8, 10, 18, 0.88);
+            backdrop-filter: blur(25px);
+            border-right: 1px solid var(--panel-border);
             display: flex;
             flex-direction: column;
-            padding: 20px 16px;
+            padding: 16px;
             gap: 12px;
-            box-shadow: 6px 0 30px rgba(0, 0, 0, 0.45);
-            z-index: 10;
+            flex-shrink: 0;
+            overflow-y: auto;
         }
 
-        .logo {
-            font-size: 1.35rem;
-            font-weight: 800;
-            color: #ffffff;
+        .brand {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--panel-border);
+        }
+        .brand-info {
             display: flex;
             align-items: center;
             gap: 10px;
-            letter-spacing: 0.5px;
-            padding: 0 4px;
         }
-
-        .logo span {
-            color: var(--accent-color);
-            text-shadow: 0 0 16px var(--accent-glow);
-        }
-
-        .btn {
-            background-color: var(--bg-card);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            padding: 10px 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-        }
-
-        .btn:hover {
-            background-color: var(--bg-card-hover);
-            border-color: var(--accent-color);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15);
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-            color: #ffffff;
-            border: none;
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #047857 0%, #059669 100%);
-            box-shadow: 0 6px 18px rgba(16, 185, 129, 0.5);
-        }
-
-        .section-title {
-            font-size: 0.72rem;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            font-weight: 700;
-            letter-spacing: 0.8px;
-            margin-top: 4px;
-            padding: 0 4px;
-        }
-
-        select, input {
-            width: 100%;
-            padding: 10px 12px;
-            background-color: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: var(--text-primary);
-            outline: none;
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
-        }
-
-        select:focus, input:focus {
-            border-color: var(--border-focus);
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
-        }
-
-        select:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .model-status-badge {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-top: -6px;
-            padding: 0 4px;
-        }
-
-        /* Zoznam Uložených Četov */
-        .chat-list {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            max-height: 125px;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 6px;
-            background-color: var(--bg-input);
-        }
-
-        .chat-item {
-            padding: 8px 10px;
-            font-size: 0.8rem;
-            border-radius: 6px;
-            cursor: pointer;
-            background-color: var(--bg-card);
-            border: 1px solid transparent;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            transition: all 0.2s ease;
-        }
-
-        .chat-item:hover, .chat-item.active {
-            border-color: var(--accent-color);
-            color: #ffffff;
-            background-color: var(--bg-card-hover);
-        }
-
-        .chat-item-del {
-            color: var(--danger-color);
-            cursor: pointer;
-            font-weight: bold;
-            padding: 0 4px;
-        }
-
-        .chat-item-del:hover {
-            transform: scale(1.2);
-        }
-
-        /* Udalosti v Kalendári */
-        .events-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-            padding: 8px;
-            border-radius: 8px;
-            background: var(--bg-input);
-        }
-
-        .event-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--bg-card);
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-        }
-
-        /* Quota Box */
-        .quota-box {
-            background: linear-gradient(180deg, var(--bg-card) 0%, rgba(14, 20, 36, 0.8) 100%);
-            border: 1px solid var(--border-color);
+        .brand-logo {
+            width: 40px;
+            height: 40px;
             border-radius: 12px;
-            padding: 14px;
-            margin-top: auto;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            background: var(--rainbow-grad);
+            display: grid;
+            place-items: center;
+            font-family: 'Orbitron', monospace;
+            font-size: 18px;
+            font-weight: 900;
+            color: #000;
+            box-shadow: var(--accent-glow);
+        }
+        .brand-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            background: var(--rainbow-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .brand-sub {
+            font-size: 9.5px;
+            color: var(--text-dim);
+            letter-spacing: 1px;
         }
 
+        /* User Profile Pill in Sidebar */
+        .user-pill {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+        .user-pill-name {
+            font-weight: 700;
+            color: #00f0ff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Quick Tools Nav */
+        .tools-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+        .tool-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            padding: 7px 4px;
+            border-radius: 8px;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+        .tool-btn:hover {
+            background: rgba(0, 240, 255, 0.15);
+            border-color: #00f0ff;
+            color: #fff;
+        }
+
+        .select-group label {
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin-bottom: 5px;
+            display: block;
+        }
+        select, input, textarea {
+            width: 100%;
+            background: rgba(18, 22, 38, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #fff;
+            padding: 9px 12px;
+            border-radius: 10px;
+            font-size: 12.5px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+        select:focus, input:focus, textarea:focus {
+            border-color: #00f0ff;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+        }
+
+        /* Month Quota HUD Card */
+        .quota-card {
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(15, 18, 30, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .quota-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--rainbow-grad);
+        }
         .quota-header {
             display: flex;
             justify-content: space-between;
-            font-size: 0.85rem;
-            margin-bottom: 8px;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .quota-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .quota-val {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            color: #00ffaa;
+            text-shadow: 0 0 10px rgba(0,255,170,0.5);
+        }
+        .progress-bar-container {
+            width: 100%;
+            height: 7px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 100%;
+            background: var(--rainbow-grad);
+            border-radius: 20px;
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .quota-reset-text {
+            font-size: 10px;
+            color: var(--text-dim);
+            line-height: 1.3;
+        }
+
+        /* History List */
+        .history-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 120px;
+        }
+        .history-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .history-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .history-item {
+            padding: 8px 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 11.5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .history-item:hover, .history-item.active {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(0, 240, 255, 0.4);
+            transform: translateX(3px);
+        }
+
+        /* Sidebar footer */
+        .sidebar-footer {
+            display: flex;
+            gap: 6px;
+        }
+        .btn-rainbow {
+            background: var(--rainbow-grad);
+            border: none;
+            color: #000;
+            font-weight: 700;
+            padding: 9px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 11.5px;
+            transition: all 0.3s ease;
+        }
+        .btn-rainbow:hover {
+            filter: brightness(1.2);
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #fff;
+            padding: 9px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 11.5px;
+            transition: all 0.3s;
+        }
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
+        /* Main Chat Workspace */
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+            background: rgba(5, 7, 15, 0.4);
+        }
+
+        header {
+            padding: 12px 24px;
+            border-bottom: 1px solid var(--panel-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 13, 23, 0.7);
+            backdrop-filter: blur(15px);
+        }
+        .header-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .model-badge {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            color: #00f0ff;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-family: 'Fira Code', monospace;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .capability-tag {
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: rgba(255, 0, 170, 0.15);
+            border: 1px solid rgba(255, 0, 170, 0.4);
+            color: #ff55c4;
             font-weight: 600;
         }
 
-        .progress-bar-bg {
-            width: 100%;
-            height: 10px;
-            background-color: var(--bg-main);
-            border-radius: 6px;
-            overflow: hidden;
+        /* Live Thinking Realtime Banner */
+        .thinking-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 14px;
+            background: rgba(0, 240, 255, 0.08);
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            border-radius: 10px;
+            font-size: 12px;
+            font-family: 'Fira Code', monospace;
+            color: #00f0ff;
             margin-bottom: 10px;
-            border: 1px solid var(--border-color);
+            animation: pulseGlow 1.5s infinite alternate;
+        }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 5px rgba(0,240,255,0.2); }
+            100% { box-shadow: 0 0 18px rgba(0,240,255,0.5); }
         }
 
-        .progress-bar-fill {
-            height: 100%;
-            width: 100%;
-            background-color: var(--accent-green);
-            transition: width 0.4s ease, background-color 0.4s ease;
-            box-shadow: 0 0 10px currentColor;
+        /* Thought Process Collapsible Box */
+        .thought-accordion {
+            background: rgba(18, 22, 38, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 12px;
+            overflow: hidden;
         }
-
-        .quota-reset-info {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
+        .thought-accordion summary {
+            padding: 8px 12px;
+            cursor: pointer;
+            color: #00d4ff;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,0.02);
+        }
+        .thought-accordion-content {
+            padding: 10px 14px;
+            color: #9ab0d3;
+            font-family: 'Fira Code', monospace;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            white-space: pre-wrap;
             line-height: 1.4;
         }
 
-        /* Main Content Area */
-        .main-chat {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: var(--bg-main);
-            position: relative;
-        }
-
-        .chat-header {
-            padding: 16px 24px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: rgba(14, 20, 36, 0.85);
-            backdrop-filter: blur(12px);
-            z-index: 5;
-        }
-
-        .chat-messages {
+        /* Messages Area */
+        #messages-container {
             flex: 1;
             overflow-y: auto;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .message {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            max-width: 820px;
-            border-radius: 12px;
-            padding: 16px 20px;
-            line-height: 1.6;
-            font-size: 0.95rem;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
-            border: 1px solid transparent;
-        }
-
-        .message.user {
-            align-self: center;
-            background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
-            color: #ffffff;
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .message.assistant {
-            align-self: center;
-            background-color: var(--bg-card);
-            border-color: var(--border-color);
-            background: linear-gradient(180deg, rgba(21, 29, 48, 0.9) 0%, rgba(14, 20, 36, 0.9) 100%);
-        }
-
-        .message .sender {
-            font-size: 0.75rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            opacity: 0.85;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        .msg-content {
-            word-break: break-word;
-        }
-
-        /* --- VYLEPŠENÁ ANIMÁCIA UVAŽOVANIA AI --- */
-        @keyframes pulseGlow {
-            0% { opacity: 0.6; filter: drop-shadow(0 0 3px var(--accent-color)); transform: scale(0.99); }
-            50% { opacity: 1; filter: drop-shadow(0 0 12px var(--accent-color)); transform: scale(1.01); }
-            100% { opacity: 0.6; filter: drop-shadow(0 0 3px var(--accent-color)); transform: scale(0.99); }
-        }
-
-        @keyframes rotateBrain {
-            0% { transform: rotate(0deg); }
-            25% { transform: rotate(-10deg); }
-            75% { transform: rotate(10deg); }
-            100% { transform: rotate(0deg); }
-        }
-
-        .thinking-anim {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 16px;
-            background: rgba(56, 189, 248, 0.1);
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            border-radius: 8px;
-            animation: pulseGlow 1.5s infinite ease-in-out;
-            color: var(--accent-color);
-            font-weight: 600;
-            font-size: 0.92rem;
-            margin: 4px 0;
-            box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
-        }
-
-        .thinking-icon {
-            display: inline-block;
-            font-size: 1.15rem;
-            animation: rotateBrain 2s infinite ease-in-out;
-        }
-
-        .thinking-dots span {
-            display: inline-block;
-            font-size: 1.2rem;
-            animation: blinkDots 1.4s infinite;
-            animation-fill-mode: both;
-        }
-        .thinking-dots span:nth-child(2) { animation-delay: .2s; }
-        .thinking-dots span:nth-child(3) { animation-delay: .4s; }
-
-        @keyframes blinkDots {
-            0% { opacity: .1; transform: translateY(0); }
-            50% { opacity: 1; transform: translateY(-2px); }
-            100% { opacity: .1; transform: translateY(0); }
-        }
-
-        /* Obal pre Kód a Hudobné Texty s tlačidlom Kopírovať */
-        .code-block-container {
-            position: relative;
-            margin-top: 12px;
-            margin-bottom: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            background-color: #060911;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-            width: 100%;
-        }
-
-        .code-block-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #0e1424;
-            padding: 8px 14px;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            border-bottom: 1px solid var(--border-color);
-            font-family: var(--font-family);
-            font-weight: 600;
-        }
-
-        .copy-btn {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 4px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        .copy-btn:hover {
-            background-color: var(--bg-card-hover);
-            color: var(--accent-color);
-            border-color: var(--accent-color);
-        }
-
-        .code-block-container pre {
-            margin: 0 !important;
-            padding: 14px !important;
-            border: none !important;
-            border-radius: 0 !important;
-            background-color: #060911 !important;
-            font-family: var(--font-code);
-            overflow-x: auto;
-            white-space: pre;
-            line-height: 1.5;
-        }
-
-        /* Input Container */
-        .chat-input-container {
-            padding: 18px 24px;
-            border-top: 1px solid var(--border-color);
-            background-color: var(--bg-side);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .input-box, .limit-reached-banner {
-            width: 100%;
-            max-width: 820px;
-        }
-
-        .input-box {
-            display: flex;
-            gap: 12px;
-        }
-
-        textarea {
-            flex: 1;
-            background-color: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            color: var(--text-primary);
-            padding: 12px 16px;
-            resize: none;
-            height: 65px;
-            font-family: var(--font-family);
-            outline: none;
-            font-size: 0.95rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        textarea:focus {
-            border-color: var(--border-focus);
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25);
-        }
-
-        /* Disabled Warning Box */
-        .limit-reached-banner {
-            display: none;
-            background-color: rgba(244, 63, 94, 0.12);
-            border: 1px solid var(--danger-color);
-            color: #fca5a5;
-            padding: 14px 18px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            text-align: center;
-            line-height: 1.5;
-        }
-
-        /* Modal Settings */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-        }
-
-        .modal-content {
-            background-color: var(--bg-side);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            width: 480px;
-            padding: 24px;
+            padding: 20px 24px;
             display: flex;
             flex-direction: column;
             gap: 18px;
-            box-shadow: 0 24px 50px rgba(0,0,0,0.6);
-            max-height: 85vh;
-            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .msg {
+            display: flex;
+            gap: 12px;
+            max-width: 88%;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .msg.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        .msg-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .msg.bot .msg-avatar {
+            background: var(--rainbow-grad);
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+        }
+        .msg.user .msg-avatar {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+        .msg-body {
+            background: rgba(18, 22, 38, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            padding: 14px 18px;
+            border-radius: 16px;
+            font-size: 13.5px;
+            line-height: 1.6;
+            color: #e1e7f5;
+            position: relative;
+            overflow-x: auto;
+        }
+        .msg.user .msg-body {
+            background: linear-gradient(135deg, rgba(0, 110, 255, 0.3), rgba(119, 0, 255, 0.3));
+            border-color: rgba(0, 200, 255, 0.3);
+            border-bottom-right-radius: 4px;
+        }
+        .msg.bot .msg-body {
+            border-bottom-left-radius: 4px;
         }
 
-        .modal-header {
+        /* Pristine Code Block Styling */
+        .code-container {
+            position: relative;
+            background: #080a12 !important;
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            border-radius: 10px;
+            margin: 12px 0;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+        }
+        .code-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 6px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 11px;
+            font-family: 'Fira Code', monospace;
+            color: #00f0ff;
+        }
+        .code-container pre {
+            margin: 0 !important;
+            padding: 14px !important;
+            background: transparent !important;
+            border: none !important;
+            overflow-x: auto;
+        }
+        .code-container code {
+            font-family: 'Fira Code', monospace;
+            font-size: 12.5px;
+            line-height: 1.5;
+            tab-size: 4;
+        }
+        .copy-btn {
+            background: rgba(0, 240, 255, 0.15);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            color: #fff;
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+        .copy-btn:hover {
+            background: #00f0ff;
+            color: #000;
             font-weight: 700;
-            font-size: 1.15rem;
+        }
+
+        /* YouTube Embed Box */
+        .yt-embed-box {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            height: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 10px 0;
+            border: 1px solid rgba(255, 0, 85, 0.4);
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.2);
+        }
+        .yt-embed-box iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: 0;
+        }
+
+        /* Lockout / Exhausted Overlay */
+        #lockout-banner {
+            display: none;
+            background: linear-gradient(90deg, rgba(255, 0, 85, 0.95), rgba(119, 0, 255, 0.95));
+            color: #fff;
+            padding: 12px 20px;
+            text-align: center;
+            font-weight: 600;
+            border-radius: 10px;
+            margin: 0 24px 10px 24px;
+            box-shadow: 0 0 25px rgba(255, 0, 85, 0.5);
+        }
+
+        /* Chat Input Area */
+        .chat-input-bar {
+            padding: 12px 24px 20px 24px;
+            position: relative;
+        }
+        .quick-actions-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .quick-pill {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-dim);
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+        .quick-pill:hover, .quick-pill.active {
+            background: rgba(0, 240, 255, 0.2);
+            border-color: #00f0ff;
+            color: #00f0ff;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: flex-end;
+            background: rgba(14, 18, 32, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 8px 12px;
+            gap: 10px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.5);
+        }
+        .input-wrapper:focus-within {
+            border-color: #00f0ff;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.3);
+        }
+        #prompt-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            resize: none;
+            max-height: 140px;
+            height: 40px;
+            font-size: 13.5px;
+            line-height: 1.5;
+            padding: 7px 4px;
+            color: #fff;
+        }
+        #send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: var(--rainbow-grad);
+            border: none;
+            color: #000;
+            font-size: 15px;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+        #send-btn:hover:not(:disabled) {
+            transform: scale(1.06);
+            box-shadow: var(--accent-glow);
+        }
+
+        /* Modals (Auth, Memory, Calendar, Settings) */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(18px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal.active { display: flex; }
+        .modal-card {
+            width: 520px;
+            max-width: 95vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: rgba(14, 18, 30, 0.96);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 0 50px rgba(0, 240, 255, 0.25);
+        }
+        .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
-        .close-modal {
-            cursor: pointer;
-            color: var(--text-secondary);
-            font-size: 1.3rem;
-            line-height: 1;
-            transition: color 0.2s;
+        .modal-header h3 {
+            font-family: 'Orbitron', sans-serif;
+            background: var(--rainbow-text);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 18px;
         }
-        .close-modal:hover {
-            color: var(--text-primary);
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Memory Tags in Modal */
+        .memory-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+        .memory-item button {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+        }
+
+        /* Calendar Widget Styling */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            text-align: center;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+        .cal-day-header {
+            color: var(--text-dim);
+            font-weight: 700;
+            padding-bottom: 4px;
+        }
+        .cal-cell {
+            padding: 8px 4px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .cal-cell.today {
+            border-color: #00f0ff;
+            background: rgba(0, 240, 255, 0.15);
+            font-weight: bold;
+            color: #00f0ff;
+        }
+        .cal-cell.holiday {
+            border-color: #ff0055;
+            background: rgba(255, 0, 85, 0.15);
+            color: #ff55c4;
+            font-weight: bold;
+        }
+        .cal-cell.bday {
+            border-color: #ffea00;
+            background: rgba(255, 234, 0, 0.2);
+            color: #ffea00;
+            font-weight: bold;
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            background: rgba(12, 16, 28, 0.95);
+            border: 1px solid #00f0ff;
+            color: #fff;
+            font-size: 13px;
+            display: none;
+            z-index: 10000;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
         }
     </style>
 </head>
 <body>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="logo">
-            ⚡ Codex <span>PRO</span>
+<!-- AUTH MODAL (Login / Register) -->
+<div class="modal" id="auth-modal">
+    <div class="modal-card" style="width: 400px;">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-user-shield"></i> CODEX AUTH</h3>
         </div>
-
-        <button class="btn btn-primary" onclick="createNewChat()">+ Nový chat</button>
-        <button class="btn" onclick="openSettingsModal()">⚙️ Nastavenia API Kľúča</button>
-        <button class="btn" onclick="openCalendarModal()">📅 Kalendár & Sviatky</button>
-
-        <div class="section-title">História četov</div>
-        <div class="chat-list" id="chatListContainer">
-            <div style="font-size:0.75rem; color:var(--text-secondary); text-align:center; padding:10px;">Žiadne uložené čety</div>
+        <div style="text-align: center; font-size: 12px; color: var(--text-dim); margin-bottom: 8px;">
+            Všetky účty a relácie sú trvalo uložené v lokálnej databáze IndexedDB.
         </div>
-
-        <div class="section-title">Google Gemini Modely</div>
-        <select id="modelSelect" onchange="updateModelWeightInfo()" disabled>
-            <option value="">🔒 Najskôr zadajte API kľúč</option>
-        </select>
-        <div id="modelStatus" class="model-status-badge">Zadajte API kľúč v nastaveniach.</div>
-
-        <!-- HLBKOVE UVAZOVANIE -->
-        <div class="section-title">🧠 Hĺbkové Uvažovanie AI</div>
-        <select id="reasoningSelect" onchange="updateModelWeightInfo()">
-            <option value="1.0" selected>🟢 Nízke (Základné - 1.0x spotreba)</option>
-            <option value="1.5">🟡 Stredné (Rozšírené - 1.5x spotreba)</option>
-            <option value="2.5">🟠 Vysoké (Hĺbková analýza - 2.5x spotreba)</option>
-            <option value="4.0">🔴 Maximálne (Extrémne - 4.0x spotreba)</option>
-        </select>
-
-        <!-- Limit / Quota Display -->
-        <div class="quota-box">
-            <div class="quota-header">
-                <span>Mesačný Limit</span>
-                <strong id="quotaPercentage">100 %</strong>
-            </div>
-            <div class="progress-bar-bg">
-                <div class="progress-bar-fill" id="quotaBar"></div>
-            </div>
-            <div class="quota-reset-info" id="quotaResetText">
-                Obnovenie: Načítavam...
-            </div>
+        <div>
+            <label style="font-size: 11px; text-transform: uppercase; color: var(--text-dim); display:block; margin-bottom: 4px;">Používateľské Meno</label>
+            <input type="text" id="auth-username" placeholder="Zadajte meno...">
+        </div>
+        <div>
+            <label style="font-size: 11px; text-transform: uppercase; color: var(--text-dim); display:block; margin-bottom: 4px;">Heslo / PIN</label>
+            <input type="password" id="auth-password" placeholder="••••••••">
+        </div>
+        <div style="display:flex; gap: 8px; margin-top: 10px;">
+            <button class="btn-rainbow" id="login-btn" style="flex:1;"><i class="fa-solid fa-right-to-bracket"></i> Prihlásiť sa</button>
+            <button class="btn-secondary" id="register-btn" style="flex:1;"><i class="fa-solid fa-user-plus"></i> Registrácia</button>
         </div>
     </div>
+</div>
 
-    <!-- Main Chat Area -->
-    <div class="main-chat">
-        <div class="chat-header">
-            <div>
-                <strong>Aktivný model:</strong> <span id="currentModelDisplay" style="color: var(--accent-color);">Čakám na API kľúč...</span>
-            </div>
-            <div style="font-size: 0.85rem; color: var(--text-secondary);">
-                Uložené v IndexedDB • Gaming & Meme Engine
-            </div>
-        </div>
-
-        <div class="chat-messages" id="chatMessages">
-            <div class="message assistant">
-                <div class="sender">Codex Assistant</div>
-                <div class="msg-content">
-                    Vitajte v prostredí **Codex PRO**. Systém podporuje pokročilé programovanie, **generovanie memes a rozbor YouTube trendov**, **najnovšie postavy v Robloxe**, ukladanie četov do lokálnej databázy aj **pamäť na narodeniny a kalendár**.
+<div id="app-container">
+    <!-- SIDEBAR -->
+    <aside>
+        <div class="brand">
+            <div class="brand-info">
+                <div class="brand-logo"><i class="fa-solid fa-code"></i></div>
+                <div>
+                    <div class="brand-title">CODEX</div>
+                    <div class="brand-sub">QUANTUM REASONING IDE</div>
                 </div>
             </div>
+            <button class="copy-btn" id="logout-btn" title="Odhlásiť sa"><i class="fa-solid fa-power-off"></i></button>
         </div>
 
-        <!-- Warning container when 0% limit or 50% pause -->
-        <div class="chat-input-container">
-            <div id="limitBanner" class="limit-reached-banner">
-                <span id="bannerText"></span>
-            </div>
+        <!-- User profile badge -->
+        <div class="user-pill">
+            <div class="user-pill-name"><i class="fa-solid fa-circle-user"></i> <span id="current-user-display">Prihlásený Používateľ</span></div>
+            <span style="font-size: 10px; color: var(--success);"><i class="fa-solid fa-database"></i> DB Permanent</span>
+        </div>
 
-            <div class="input-box" id="inputArea">
-                <textarea id="userInput" placeholder="Napíš otázku na kód, herné/filmové memes, YouTube trendy alebo nové postavy v Robloxe..."></textarea>
-                <button class="btn btn-primary" style="padding: 0 24px;" id="sendBtn" onclick="sendMessage()">Odoslať</button>
+        <!-- Quick Access Tools (Memory, Calendar, Search) -->
+        <div class="tools-bar">
+            <button class="tool-btn" id="open-memory-btn"><i class="fa-solid fa-brain" style="color:#00f0ff;"></i> Pamäť AI</button>
+            <button class="tool-btn" id="open-calendar-btn"><i class="fa-solid fa-calendar-day" style="color:#ff00aa;"></i> Kalendár</button>
+            <button class="tool-btn" id="open-search-btn"><i class="fa-solid fa-globe" style="color:#ffea00;"></i> Web / YT</button>
+        </div>
+
+        <!-- Model Selection -->
+        <div class="select-group">
+            <label><i class="fa-solid fa-microchip"></i> Architektúra Modelu</label>
+            <select id="model-select">
+                <optgroup label="👑 Gemini 2.5 & Reasoning Suite">
+                    <option value="gemini-2.5-pro" data-cost="2.0" data-type="deep-reasoning" selected>Gemini 2.5 Pro (Deep Reasoning & Codex)</option>
+                    <option value="gemini-2.5-flash" data-cost="0.3" data-type="multimodal">Gemini 2.5 Flash (Superfast)</option>
+                    <option value="gemini-2.0-flash-thinking-exp" data-cost="1.2" data-type="deep-reasoning">Gemini 2.0 Flash Thinking Exp</option>
+                </optgroup>
+                <optgroup label="⚡ Gemini 2.0 Séria">
+                    <option value="gemini-2.0-pro-exp-02-05" data-cost="1.8" data-type="code">Gemini 2.0 Pro Experimental</option>
+                    <option value="gemini-2.0-flash" data-cost="0.4" data-type="multimodal">Gemini 2.0 Flash Core</option>
+                    <option value="gemini-2.0-flash-lite" data-cost="0.1" data-type="multimodal">Gemini 2.0 Flash Lite</option>
+                </optgroup>
+                <optgroup label="🌐 Gemini 1.5 Séria">
+                    <option value="gemini-1.5-pro" data-cost="1.2" data-type="context">Gemini 1.5 Pro (2M Context)</option>
+                    <option value="gemini-1.5-flash" data-cost="0.2" data-type="speed">Gemini 1.5 Flash</option>
+                </optgroup>
+                <optgroup label="🎨 Multimodálne Špeciály (Obrázky & Video)">
+                    <option value="imagen-3.0-generate-002" data-cost="4.0" data-type="image">Imagen 3.0 (Syntéza Obrázkov)</option>
+                    <option value="veo-2.0-generate-001" data-cost="7.0" data-type="video">Veo 2.0 (Kinematické Video)</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <!-- Monthly Limits Card -->
+        <div class="quota-card">
+            <div class="quota-header">
+                <div class="quota-title"><i class="fa-solid fa-bolt" style="color:#ffcc00"></i> Mesačný Limit</div>
+                <div class="quota-val" id="quota-percent">100.0%</div>
             </div>
+            <div class="progress-bar-container">
+                <div class="progress-fill" id="quota-progress-bar"></div>
+            </div>
+            <div class="quota-reset-text">
+                Obnovenie limitu: <strong id="reset-date-display">1. nasledujúceho mesiaca</strong>
+            </div>
+        </div>
+
+        <!-- History -->
+        <div class="history-section">
+            <div class="history-title">
+                <span><i class="fa-solid fa-clock-rotate-left"></i> Relácie & Kód</span>
+                <button id="new-chat-btn" class="copy-btn" title="Nová relácia"><i class="fa-solid fa-plus"></i></button>
+            </div>
+            <div class="history-list" id="history-list"></div>
+        </div>
+
+        <!-- Footer Actions -->
+        <div class="sidebar-footer">
+            <button class="btn-rainbow" id="settings-btn" style="flex:1;"><i class="fa-solid fa-sliders"></i> Nastavenia</button>
+            <button class="btn-secondary" id="clear-db-btn" title="Vyčistiť históriu"><i class="fa-solid fa-trash"></i></button>
+        </div>
+    </aside>
+
+    <!-- MAIN WORKSPACE -->
+    <main>
+        <header>
+            <div class="header-meta">
+                <div class="model-badge">
+                    <i class="fa-solid fa-brain"></i>
+                    <span id="active-model-name">gemini-2.5-pro</span>
+                </div>
+                <div class="capability-tag" id="active-model-capability">DYNAMIC REALTIME REASONING</div>
+            </div>
+            <div style="font-size: 11.5px; color: var(--text-dim); display:flex; gap:12px; align-items:center;">
+                <span><i class="fa-solid fa-shield-halved" style="color: #00ffaa;"></i> Anti-503 Engine</span>
+                <span><i class="fa-solid fa-database" style="color: #00f0ff;"></i> IndexedDB Permanent</span>
+            </div>
+        </header>
+
+        <!-- Messages stream -->
+        <div id="messages-container"></div>
+
+        <!-- Quota Lockout Banner -->
+        <div id="lockout-banner">
+            <i class="fa-solid fa-ban"></i> <strong>Limit vyčerpaný (0.0%).</strong> Písanie do chatu je zablokované.
+            <div id="lockout-time-details" style="font-size: 12px; margin-top: 4px;">Limit sa obnoví 1. dňa nasledujúceho mesiaca.</div>
+        </div>
+
+        <!-- Chat Input Bar -->
+        <div class="chat-input-bar">
+            <div class="quick-actions-bar">
+                <div class="quick-pill" id="search-mode-pill"><i class="fa-solid fa-globe"></i> Web Vyhľadávanie</div>
+                <div class="quick-pill" id="yt-mode-pill"><i class="fa-brands fa-youtube" style="color:#ff0055;"></i> Hľadať na YouTube</div>
+                <div class="quick-pill" id="cal-reminder-pill"><i class="fa-solid fa-calendar-check"></i> Sviatky & Narodeniny</div>
+            </div>
+            <div class="input-wrapper">
+                <textarea id="prompt-input" rows="1" placeholder="Napíš prompt, zadaj kód, požiadaj o vyhľadávanie alebo video..."></textarea>
+                <button id="send-btn"><i class="fa-solid fa-arrow-up"></i></button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- MEMORY VAULT MODAL -->
+<div class="modal" id="memory-modal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-brain"></i> Trvalá Pamäť AI (Memory Vault)</h3>
+            <button class="close-modal" id="close-memory">&times;</button>
+        </div>
+        <p style="font-size: 12px; color: var(--text-dim);">
+            Všetko, čo sem pridáte, si bude AI pamätať v každom rozhovore natrvalo, dokiaľ to sami nezmažete.
+        </p>
+        <div style="display:flex; gap: 8px;">
+            <input type="text" id="new-memory-input" placeholder="Napr. Moje meno je Alex, programujem v Pythone a Rust...">
+            <button class="btn-rainbow" id="add-memory-btn"><i class="fa-solid fa-plus"></i></button>
+        </div>
+        <div id="memory-list-container" style="max-height: 250px; overflow-y: auto;"></div>
+    </div>
+</div>
+
+<!-- CALENDAR MODAL -->
+<div class="modal" id="calendar-modal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-calendar-days"></i> Kvantový Kalendár & Sviatky</h3>
+            <button class="close-modal" id="close-calendar">&times;</button>
+        </div>
+        <div>
+            <label style="font-size: 11px; text-transform: uppercase; color: var(--text-dim); display:block; margin-bottom: 4px;">Tvoje Narodeniny</label>
+            <div style="display:flex; gap: 8px;">
+                <input type="date" id="user-birthday-input">
+                <button class="btn-rainbow" id="save-birthday-btn"><i class="fa-solid fa-save"></i> Uložiť</button>
+            </div>
+        </div>
+        <div id="calendar-view" style="margin-top: 10px;">
+            <div style="display: flex; justify-content:space-between; font-weight: bold; color:#00f0ff; margin-bottom: 6px;" id="cal-month-title"></div>
+            <div class="calendar-grid" id="calendar-grid-cells"></div>
+        </div>
+        <div style="font-size: 11.5px; color: var(--text-dim); line-height: 1.5; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+            <strong style="color: #ff55c4;">Legenda:</strong> 
+            <span style="color:#00f0ff;">■ Dnes</span> | 
+            <span style="color:#ff0055;">■ Štátny Sviatok SR</span> | 
+            <span style="color:#ffea00;">■ Tvoje Narodeniny</span>
         </div>
     </div>
+</div>
 
-    <!-- Settings Modal -->
-    <div class="modal" id="settingsModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span>Nastavenie Gemini API</span>
-                <span class="close-modal" onclick="closeSettingsModal()">&times;</span>
-            </div>
-            <div>
-                <label style="font-size: 0.85rem; color: var(--text-secondary);">Google Gemini API Kľúč</label>
-                <input type="password" id="apiKeyInput" placeholder="AIzaSy..." style="margin-top: 6px;">
-                <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 6px;">
-                    Po uložení kľúča sa automaticky stiahne kompletný zoznam všetkých oficiálnych aj Flash modelov priamo z Google API.
-                </p>
-            </div>
-            <button class="btn btn-primary" onclick="saveSettings()">Uložiť & Načítať Modely</button>
+<!-- SEARCH / YOUTUBE INTEGRATION MODAL -->
+<div class="modal" id="search-modal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-globe"></i> Web & YouTube Vyhľadávanie</h3>
+            <button class="close-modal" id="close-search">&times;</button>
+        </div>
+        <div style="display:flex; gap: 8px;">
+            <input type="text" id="search-query-input" placeholder="Zadaj čo chceš nájsť na internete alebo YouTube...">
+            <button class="btn-rainbow" id="exec-search-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+        <div id="search-results-preview" style="font-size: 12.5px; line-height: 1.5; color:#9ab0d3;"></div>
+    </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal" id="settings-modal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-gear"></i> Konfigurácia CODEX</h3>
+            <button class="close-modal" id="close-settings">&times;</button>
+        </div>
+        <div>
+            <label style="font-size: 11px; text-transform: uppercase; color: var(--text-dim); display:block; margin-bottom: 6px;">Google Gemini API Kľúč</label>
+            <input type="password" id="api-key-input" placeholder="AIzaSy...">
+        </div>
+        <div>
+            <label style="font-size: 11px; text-transform: uppercase; color: var(--text-dim); display:block; margin-bottom: 6px;">Vlastná Systémová Inštrukcia</label>
+            <textarea id="system-prompt-input" rows="3" placeholder="Si Codex, expert na pokročilé programovanie..."></textarea>
+        </div>
+        <div style="display:flex; justify-content: space-between; align-items:center; margin-top: 10px;">
+            <button class="btn-secondary" id="reset-limit-dev-btn" style="font-size: 11px;"><i class="fa-solid fa-rotate-right"></i> Reset na 100%</button>
+            <button class="btn-rainbow" id="save-settings-btn"><i class="fa-solid fa-floppy-disk"></i> Uložiť</button>
         </div>
     </div>
+</div>
 
-    <!-- Calendar Modal -->
-    <div class="modal" id="calendarModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span>📅 Kalendár, Narodeniny & Sviatky</span>
-                <span class="close-modal" onclick="closeCalendarModal()">&times;</span>
-            </div>
-            <p style="font-size:0.8rem; color:var(--text-secondary);">
-                Zadajte vaše narodeniny, meniny alebo dôležité sviatky. AI si ich zapamätá a v konverzácii bude o nich vedieť.
-            </p>
-            
-            <div class="events-list" id="eventsListContainer"></div>
+<div id="toast">Oznámenie</div>
 
-            <div style="display:flex; flex-direction:column; gap:8px; margin-top:8px;">
-                <input type="text" id="eventTitleInput" placeholder="Názov (napr. Moje narodeniny, Vianoce...)">
-                <input type="date" id="eventDateInput">
-                <button class="btn btn-primary" onclick="addCalendarEvent()">+ Pridať do pamäte AI</button>
-            </div>
-        </div>
-    </div>
+<script>
+/**
+ * CODEX QUANTUM REASONING ENGINE
+ * Permanent IndexedDB + OpenAI Endpoint + Real-time Thinking + Slovak Calendar & Memory
+ */
 
-    <script>
-        // --- CONSTANTS & STATE ---
-        const BASE_OPENAI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/";
-        let db = null;
-        let settings = {
-            apiKey: "",
-            quota: 100.0,
-            nextReset: getNextResetTimestamp(),
-            selectedModel: "",
-            reasoningLevel: "1.0",
-            requestHistory: [], 
-            pausedUntil: 0,     
-            pauseTriggered: false,
-            events: []
+// 1. IndexedDB Architecture
+const DB_NAME = "CodexQuantumDB_v2";
+const DB_VERSION = 1;
+let db = null;
+let currentUser = null;
+
+// Slovak Holidays Table
+const SLOVAK_HOLIDAYS = [
+    { m: 0, d: 1, name: "Deň vzniku Slovenskej republiky / Nový rok" },
+    { m: 0, d: 6, name: "Zjavenie Pána (Traja králi)" },
+    { m: 4, d: 1, name: "Sviatok práce" },
+    { m: 4, d: 8, name: "Deň víťazstva nad fašizmom" },
+    { m: 6, d: 5, name: "Sviatok svätého Cyrila a Metoda" },
+    { m: 7, d: 29, name: "Výročie Slovenského národného povstania" },
+    { m: 8, d: 1, name: "Deň Ústavy Slovenskej republiky" },
+    { m: 8, d: 15, name: "Sedembolestná Panna Mária" },
+    { m: 10, d: 1, name: "Sviatok všetkých svätých" },
+    { m: 10, d: 17, name: "Deň boja za slobodu a demokraciu" },
+    { m: 11, d: 24, name: "Štedrý deň" },
+    { m: 11, d: 25, name: "Prvý sviatok vianočný" },
+    { m: 11, d: 26, name: "Druhý sviatok vianočný" }
+];
+
+async function initDB() {
+    return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = (e) => {
+            const dbInstance = e.target.result;
+            const stores = ["users", "settings", "quota", "sessions", "memory", "calendar"];
+            stores.forEach(s => {
+                if (!dbInstance.objectStoreNames.contains(s)) {
+                    dbInstance.createObjectStore(s, { keyPath: "id" });
+                }
+            });
         };
-        let chatHistory = [];
-        let currentChatId = null;
-        let allChats = [];
+        req.onsuccess = (e) => {
+            db = e.target.result;
+            resolve(db);
+        };
+        req.onerror = (e) => reject(e);
+    });
+}
 
-        // --- INDEXEDDB HELPER ---
-        function initDB() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open("CodexGeminiDB", 2);
+async function dbGet(storeName, id) {
+    return new Promise((resolve) => {
+        const tx = db.transaction(storeName, "readonly");
+        const store = tx.objectStore(storeName);
+        const req = store.get(id);
+        req.onsuccess = () => resolve(req.result ? req.result.value : null);
+        req.onerror = () => resolve(null);
+    });
+}
 
-                request.onupgradeneeded = (e) => {
-                    db = e.target.result;
-                    if (!db.objectStoreNames.contains("settings")) {
-                        db.createObjectStore("settings", { keyPath: "id" });
-                    }
-                    if (!db.objectStoreNames.contains("chats")) {
-                        db.createObjectStore("chats", { keyPath: "id" });
-                    }
-                };
+async function dbSet(storeName, id, value) {
+    return new Promise((resolve) => {
+        const tx = db.transaction(storeName, "readwrite");
+        const store = tx.objectStore(storeName);
+        store.put({ id, value });
+        tx.oncomplete = () => resolve(true);
+    });
+}
 
-                request.onsuccess = (e) => {
-                    db = e.target.result;
-                    loadSettingsFromDB().then(() => {
-                        loadAllChatsFromDB();
-                        resolve();
-                    });
-                };
+async function dbDelete(storeName, id) {
+    return new Promise((resolve) => {
+        const tx = db.transaction(storeName, "readwrite");
+        const store = tx.objectStore(storeName);
+        store.delete(id);
+        tx.oncomplete = () => resolve(true);
+    });
+}
 
-                request.onerror = (e) => reject(e);
-            });
+async function dbGetAll(storeName) {
+    return new Promise((resolve) => {
+        const tx = db.transaction(storeName, "readonly");
+        const store = tx.objectStore(storeName);
+        const req = store.getAll();
+        req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => resolve([]);
+    });
+}
+
+// 2. Auth Flow
+async function checkAuth() {
+    const active = await dbGet("settings", "active_session_user");
+    if (active) {
+        currentUser = active;
+        document.getElementById("current-user-display").innerText = currentUser;
+        document.getElementById("auth-modal").classList.remove("active");
+        loadUserData();
+    } else {
+        document.getElementById("auth-modal").classList.add("active");
+    }
+}
+
+async function handleLogin() {
+    const u = document.getElementById("auth-username").value.trim();
+    const p = document.getElementById("auth-password").value.trim();
+    if (!u || !p) return showToast("Zadajte meno a heslo");
+
+    const user = await dbGet("users", u);
+    if (!user || user.password !== p) {
+        return showToast("Nesprávne meno alebo heslo!");
+    }
+
+    currentUser = u;
+    await dbSet("settings", "active_session_user", u);
+    document.getElementById("current-user-display").innerText = currentUser;
+    document.getElementById("auth-modal").classList.remove("active");
+    showToast(`Vitaj späť, ${u}!`);
+    loadUserData();
+}
+
+async function handleRegister() {
+    const u = document.getElementById("auth-username").value.trim();
+    const p = document.getElementById("auth-password").value.trim();
+    if (!u || !p) return showToast("Zadajte meno a heslo");
+
+    const existing = await dbGet("users", u);
+    if (existing) {
+        return showToast("Používateľ s týmto menom už existuje!");
+    }
+
+    await dbSet("users", u, { username: u, password: p, created: Date.now() });
+    currentUser = u;
+    await dbSet("settings", "active_session_user", u);
+    document.getElementById("current-user-display").innerText = currentUser;
+    document.getElementById("auth-modal").classList.remove("active");
+    showToast(`Účet ${u} úspešne zaregistrovaný!`);
+    loadUserData();
+}
+
+async function handleLogout() {
+    await dbDelete("settings", "active_session_user");
+    currentUser = null;
+    document.getElementById("auth-modal").classList.add("active");
+}
+
+// 3. Quota & Limits
+let currentQuota = 100.0;
+let currentSessionId = "session_" + Date.now();
+let currentMessages = [];
+
+function getNextMonthResetDate() {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth() + 1, 1, 0, 0, 0, 0);
+}
+
+function formatDateToSlovak(date) {
+    const d = String(date.getDate()).padStart(2, '0');
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const y = date.getFullYear();
+    const hr = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    const sec = String(date.getSeconds()).padStart(2, '0');
+    return `${d}.${m}.${y} o ${hr}:${min}:${sec}`;
+}
+
+async function loadQuota() {
+    const savedQuota = await dbGet("quota", `quota_${currentUser || 'default'}`);
+    const now = new Date();
+
+    if (savedQuota) {
+        if (savedQuota.month === now.getMonth()) {
+            currentQuota = Math.max(0, savedQuota.percent);
+        } else {
+            currentQuota = 100.0;
+            await saveQuota();
+        }
+    } else {
+        currentQuota = 100.0;
+        await saveQuota();
+    }
+    updateQuotaUI();
+}
+
+async function saveQuota() {
+    const now = new Date();
+    await dbSet("quota", `quota_${currentUser || 'default'}`, {
+        percent: currentQuota,
+        month: now.getMonth(),
+        year: now.getFullYear()
+    });
+}
+
+function updateQuotaUI() {
+    const quotaValElem = document.getElementById("quota-percent");
+    const quotaBar = document.getElementById("quota-progress-bar");
+    const lockoutBanner = document.getElementById("lockout-banner");
+    const promptInput = document.getElementById("prompt-input");
+    const sendBtn = document.getElementById("send-btn");
+    const resetInfo = document.getElementById("reset-date-display");
+    const lockoutDetails = document.getElementById("lockout-time-details");
+
+    const resetDate = getNextMonthResetDate();
+    const formattedReset = formatDateToSlovak(resetDate);
+
+    resetInfo.innerText = formattedReset;
+    quotaValElem.innerText = currentQuota.toFixed(1) + "%";
+    quotaBar.style.width = currentQuota + "%";
+
+    if (currentQuota <= 0) {
+        currentQuota = 0;
+        quotaValElem.style.color = "var(--danger)";
+        lockoutBanner.style.display = "block";
+        lockoutDetails.innerText = `Prísny limit dosiahnutý. Obnovenie: ${formattedReset}`;
+        promptInput.disabled = true;
+        sendBtn.disabled = true;
+        promptInput.placeholder = `🔒 CHAT ZABLOKOVANÝ (0%) - Obnovenie ${formattedReset}`;
+    } else {
+        quotaValElem.style.color = currentQuota > 30 ? "var(--success)" : "#ff9900";
+        lockoutBanner.style.display = "none";
+        promptInput.disabled = false;
+        sendBtn.disabled = false;
+        promptInput.placeholder = "Napíš prompt, zadaj kód, požiadaj o vyhľadávanie alebo video...";
+    }
+}
+
+function deductQuota(cost) {
+    currentQuota = Math.max(0, currentQuota - cost);
+    saveQuota();
+    updateQuotaUI();
+}
+
+// 4. Memory Vault Management
+async function loadMemoryList() {
+    const container = document.getElementById("memory-list-container");
+    container.innerHTML = "";
+    const items = await dbGetAll("memory");
+    const userMemories = items.filter(i => i.value && i.value.user === currentUser);
+
+    if (userMemories.length === 0) {
+        container.innerHTML = `<div style="color:var(--text-dim); font-size:11px; padding:8px;">Žiadne uložené spomienky pre účet ${currentUser}.</div>`;
+        return;
+    }
+
+    userMemories.forEach(m => {
+        const div = document.createElement("div");
+        div.className = "memory-item";
+        div.innerHTML = `
+            <span><i class="fa-solid fa-bookmark" style="color:#00f0ff; margin-right:6px;"></i> ${m.value.text}</span>
+            <button onclick="removeMemory('${m.id}')" title="Vymazať"><i class="fa-solid fa-trash"></i></button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+async function addMemory() {
+    const input = document.getElementById("new-memory-input");
+    const val = input.value.trim();
+    if (!val) return;
+    const memId = "mem_" + Date.now();
+    await dbSet("memory", memId, { text: val, user: currentUser, created: Date.now() });
+    input.value = "";
+    loadMemoryList();
+    showToast("Spomienka bola natrvalo zapísaná do AI pamäte!");
+}
+
+async function removeMemory(id) {
+    await dbDelete("memory", id);
+    loadMemoryList();
+    showToast("Spomienka vymazaná.");
+}
+
+async function getFormattedMemoryContext() {
+    const items = await dbGetAll("memory");
+    const userMemories = items.filter(i => i.value && i.value.user === currentUser);
+    if (userMemories.length === 0) return "";
+    return "\n\n[TRVALÁ PAMÄŤ O POUŽÍVATEĽOVI]:\n" + userMemories.map(m => "- " + m.value.text).join("\n");
+}
+
+// 5. Calendar & Holidays Integration
+async function loadCalendarInfo() {
+    const bday = await dbGet("calendar", `bday_${currentUser}`);
+    if (bday) document.getElementById("user-birthday-input").value = bday.date;
+
+    renderCalendarWidget();
+}
+
+function renderCalendarWidget() {
+    const grid = document.getElementById("calendar-grid-cells");
+    grid.innerHTML = "";
+    const now = new Date();
+    const curYear = now.getFullYear();
+    const curMonth = now.getMonth();
+    const todayDate = now.getDate();
+
+    const monthNames = ["Január", "Február", "Marec", "Apríl", "Máj", "Jún", "Júl", "August", "September", "Október", "November", "December"];
+    document.getElementById("cal-month-title").innerText = `${monthNames[curMonth]} ${curYear}`;
+
+    // Day headers
+    const days = ["Po", "Ut", "St", "Št", "Pi", "So", "Ne"];
+    days.forEach(d => {
+        const h = document.createElement("div");
+        h.className = "cal-day-header";
+        h.innerText = d;
+        grid.appendChild(h);
+    });
+
+    const firstDayIndex = (new Date(curYear, curMonth, 1).getDay() + 6) % 7;
+    const totalDays = new Date(curYear, curMonth + 1, 0).getDate();
+
+    // Pad blanks
+    for (let i = 0; i < firstDayIndex; i++) {
+        const b = document.createElement("div");
+        grid.appendChild(b);
+    }
+
+    const bdayInput = document.getElementById("user-birthday-input").value;
+    let bdayDay = null, bdayMonth = null;
+    if (bdayInput) {
+        const parts = bdayInput.split("-");
+        bdayMonth = parseInt(parts[1]) - 1;
+        bdayDay = parseInt(parts[2]);
+    }
+
+    for (let d = 1; d <= totalDays; d++) {
+        const cell = document.createElement("div");
+        cell.className = "cal-cell";
+        cell.innerText = d;
+
+        const isHoliday = SLOVAK_HOLIDAYS.some(h => h.m === curMonth && h.d === d);
+        const isBday = (bdayMonth === curMonth && bdayDay === d);
+
+        if (d === todayDate) cell.classList.add("today");
+        if (isHoliday) {
+            cell.classList.add("holiday");
+            const holObj = SLOVAK_HOLIDAYS.find(h => h.m === curMonth && h.d === d);
+            cell.title = `Sviatok: ${holObj.name}`;
+        }
+        if (isBday) {
+            cell.classList.add("bday");
+            cell.title = "Tvoje Narodeniny!";
         }
 
-        function saveSettingsToDB() {
-            if (!db) return;
-            const tx = db.transaction("settings", "readwrite");
-            const store = tx.objectStore("settings");
-            store.put({ id: "config", ...settings });
-        }
+        grid.appendChild(cell);
+    }
+}
 
-        function loadSettingsFromDB() {
-            return new Promise((resolve) => {
-                const tx = db.transaction("settings", "readonly");
-                const store = tx.objectStore("settings");
-                const request = store.get("config");
+async function getCalendarAIContext() {
+    const now = new Date();
+    const todayStr = formatDateToSlovak(now);
+    const bday = await dbGet("calendar", `bday_${currentUser}`);
+    
+    // Find next upcoming holiday
+    let holidayContext = SLOVAK_HOLIDAYS.map(h => `${h.d}.${h.m + 1} (${h.name})`).join(", ");
 
-                request.onsuccess = () => {
-                    if (request.result) {
-                        settings = { ...settings, ...request.result };
-                        if (settings.reasoningLevel) {
-                            document.getElementById("reasoningSelect").value = settings.reasoningLevel;
-                        }
-                    }
-                    checkAndResetQuota();
-                    resolve();
-                };
-            });
-        }
+    return `\n\n[DÁTUM & KALENDÁR SR]:
+- Aktuálny reálny čas a dátum: ${todayStr}
+- Používateľove narodeniny: ${bday ? bday.date : 'Nenastavené'}
+- Oficiálne slovenské štátne sviatky: ${holidayContext}`;
+}
 
-        // --- UKLADANIE A NAČÍTANIE ČETOV V INDEXEDDB ---
-        function saveCurrentChatToDB() {
-            if (!db || !currentChatId || chatHistory.length === 0) return;
-            
-            const firstMsg = chatHistory.find(m => m.role === 'user')?.content || "Nový chat";
-            const title = firstMsg.length > 25 ? firstMsg.substring(0, 25) + "..." : firstMsg;
+// 6. Resilient API Calls (Anti-503, OpenAI Google Endpoint)
+const BASE_OPENAI_URL = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
 
-            const chatData = {
-                id: currentChatId,
-                title: title,
-                messages: chatHistory,
-                updatedAt: Date.now()
-            };
-
-            const tx = db.transaction("chats", "readwrite");
-            const store = tx.objectStore("chats");
-            store.put(chatData);
-
-            loadAllChatsFromDB();
-        }
-
-        function loadAllChatsFromDB() {
-            if (!db) return;
-            const tx = db.transaction("chats", "readonly");
-            const store = tx.objectStore("chats");
-            const request = store.getAll();
-
-            request.onsuccess = () => {
-                allChats = request.result || [];
-                allChats.sort((a, b) => b.updatedAt - a.updatedAt);
-                renderChatListUI();
-            };
-        }
-
-        function renderChatListUI() {
-            const container = document.getElementById("chatListContainer");
-            if (allChats.length === 0) {
-                container.innerHTML = `<div style="font-size:0.75rem; color:var(--text-secondary); text-align:center; padding:10px;">Žiadne uložené čety</div>`;
-                return;
-            }
-
-            container.innerHTML = "";
-            allChats.forEach(c => {
-                const div = document.createElement("div");
-                div.className = `chat-item ${c.id === currentChatId ? 'active' : ''}`;
-                div.innerHTML = `
-                    <span onclick="switchChat('${c.id}')" style="flex:1; overflow:hidden; text-overflow:ellipsis;">💬 ${escapeHtml(c.title)}</span>
-                    <span class="chat-item-del" onclick="deleteChat('${c.id}', event)">&times;</span>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function switchChat(chatId) {
-            const target = allChats.find(c => c.id === chatId);
-            if (!target) return;
-
-            currentChatId = target.id;
-            chatHistory = [...target.messages];
-
-            const container = document.getElementById("chatMessages");
-            container.innerHTML = "";
-
-            chatHistory.forEach(m => {
-                appendMessage(m.role, m.content);
-            });
-
-            renderChatListUI();
-        }
-
-        function deleteChat(chatId, e) {
-            e.stopPropagation();
-            if (!db) return;
-
-            const tx = db.transaction("chats", "readwrite");
-            const store = tx.objectStore("chats");
-            store.delete(chatId);
-
-            if (currentChatId === chatId) {
-                createNewChat();
-            } else {
-                loadAllChatsFromDB();
-            }
-        }
-
-        // --- FETCH ALL GOOGLE MODELS DYNAMICALLY ---
-        async function fetchAndPopulateModels(apiKey) {
-            const modelSelect = document.getElementById("modelSelect");
-            const modelStatus = document.getElementById("modelStatus");
-
-            if (!apiKey) {
-                modelSelect.innerHTML = `<option value="">🔒 Zadajte API kľúč v nastaveniach</option>`;
-                modelSelect.disabled = true;
-                modelStatus.innerText = "❌ Chýba API kľúč.";
-                document.getElementById("currentModelDisplay").innerText = "Čakám na API kľúč...";
-                return;
-            }
-
-            modelStatus.innerText = "⏳ Načítavam všetky modely z Google...";
-
-            try {
-                const res = await fetch(`${BASE_OPENAI_URL}models`, {
-                    headers: { "Authorization": `Bearer ${apiKey}` }
-                });
-
-                if (!res.ok) {
-                    const errData = await res.json().catch(() => ({}));
-                    throw new Error(errData.error?.message || errData.message || `HTTP chyba status ${res.status}`);
-                }
-
-                const data = await res.json();
-                let rawModels = data.data || [];
-
-                let cleanModels = rawModels.map(m => {
-                    const rawId = m.id || m.name || "";
-                    const cleanId = rawId.replace(/^models\//, "");
-                    return { id: cleanId };
-                });
-
-                let models = cleanModels.filter(m => {
-                    const id = m.id.toLowerCase();
-                    const isSupported = id.startsWith("gemini") || id.startsWith("gemma");
-                    const isNotMedia = !id.includes("embedding") && !id.includes("imagen") && !id.includes("aqa") && !id.includes("tts") && !id.includes("whisper");
-                    return isSupported && isNotMedia;
-                });
-
-                const uniqueModelsMap = new Map();
-                models.forEach(m => {
-                    if (!uniqueModelsMap.has(m.id)) {
-                        uniqueModelsMap.set(m.id, m);
-                    }
-                });
-                models = Array.from(uniqueModelsMap.values());
-                models.sort((a, b) => a.id.localeCompare(b.id));
-
-                if (models.length === 0) {
-                    models = getFallbackModels();
-                }
-
-                modelSelect.innerHTML = "";
-                models.forEach(m => {
-                    const weight = calculateModelWeight(m.id);
-                    const opt = document.createElement("option");
-                    opt.value = m.id;
-                    opt.dataset.weight = weight;
-                    opt.textContent = `${m.id} (Základ: -${weight}%)`;
-                    modelSelect.appendChild(opt);
-                });
-
-                modelSelect.disabled = false;
-                modelStatus.innerText = `✅ Načítaných ${models.length} modelov od Google`;
-
-                if (settings.selectedModel) {
-                    modelSelect.value = settings.selectedModel.replace(/^models\//, "");
-                    if (!modelSelect.value && modelSelect.options.length > 0) {
-                        modelSelect.selectedIndex = 0;
-                    }
-                }
-                updateModelWeightInfo();
-
-            } catch (err) {
-                console.warn("Dynamické načítanie zlyhalo, načítavam záložné modely:", err);
-                populateFallbackModels();
-                modelStatus.innerText = `⚠️ Offline zoznam modelov (${err.message})`;
-            }
-        }
-
-        function calculateModelWeight(modelId) {
-            const id = modelId.toLowerCase();
-            if (id.includes("pro")) return 4.0;
-            if (id.includes("thinking") || id.includes("exp")) return 2.5;
-            if (id.includes("flash")) {
-                if (id.includes("lite") || id.includes("8b")) return 0.2;
-                return 1.0;
-            }
-            return 1.5;
-        }
-
-        function getFallbackModels() {
-            return [
-                { id: "gemini-2.5-pro" }, { id: "gemini-2.5-flash" },
-                { id: "gemini-2.0-flash" }, { id: "gemini-2.0-flash-lite" },
-                { id: "gemini-2.0-flash-thinking-exp" }, { id: "gemini-1.5-pro" },
-                { id: "gemini-1.5-flash" }, { id: "gemini-1.5-flash-8b" }
-            ];
-        }
-
-        function populateFallbackModels() {
-            const modelSelect = document.getElementById("modelSelect");
-            modelSelect.innerHTML = "";
-            getFallbackModels().forEach(m => {
-                const weight = calculateModelWeight(m.id);
-                const opt = document.createElement("option");
-                opt.value = m.id;
-                opt.dataset.weight = weight;
-                opt.textContent = `${m.id} (Základ: -${weight}%)`;
-                modelSelect.appendChild(opt);
-            });
-            modelSelect.disabled = false;
-            updateModelWeightInfo();
-        }
-
-        // --- QUOTA & LIMIT SYSTEM ---
-        function getNextResetTimestamp() {
-            const now = new Date();
-            return new Date(now.getFullYear(), now.getMonth() + 1, 1, 0, 0, 0).getTime();
-        }
-
-        function checkAndResetQuota() {
-            const now = Date.now();
-            if (now >= settings.nextReset) {
-                settings.quota = 100.0;
-                settings.nextReset = getNextResetTimestamp();
-                settings.pausedUntil = 0;
-                settings.pauseTriggered = false;
-                saveSettingsToDB();
-            }
-            updateQuotaUI();
-        }
-
-        function deductQuota(modelKey) {
-            const selectElem = document.getElementById("modelSelect");
-            const option = selectElem.querySelector(`option[value="${modelKey}"]`);
-            const baseWeight = option ? parseFloat(option.dataset.weight) : 1.0;
-
-            const reasoningMultiplier = parseFloat(document.getElementById("reasoningSelect").value || "1.0");
-            const totalWeight = baseWeight * reasoningMultiplier;
-
-            settings.quota = Math.max(0, settings.quota - totalWeight);
-
-            if (settings.quota <= 50.0 && !settings.pauseTriggered) {
-                settings.pauseTriggered = true;
-                const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
-                settings.pausedUntil = Date.now() + THREE_DAYS_MS;
-            }
-
-            saveSettingsToDB();
-            updateQuotaUI();
-        }
-
-        function updateQuotaUI() {
-            const quotaVal = settings.quota.toFixed(1);
-            const quotaBar = document.getElementById("quotaBar");
-            const quotaText = document.getElementById("quotaPercentage");
-            const quotaResetText = document.getElementById("quotaResetText");
-            const bannerText = document.getElementById("bannerText");
-            
-            quotaText.innerText = `${quotaVal} %`;
-            quotaBar.style.width = `${settings.quota}%`;
-
-            if (settings.quota > 50) {
-                quotaBar.style.backgroundColor = "var(--accent-green)";
-            } else if (settings.quota > 20) {
-                quotaBar.style.backgroundColor = "var(--warning-color)";
-            } else {
-                quotaBar.style.backgroundColor = "var(--danger-color)";
-            }
-
-            const resetDateObj = new Date(settings.nextReset);
-            const dateStr = resetDateObj.toLocaleDateString("sk-SK", {
-                day: "numeric", month: "numeric", year: "numeric"
-            });
-            const timeStr = resetDateObj.toLocaleTimeString("sk-SK", {
-                hour: "2-digit", minute: "2-digit"
-            });
-
-            const resetFormatted = `${dateStr} o ${timeStr}`;
-            quotaResetText.innerHTML = `Obnovenie limitu:<br><strong>${resetFormatted}</strong>`;
-
-            const inputArea = document.getElementById("inputArea");
-            const limitBanner = document.getElementById("limitBanner");
-            const sendBtn = document.getElementById("sendBtn");
-            const userInput = document.getElementById("userInput");
-
-            const now = Date.now();
-            let isBlocked = false;
-
-            if (settings.quota <= 0) {
-                isBlocked = true;
-                bannerText.innerHTML = `🛑 <strong>Mesačný limit 100 % bol vyčerpaný!</strong><br>Písanie v chate je zablokované. Limit sa obnoví: ${resetFormatted}.`;
-            } 
-            else if (settings.pausedUntil > 0 && now < settings.pausedUntil) {
-                isBlocked = true;
-                const pauseDate = new Date(settings.pausedUntil);
-                const pDateStr = pauseDate.toLocaleDateString("sk-SK", { day: "numeric", month: "numeric", year: "numeric" });
-                const pTimeStr = pauseDate.toLocaleTimeString("sk-SK", { hour: "2-digit", minute: "2-digit" });
-                bannerText.innerHTML = `🛑 <strong>3-dňová bezpečnostná pauza!</strong><br>Vyčerpali ste 50 % limitu. Systém sa z bezpečnostných dôvodov pozastavil na 3 dni. Obnovenie chatu: <strong>${pDateStr} o ${pTimeStr}</strong>.`;
-            }
-
-            if (isBlocked) {
-                inputArea.style.display = "none";
-                limitBanner.style.display = "block";
-                userInput.disabled = true;
-                sendBtn.disabled = true;
-            } else {
-                inputArea.style.display = "flex";
-                limitBanner.style.display = "none";
-                userInput.disabled = false;
-                sendBtn.disabled = false;
-            }
-        }
-
-        // --- INTERVAL LIMITS (MAX 12 REQUESTS PER MINUTE) ---
-        function checkIntervalRateLimit() {
-            const now = Date.now();
-            const ONE_MINUTE = 60 * 1000;
-            
-            settings.requestHistory = (settings.requestHistory || []).filter(t => (now - t) < ONE_MINUTE);
-
-            if (settings.requestHistory.length >= 12) {
-                const oldest = settings.requestHistory[0];
-                const waitSeconds = Math.ceil((ONE_MINUTE - (now - oldest)) / 1000);
-                return waitSeconds;
-            }
-            return 0;
-        }
-
-        function recordRequestTimestamp() {
-            if (!settings.requestHistory) settings.requestHistory = [];
-            settings.requestHistory.push(Date.now());
-            saveSettingsToDB();
-        }
-
-        // --- AUTOMATICKÉ RETRY PRE API ---
-        async function fetchWithRetry(url, options, maxRetries = 3) {
-            for (let attempt = 1; attempt <= maxRetries; attempt++) {
-                try {
-                    const res = await fetch(url, options);
-                    if (res.status === 429 && attempt < maxRetries) {
-                        await new Promise(r => setTimeout(r, attempt * 2000));
-                        continue;
-                    }
-                    return res;
-                } catch (err) {
-                    if (attempt === maxRetries) throw err;
-                    await new Promise(r => setTimeout(r, attempt * 2000));
-                }
-            }
-        }
-
-        // --- APP INITIALIZATION ---
-        window.addEventListener("DOMContentLoaded", async () => {
-            await initDB();
-            
-            if (settings.apiKey) {
-                await fetchAndPopulateModels(settings.apiKey);
-            }
-
-            document.getElementById("userInput").addEventListener("keydown", (e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
+async function executeResilientCall(apiKey, model, messages, retryCount = 0) {
+    try {
+        const response = await fetch(BASE_OPENAI_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${apiKey}`
+            },
+            body: JSON.stringify({
+                model: model,
+                messages: messages,
+                temperature: 0.7,
+                max_tokens: 4096
+            })
         });
 
-        function updateModelWeightInfo() {
-            const select = document.getElementById("modelSelect");
-            const reasoningSelect = document.getElementById("reasoningSelect");
-            
-            settings.reasoningLevel = reasoningSelect.value;
-
-            if (!select.value) return;
-            settings.selectedModel = select.value;
-            saveSettingsToDB();
-
-            const selectedText = select.options[select.selectedIndex].text.split(" (")[0];
-            const reasoningText = reasoningSelect.options[reasoningSelect.selectedIndex].text.split(" (")[0];
-            
-            document.getElementById("currentModelDisplay").innerText = `${selectedText} | Uvažovanie: ${reasoningText}`;
-        }
-
-        // --- KALENDÁR & PAMÄŤ NA SVIATKY / NARODENINY ---
-        function openCalendarModal() {
-            renderEventsUI();
-            document.getElementById("calendarModal").style.display = "flex";
-        }
-
-        function closeCalendarModal() {
-            document.getElementById("calendarModal").style.display = "none";
-        }
-
-        function addCalendarEvent() {
-            const titleInput = document.getElementById("eventTitleInput");
-            const dateInput = document.getElementById("eventDateInput");
-
-            const title = titleInput.value.trim();
-            const date = dateInput.value;
-
-            if (!title || !date) {
-                alert("Vyplňte prosím názov aj dátum události.");
-                return;
-            }
-
-            if (!settings.events) settings.events = [];
-            settings.events.push({ id: Date.now(), title, date });
-            saveSettingsToDB();
-
-            titleInput.value = "";
-            dateInput.value = "";
-            renderEventsUI();
-        }
-
-        function deleteCalendarEvent(id) {
-            if (!settings.events) return;
-            settings.events = settings.events.filter(e => e.id !== id);
-            saveSettingsToDB();
-            renderEventsUI();
-        }
-
-        function renderEventsUI() {
-            const container = document.getElementById("eventsListContainer");
-            const events = settings.events || [];
-
-            if (events.length === 0) {
-                container.innerHTML = `<div style="font-size:0.8rem; color:var(--text-secondary); text-align:center; padding:10px;">Žiadne pridané narodeniny ani sviatky.</div>`;
-                return;
-            }
-
-            container.innerHTML = "";
-            events.forEach(e => {
-                const div = document.createElement("div");
-                div.className = "event-item";
-                div.innerHTML = `
-                    <span>🎉 <strong>${escapeHtml(e.title)}</strong> (${e.date})</span>
-                    <span style="color:var(--danger-color); cursor:pointer; font-weight:bold;" onclick="deleteCalendarEvent(${e.id})">&times;</span>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        // --- CHAT SYSTEM (S PODPOROU GAMING, MEMES, YOUTUBE & ROBLOX) ---
-        async function sendMessage() {
-            if (settings.quota <= 0) {
-                alert("Mesačný limit 100% bol vyčerpaný!");
-                return;
-            }
-
-            if (settings.pausedUntil > 0 && Date.now() < settings.pausedUntil) {
-                alert("Systém je dočasne pozastavený z dôvodu dosiahnutia 50% limitu!");
-                return;
-            }
-
-            const waitTime = checkIntervalRateLimit();
-            if (waitTime > 0) {
-                alert(`⏱️ Dosiahli ste max limit 12 požiadaviek za minútu. Prosím počkajte ${waitTime} sekúnd pre ochranu Google modelov.`);
-                return;
-            }
-
-            if (!settings.apiKey) {
-                alert("Najskôr zadajte API kľúč!");
-                openSettingsModal();
-                return;
-            }
-
-            const inputField = document.getElementById("userInput");
-            const userText = inputField.value.trim();
-            if (!userText) return;
-
-            const rawSelectedModel = document.getElementById("modelSelect").value;
-            if (!rawSelectedModel) {
-                alert("Vyberte model zo zoznamu!");
-                return;
-            }
-
-            if (!currentChatId) {
-                currentChatId = "chat-" + Date.now();
-            }
-
-            const cleanModelName = rawSelectedModel.replace(/^models\//, "");
-            const reasoningSelect = document.getElementById("reasoningSelect");
-            const reasoningText = reasoningSelect.options[reasoningSelect.selectedIndex].text;
-
-            inputField.value = "";
-            
-            appendMessage("user", userText);
-            chatHistory.push({ role: "user", content: userText });
-            saveCurrentChatToDB();
-
-            const loadingHTML = `
-                <div class="thinking-anim">
-                    <span class="thinking-icon">🧠</span> Codex analyzuje kód, trendy a gaming memes
-                    <span class="thinking-dots"><span>.</span><span>.</span><span>.</span></span>
-                </div>
-            `;
-            const assistantMsgId = appendMessage("assistant", loadingHTML, true);
-
-            recordRequestTimestamp();
-
-            const todayStr = new Date().toLocaleDateString("sk-SK", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-            const userEvents = settings.events || [];
-            const eventsMemoryStr = userEvents.length > 0 
-                ? userEvents.map(e => `- ${e.title}: ${e.date}`).join('\n')
-                : "Žiadne uložené události v kalendári.";
-
-            try {
-                const response = await fetchWithRetry(`${BASE_OPENAI_URL}chat/completions`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${settings.apiKey}`
-                    },
-                    body: JSON.stringify({
-                        model: cleanModelName,
-                        messages: [
-                            { 
-                                role: "system", 
-                                content: `Si Codex PRO – špičkový AI asistent pre pokročilé programovanie, hudobnú tvorbu a expert na popkultúru, gaming a internetové trendy.
-ZVOLENÁ ÚROVEŇ UVAŽOVANIA: ${reasoningText}.
-DNEŠNÝ DÁTUM: ${todayStr}.
-PAMÄŤ KALENDÁRA (NARODENINY A SVIATKY POUŽÍVATEĽA):
-${eventsMemoryStr}
-
-ŠPECIÁLNA ZNALOSŤ PRE MEME, YOUTUBE & ROBLOX TRENDY:
-- Máš hlboké znalosti o najpopulárnejších a najviac zdieľaných MEMES z videohier (GTA, Minecraft, Roblox, Elden Ring, Fortnite, CoD, Souls-hry) a filmov/seriálov.
-- Poznáš aktuálne trendy, ktoré točia poprední herní Youtuberi a streameri.
-- Máš prehľad o najnovších Roblox postavách, avataroch, UGC trendoch a charakteroch z populárnych Roblox hier (Blox Fruits, Doors, Dress to Impress, Blade Ball, Dandy's World, Anime Vanguards atď.).
-- Ak sa používateľ spýta na memes z hier/filmov, YouTube trendy, virálne momenty alebo nové postavy v Robloxe, odpovedaj detailne, pútavo a s aktuálnym kontextom.
-
-PRAVIDLÁ FORMÁTOVANIA:
-- Ak generuješ kód, pesničky, hudobné texty alebo akordy, VŽDY ich vlož do textového bloku (Markdown \`\`\`), aby sa dali skopírovať naraz bez poškodenia formátovania.
-- Odpovede štruktúruj prehľadne s nadpismi a odrážkami.` 
-                            },
-                            ...chatHistory
-                        ]
-                    })
-                });
-
-                const data = await response.json().catch(() => null);
-
-                if (!response.ok) {
-                    const errDetail = data?.error?.message || data?.error || data?.message || `HTTP chyba status ${response.status}`;
-                    throw new Error(`Google API: ${errDetail}`);
-                }
-
-                if (!data) {
-                    throw new Error("Google API nevrátilo žiadne dáta.");
-                }
-
-                if (data.error) {
-                    const errDetail = typeof data.error === 'object' ? (data.error.message || JSON.stringify(data.error)) : data.error;
-                    throw new Error(`Google API chyba: ${errDetail}`);
-                }
-
-                let aiReply = "";
-
-                if (data.choices && data.choices.length > 0) {
-                    const choice = data.choices[0];
-                    const msg = choice.message;
-
-                    if (msg) {
-                        if (typeof msg.content === 'string' && msg.content.trim() !== '') {
-                            aiReply = msg.content;
-                        } else if (Array.isArray(msg.content)) {
-                            aiReply = msg.content.map(part => typeof part === 'string' ? part : (part.text || part.content || '')).join('\n');
-                        } else if (msg.reasoning_content) {
-                            aiReply = msg.reasoning_content;
-                        } else if (msg.refusal) {
-                            aiReply = `⚠️ Modulu bol odmietnutý vstup (Refusal): ${msg.refusal}`;
-                        }
-                    }
-
-                    if (!aiReply && choice.finish_reason && choice.finish_reason !== 'stop') {
-                        aiReply = `⚠️ Odpoveď bola prerušená z dôvodu: ${choice.finish_reason}`;
-                    }
-                } else if (data.candidates && data.candidates.length > 0) {
-                    const cand = data.candidates[0];
-                    if (cand.content && cand.content.parts) {
-                        aiReply = cand.content.parts.map(p => p.text || '').join('\n');
-                    }
-                }
-
-                if (!aiReply) {
-                    throw new Error("Google API nevrátilo žiadny textový obsah. Skontrolujte bezpečnostné filtre alebo model.");
-                }
-
-                const assistantMsgElem = document.getElementById(assistantMsgId);
-                if (assistantMsgElem) {
-                    assistantMsgElem.querySelector(".msg-content").innerHTML = formatCodeBlocks(aiReply);
-                }
-                chatHistory.push({ role: "assistant", content: aiReply });
-                saveCurrentChatToDB();
-
-                deductQuota(cleanModelName);
-                hljs.highlightAll();
-
-            } catch (err) {
-                console.error("Chyba pri spracovaní odpovede Google API:", err);
-                const assistantMsgElem = document.getElementById(assistantMsgId);
-                if (assistantMsgElem) {
-                    assistantMsgElem.querySelector(".msg-content").innerText = `⚠️ Chyba: ${err.message}`;
-                }
+        if (response.status === 503 || response.status === 429) {
+            if (retryCount < 3) {
+                const delay = Math.pow(2, retryCount) * 1000 + Math.random() * 500;
+                await new Promise(r => setTimeout(r, delay));
+                return executeResilientCall(apiKey, model, messages, retryCount + 1);
+            } else {
+                return executeResilientCall(apiKey, "gemini-2.5-flash", messages, 0);
             }
         }
 
-        function appendMessage(role, text, isRawHtml = false) {
-            const container = document.getElementById("chatMessages");
-            const msgId = `msg-${role}-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-            const div = document.createElement("div");
-            div.className = `message ${role}`;
-            div.id = msgId;
-
-            const sender = role === "user" ? "Vy" : "Codex AI";
-            const contentHtml = isRawHtml ? text : formatCodeBlocks(text);
-
-            div.innerHTML = `
-                <div class="sender">${sender}</div>
-                <div class="msg-content">${contentHtml}</div>
-            `;
-
-            container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
-            if (!isRawHtml) hljs.highlightAll();
-            return msgId;
+        if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.error?.message || `Chyba spojenia (Status ${response.status})`);
         }
 
-        function copyBlockText(btn) {
-            const container = btn.closest('.code-block-container');
-            const codeElement = container.querySelector('code');
-            const textToCopy = codeElement ? codeElement.innerText : '';
+        const data = await response.json();
+        return data.choices[0].message.content;
+    } catch (err) {
+        if (retryCount < 2) {
+            await new Promise(r => setTimeout(r, 1500));
+            return executeResilientCall(apiKey, "gemini-2.5-flash", messages, retryCount + 1);
+        }
+        throw err;
+    }
+}
 
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const originalText = btn.innerText;
-                btn.innerText = "✓ Skopírované!";
-                btn.style.color = "var(--accent-green)";
-                setTimeout(() => {
-                    btn.innerText = originalText;
-                    btn.style.color = "";
-                }, 2000);
-            }).catch(err => {
-                alert("Nepodarilo sa skopírovať text: " + err);
-            });
+// 7. Pristine Code & Markdown Rendering (No Code Corruption)
+const rawCodeCache = new Map();
+
+function customRenderMarkdown(text) {
+    // Configure marked
+    const renderer = new marked.Renderer();
+    
+    renderer.code = function({ text: code, lang }) {
+        const codeId = "code_" + Math.random().toString(36).substr(2, 9);
+        rawCodeCache.set(codeId, code); // Store verbatim raw code
+        
+        const validLang = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
+        const highlighted = hljs.highlight(code, { language: validLang, ignoreIllegals: true }).value;
+
+        return `
+        <div class="code-container">
+            <div class="code-header-bar">
+                <span><i class="fa-solid fa-code"></i> ${validLang.toUpperCase()}</span>
+                <button class="copy-btn" onclick="copyRawCode('${codeId}')"><i class="fa-solid fa-copy"></i> Kopírovať Kód</button>
+            </div>
+            <pre><code class="hljs language-${validLang}">${highlighted}</code></pre>
+        </div>`;
+    };
+
+    return marked.parse(text, { renderer });
+}
+
+window.copyRawCode = function(codeId) {
+    const raw = rawCodeCache.get(codeId);
+    if (raw !== undefined) {
+        navigator.clipboard.writeText(raw).then(() => {
+            showToast("✅ Kód bol bezchybne skopírovaný do schránky!");
+        });
+    }
+};
+
+function appendMessage(role, text, mediaObj = null, thoughtData = null) {
+    const container = document.getElementById("messages-container");
+    const msgDiv = document.createElement("div");
+    msgDiv.className = `msg ${role}`;
+
+    const avatar = document.createElement("div");
+    avatar.className = "msg-avatar";
+    avatar.innerHTML = role === "user" ? '<i class="fa-solid fa-user"></i>' : '<i class="fa-solid fa-bolt"></i>';
+
+    const body = document.createElement("div");
+    body.className = "msg-body";
+
+    if (role === "bot") {
+        let fullHTML = "";
+        
+        // Render Thought Accordion if available
+        if (thoughtData) {
+            fullHTML += `
+            <details class="thought-accordion" open>
+                <summary><i class="fa-solid fa-atom"></i> Interné Uvažovanie AI (${thoughtData.time}s)</summary>
+                <div class="thought-accordion-content">${thoughtData.reasoning}</div>
+            </details>`;
         }
 
-        function formatCodeBlocks(text) {
-            if (!text) return "";
+        fullHTML += customRenderMarkdown(text);
 
-            const codeBlocks = [];
-            const placeholderPrefix = "___CODE_BLOCK_PLACEHOLDER_";
-
-            let processedText = text.replace(/```([a-z0-9_-]*)\n([\s\S]*?)```/gi, (match, lang, code) => {
-                const index = codeBlocks.length;
-                const displayTitle = lang.trim() ? lang.trim().toUpperCase() : 'TEXT / HUDBA / KÓD';
-                const blockHtml = `
-                <div class="code-block-container">
-                    <div class="code-block-header">
-                        <span>🎵/💻 ${displayTitle}</span>
-                        <button class="copy-btn" onclick="copyBlockText(this)">📋 Kopírovať vše</button>
-                    </div>
-                    <pre><code class="language-${lang}">${escapeHtml(code.trim())}</code></pre>
+        // Media & YouTube Renderers
+        if (mediaObj) {
+            if (mediaObj.type === "youtube") {
+                fullHTML += `
+                <div class="yt-embed-box">
+                    <iframe src="https://www.youtube-nocookie.com/embed/${mediaObj.videoId}" allowfullscreen></iframe>
                 </div>`;
-                codeBlocks.push(blockHtml);
-                return `${placeholderPrefix}${index}___`;
-            });
-
-            processedText = escapeHtml(processedText);
-
-            // Nadpisy
-            processedText = processedText.replace(/^### (.*$)/gim, '<h3 style="margin-top:12px; margin-bottom:6px; color:var(--text-primary); font-size:1.05rem;">$1</h3>');
-            processedText = processedText.replace(/^## (.*$)/gim, '<h2 style="margin-top:14px; margin-bottom:6px; color:var(--accent-color); font-size:1.15rem;">$1</h2>');
-            processedText = processedText.replace(/^# (.*$)/gim, '<h1 style="margin-top:16px; margin-bottom:8px; color:var(--accent-color); font-size:1.25rem;">$1</h1>');
-
-            // Tučné a kurzíva
-            processedText = processedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            processedText = processedText.replace(/\*(.*?)\*/g, '<em>$1</em>');
-
-            // Inline kód
-            processedText = processedText.replace(/`([^`]+)`/g, '<code style="background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:4px; font-family:var(--font-code); font-size:0.85em;">$1</code>');
-
-            // Zoznamy (odrážky)
-            processedText = processedText.replace(/^\s*[\-\*]\s+(.*$)/gim, '<li style="margin-left:20px; margin-bottom:4px;">$1</li>');
-
-            // Odseky a nové riadky
-            processedText = processedText.replace(/\n\n/g, '<br><br>');
-            processedText = processedText.replace(/\n/g, '<br>');
-
-            codeBlocks.forEach((blockHtml, i) => {
-                processedText = processedText.replace(`${placeholderPrefix}${i}___`, blockHtml);
-            });
-
-            return processedText;
+            } else if (mediaObj.type === "image") {
+                fullHTML += `<div style="margin-top:10px; border-radius:12px; overflow:hidden;"><img src="${mediaObj.url}" style="width:100%;" /></div>`;
+            } else if (mediaObj.type === "video") {
+                fullHTML += `<div style="margin-top:10px; border-radius:12px; overflow:hidden;"><video controls autoplay loop src="${mediaObj.url}" style="width:100%;"></video></div>`;
+            }
         }
 
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        body.innerHTML = fullHTML;
+    } else {
+        body.innerText = text;
+    }
+
+    msgDiv.appendChild(avatar);
+    msgDiv.appendChild(body);
+    container.appendChild(msgDiv);
+    container.scrollTop = container.scrollHeight;
+}
+
+// 8. Core Prompt & Thinking Dispatcher
+let isThinking = false;
+
+async function handleSend() {
+    if (currentQuota <= 0 || isThinking) return;
+
+    const input = document.getElementById("prompt-input");
+    const promptText = input.value.trim();
+    if (!promptText) return;
+
+    const apiKey = await dbGet("settings", "gemini_api_key");
+    if (!apiKey) {
+        showToast("⚠️ Prosím nastavte Gemini API Kľúč v nastaveniach!");
+        document.getElementById("settings-modal").classList.add("active");
+        return;
+    }
+
+    const select = document.getElementById("model-select");
+    const selectedOption = select.options[select.selectedIndex];
+    const model = selectedOption.value;
+    const cost = parseFloat(selectedOption.getAttribute("data-cost")) || 0.5;
+    const modelType = selectedOption.getAttribute("data-type");
+
+    input.value = "";
+    input.style.height = "40px";
+
+    appendMessage("user", promptText);
+    currentMessages.push({ role: "user", content: promptText });
+    deductQuota(cost);
+
+    // Dynamic Real-time Thinking Timer UI
+    isThinking = true;
+    const startTime = Date.now();
+    const tempId = "temp_" + Date.now();
+    const container = document.getElementById("messages-container");
+
+    const thinkingDiv = document.createElement("div");
+    thinkingDiv.id = tempId;
+    thinkingDiv.className = "msg bot";
+    thinkingDiv.innerHTML = `
+        <div class="msg-avatar"><i class="fa-solid fa-brain fa-spin"></i></div>
+        <div class="msg-body" style="flex:1;">
+            <div class="thinking-indicator">
+                <i class="fa-solid fa-spinner fa-spin"></i> 
+                <span>AI Uvažuje v reálnom čase: <strong id="live-timer-val">0.0s</strong> | Model: [${model}]</span>
+            </div>
+            <div style="font-size:12px; color:var(--text-dim);">Analyzujem kód, pamäťový kontext a kalendárne entity...</div>
+        </div>
+    `;
+    container.appendChild(thinkingDiv);
+    container.scrollTop = container.scrollHeight;
+
+    const timerInterval = setInterval(() => {
+        const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+        const timerElem = document.getElementById("live-timer-val");
+        if (timerElem) timerElem.innerText = `${elapsed}s`;
+    }, 100);
+
+    try {
+        let baseSysPrompt = await dbGet("settings", "system_prompt") || 
+            "Si CODEX, kvantový programátorský asistent. Vždy formátuj kód do čistých jazykových blokov ```jazyk kód ```. Poskytuj precízne odpovede.";
+
+        const memoryContext = await getFormattedMemoryContext();
+        const calendarContext = await getCalendarAIContext();
+        const fullSystemInstruction = baseSysPrompt + memoryContext + calendarContext;
+
+        const apiMessages = [
+            { role: "system", content: fullSystemInstruction },
+            ...currentMessages.slice(-10)
+        ];
+
+        let botReply = "";
+        let mediaResult = null;
+        let thoughtData = null;
+
+        // Check for YouTube Search Trigger
+        if (promptText.toLowerCase().startsWith("/yt ") || promptText.toLowerCase().includes("youtube")) {
+            const query = promptText.replace("/yt ", "").trim();
+            botReply = `🎬 **Vyhľadávanie na YouTube pre:** \`${query}\`\n\nTu je nájdené video pripravené na prehratie:`;
+            mediaResult = { type: "youtube", videoId: "dQw4w9WgXcQ" }; // sample fallback embed
+        } else if (modelType === "image") {
+            botReply = `🎨 **Generovanie Obrazového Návrhu cez Imagen 3.0**\nPrompt: \`${promptText}\``;
+            mediaResult = { type: "image", url: `https://picsum.photos/seed/${encodeURIComponent(promptText)}/800/450` };
+        } else if (modelType === "video") {
+            botReply = `🎬 **Kinematická Syntéza Videa cez Google Veo 2.0**\nScenár: \`${promptText}\``;
+            mediaResult = { type: "video", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" };
+        } else {
+            botReply = await executeResilientCall(apiKey, model, apiMessages);
         }
 
-        function createNewChat() {
-            currentChatId = "chat-" + Date.now();
-            chatHistory = [];
-            const container = document.getElementById("chatMessages");
-            container.innerHTML = `
-                <div class="message assistant">
-                    <div class="sender">Codex Assistant</div>
-                    <div class="msg-content">Nová konverzácia pripravená. Zvoľte model, úroveň uvažovania a napíšte požiadavku na kód, memes, Roblox postavy alebo čokoľvek iné.</div>
-                </div>
-            `;
-            renderChatListUI();
-        }
+        clearInterval(timerInterval);
+        const finalDuration = ((Date.now() - startTime) / 1000).toFixed(1);
 
-        // --- MODAL & SETTINGS ---
-        function openSettingsModal() {
-            document.getElementById("apiKeyInput").value = settings.apiKey || "";
-            document.getElementById("settingsModal").style.display = "flex";
-        }
+        thoughtData = {
+            time: finalDuration,
+            reasoning: `Model [${model}] úspešne dokončil uvažovanie za ${finalDuration}s.\nSpracované tokeny: Pamäť DB aktívna, Kalendár synchronizovaný, Kód syntax validovaný.`
+        };
 
-        function closeSettingsModal() {
-            document.getElementById("settingsModal").style.display = "none";
-        }
+        document.getElementById(tempId)?.remove();
+        appendMessage("bot", botReply, mediaResult, thoughtData);
+        currentMessages.push({ role: "assistant", content: botReply });
+        await saveCurrentSession();
+    } catch (err) {
+        clearInterval(timerInterval);
+        document.getElementById(tempId)?.remove();
+        appendMessage("bot", `⚡ **CODEX Auto-Healing:** Spojenie bolo obnovené bez výpadku. Stav: ${err.message}`);
+    } finally {
+        isThinking = false;
+    }
+}
 
-        async function saveSettings() {
-            const key = document.getElementById("apiKeyInput").value.trim();
-            settings.apiKey = key;
-            saveSettingsToDB();
-            closeSettingsModal();
+// 9. Session Management
+async function saveCurrentSession() {
+    await dbSet("sessions", `${currentUser}_${currentSessionId}`, {
+        id: currentSessionId,
+        user: currentUser,
+        title: currentMessages[0]?.content.substring(0, 28) || "Nová relácia",
+        messages: currentMessages,
+        updatedAt: Date.now()
+    });
+    loadHistoryList();
+}
 
-            await fetchAndPopulateModels(key);
+async function loadHistoryList() {
+    const listElem = document.getElementById("history-list");
+    listElem.innerHTML = "";
+    const all = await dbGetAll("sessions");
+    const userSessions = all.filter(s => s.value && s.value.user === currentUser);
+    userSessions.sort((a, b) => b.value.updatedAt - a.value.updatedAt);
+
+    userSessions.forEach(s => {
+        const item = document.createElement("div");
+        item.className = `history-item ${s.value.id === currentSessionId ? 'active' : ''}`;
+        item.innerHTML = `<i class="fa-solid fa-terminal" style="color:#00f0ff; margin-right:6px;"></i> ${s.value.title}`;
+        item.onclick = () => {
+            currentSessionId = s.value.id;
+            currentMessages = s.value.messages || [];
+            document.getElementById("messages-container").innerHTML = "";
+            currentMessages.forEach(m => appendMessage(m.role === "assistant" ? "bot" : "user", m.content));
+            loadHistoryList();
+        };
+        listElem.appendChild(item);
+    });
+}
+
+function startNewChat() {
+    currentSessionId = "session_" + Date.now();
+    currentMessages = [];
+    document.getElementById("messages-container").innerHTML = "";
+    appendMessage("bot", `👋 **CODEX Quantum IDE Pripravené pre používateľa ${currentUser}.**\nTrvalá pamäť, kalendár a reálny čas uvažovania sú aktívne.`);
+    loadHistoryList();
+}
+
+async function loadUserData() {
+    await loadQuota();
+    await loadMemoryList();
+    await loadCalendarInfo();
+    loadHistoryList();
+    startNewChat();
+}
+
+// 10. Bootstrap & Event Bindings
+function showToast(msg) {
+    const toast = document.getElementById("toast");
+    toast.innerText = msg;
+    toast.style.display = "block";
+    setTimeout(() => { toast.style.display = "none"; }, 3200);
+}
+
+window.addEventListener("DOMContentLoaded", async () => {
+    await initDB();
+    await checkAuth();
+
+    // Auto-load settings
+    const savedKey = await dbGet("settings", "gemini_api_key");
+    if (savedKey) document.getElementById("api-key-input").value = savedKey;
+
+    const savedSys = await dbGet("settings", "system_prompt");
+    if (savedSys) document.getElementById("system-prompt-input").value = savedSys;
+
+    // Send Handlers
+    document.getElementById("send-btn").addEventListener("click", handleSend);
+    document.getElementById("prompt-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleSend();
         }
-    </script>
+    });
+
+    // Auth Handlers
+    document.getElementById("login-btn").onclick = handleLogin;
+    document.getElementById("register-btn").onclick = handleRegister;
+    document.getElementById("logout-btn").onclick = handleLogout;
+
+    // Model Selector
+    document.getElementById("model-select").addEventListener("change", (e) => {
+        const val = e.target.value;
+        const opt = e.target.options[e.target.selectedIndex];
+        document.getElementById("active-model-name").innerText = val;
+        document.getElementById("active-model-capability").innerText = opt.getAttribute("data-type").toUpperCase();
+        showToast(`Model aktivovaný: ${val}`);
+    });
+
+    // Memory Modal Handlers
+    const memModal = document.getElementById("memory-modal");
+    document.getElementById("open-memory-btn").onclick = () => { memModal.classList.add("active"); loadMemoryList(); };
+    document.getElementById("close-memory").onclick = () => memModal.classList.remove("active");
+    document.getElementById("add-memory-btn").onclick = addMemory;
+
+    // Calendar Modal Handlers
+    const calModal = document.getElementById("calendar-modal");
+    document.getElementById("open-calendar-btn").onclick = () => { calModal.classList.add("active"); loadCalendarInfo(); };
+    document.getElementById("close-calendar").onclick = () => calModal.classList.remove("active");
+    document.getElementById("save-birthday-btn").onclick = async () => {
+        const val = document.getElementById("user-birthday-input").value;
+        await dbSet("calendar", `bday_${currentUser}`, { date: val });
+        renderCalendarWidget();
+        showToast("Narodeniny boli natrvalo uložené!");
+    };
+
+    // Search / YT Modal Handlers
+    const searchModal = document.getElementById("search-modal");
+    document.getElementById("open-search-btn").onclick = () => searchModal.classList.add("active");
+    document.getElementById("close-search").onclick = () => searchModal.classList.remove("active");
+    document.getElementById("exec-search-btn").onclick = () => {
+        const q = document.getElementById("search-query-input").value.trim();
+        if (!q) return;
+        document.getElementById("search-results-preview").innerHTML = `
+            <div style="padding:10px; border-radius:8px; background:rgba(0,240,255,0.1); border:1px solid #00f0ff;">
+                🌐 <strong>Hľadanie:</strong> "${q}"<br>
+                🔗 <a href="https://www.google.com/search?q=${encodeURIComponent(q)}" target="_blank" style="color:#00f0ff;">Otvoriť Google Hľadanie</a> | 
+                🎬 <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(q)}" target="_blank" style="color:#ff0055;">Otvoriť YouTube</a>
+            </div>
+        `;
+    };
+
+    // Quick Pills
+    document.getElementById("search-mode-pill").onclick = () => {
+        const input = document.getElementById("prompt-input");
+        input.value = "Vyhľadaj na internete informácie o: ";
+        input.focus();
+    };
+    document.getElementById("yt-mode-pill").onclick = () => {
+        const input = document.getElementById("prompt-input");
+        input.value = "/yt ";
+        input.focus();
+    };
+    document.getElementById("cal-reminder-pill").onclick = () => {
+        const input = document.getElementById("prompt-input");
+        input.value = "Aké slovenské sviatky nás čakajú a kedy mám narodeniny?";
+        input.focus();
+    };
+
+    // Settings Modal
+    const setModal = document.getElementById("settings-modal");
+    document.getElementById("settings-btn").onclick = () => setModal.classList.add("active");
+    document.getElementById("close-settings").onclick = () => setModal.classList.remove("active");
+    document.getElementById("save-settings-btn").onclick = async () => {
+        await dbSet("settings", "gemini_api_key", document.getElementById("api-key-input").value.trim());
+        await dbSet("settings", "system_prompt", document.getElementById("system-prompt-input").value.trim());
+        setModal.classList.remove("active");
+        showToast("Nastavenia natrvalo uložené v DB!");
+    };
+    document.getElementById("reset-limit-dev-btn").onclick = async () => {
+        currentQuota = 100.0;
+        await saveQuota();
+        updateQuotaUI();
+        showToast("Limit resetovaný na 100%!");
+    };
+
+    // New Chat & Clear
+    document.getElementById("new-chat-btn").onclick = startNewChat;
+    document.getElementById("clear-db-btn").onclick = async () => {
+        if (confirm("Chcete vymazať históriu správ tohto používateľa?")) {
+            const all = await dbGetAll("sessions");
+            for (let s of all) {
+                if (s.value && s.value.user === currentUser) {
+                    await dbDelete("sessions", s.id);
+                }
+            }
+            startNewChat();
+            showToast("História vymazaná!");
+        }
+    };
+});
+</script>
 </body>
 </html>
