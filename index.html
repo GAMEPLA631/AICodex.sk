@@ -182,7 +182,7 @@
                 </button>
                 <button onclick="switchTab('models')" id="nav-models" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-400 hover:bg-gray-800/40 hover:text-gray-200">
                     <i class="fa-solid fa-layer-group w-5 text-emerald-400"></i>
-                    <span class="flex-1 text-left">Modely (Google & Ollama)</span>
+                    <span class="flex-1 text-left">Všetky AI Modely</span>
                     <span id="models-count-badge" class="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded-md border border-emerald-500/30">0</span>
                 </button>
                 <button onclick="switchTab('settings')" id="nav-settings" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition text-gray-400 hover:bg-gray-800/40 hover:text-gray-200">
@@ -196,7 +196,7 @@
         <div class="p-4 m-3 rainbow-border">
             <div class="flex items-center justify-between mb-2">
                 <span class="text-xs font-semibold text-gray-300 flex items-center">
-                    <i class="fa-solid fa-bolt text-amber-400 mr-1.5"></i> Mesačný Limit
+                    <i class="fa-solid fa-bolt text-amber-400 mr-1.5"></i> Mesačný Limit (Prísny)
                 </span>
                 <span class="text-xs font-mono font-bold rainbow-text" id="limit-percentage-text">100 %</span>
             </div>
@@ -222,7 +222,7 @@
                 <i class="fa-solid fa-triangle-exclamation text-amber-300 text-xl"></i>
                 <div class="text-left">
                     <h4 class="font-bold text-sm text-white">Mesačný limit bol úplne vyčerpaný (0.0 %)!</h4>
-                    <p class="text-xs text-red-200">Prísny systém zablokoval odosielanie správ. Obnovte limit v Nastaveniach alebo prepnite na Ollama model.</p>
+                    <p class="text-xs text-red-200">Prísny systém zablokoval odosielanie správ. Prepnite na Open-Source alebo obnovte limit v Nastaveniach.</p>
                 </div>
             </div>
         </div>
@@ -274,12 +274,12 @@
                     </div>
                     <h2 class="text-2xl font-extrabold text-white mb-2 tracking-wide">Vítajte v Codex Ultra Studio</h2>
                     <p class="text-xs md:text-sm text-gray-300 mb-4 max-w-lg mx-auto leading-relaxed">
-                        Pokročilé štúdio s podporou Google Gemini a Open-Source Ollama modelov. Ollama modely disponujú obrovskými limitmi (iba 0.1 % na prompt).
+                        Pokročilé programátorské štúdio s pripojením na Cloudové Open-Source Endpoints (DeepSeek-R1, Llama 3.3, Qwen 2.5 Coder), Google Gemini a Ollama.
                     </p>
                     <div class="flex flex-wrap justify-center gap-2 text-xs">
-                        <span class="px-3 py-1 bg-emerald-900/40 border border-emerald-500/30 text-emerald-300 rounded-full"><i class="fa-solid fa-server mr-1"></i> Ollama Open-Source (Mega Limity)</span>
-                        <span class="px-3 py-1 bg-purple-900/40 border border-purple-500/30 text-purple-300 rounded-full"><i class="fa-solid fa-bolt mr-1"></i> Google Gemini Pro & Flash</span>
-                        <span class="px-3 py-1 bg-cyan-900/40 border border-cyan-500/30 text-cyan-300 rounded-full"><i class="fa-solid fa-database mr-1"></i> IndexedDB Trvalé Úložisko</span>
+                        <span class="px-3 py-1 bg-cyan-900/40 border border-cyan-500/30 text-cyan-300 rounded-full"><i class="fa-solid fa-globe mr-1"></i> Open-Source Cloud Endpoints</span>
+                        <span class="px-3 py-1 bg-emerald-900/40 border border-emerald-500/30 text-emerald-300 rounded-full"><i class="fa-solid fa-bolt mr-1"></i> Iba 0.2 % / prompt pre OSS</span>
+                        <span class="px-3 py-1 bg-purple-900/40 border border-purple-500/30 text-purple-300 rounded-full"><i class="fa-solid fa-database mr-1"></i> IndexedDB Trvalé Úložisko</span>
                     </div>
                 </div>
             </div>
@@ -287,7 +287,7 @@
             <!-- Thinking / Reasoning Indicator Bar -->
             <div id="reasoning-indicator" class="hidden px-6 py-2.5 bg-purple-950/40 border-t border-purple-800/40 flex items-center space-x-3 text-xs text-purple-300 backdrop-blur-md">
                 <div class="w-2.5 h-2.5 rounded-full bg-purple-400 animate-ping"></div>
-                <span class="font-mono font-medium" id="reasoning-text">AI hlboko uvažuje a spracováva požiadavku...</span>
+                <span class="font-mono font-medium" id="reasoning-text">AI hlboko uvažuje a analyzuje požiadavku...</span>
             </div>
 
             <!-- Input Box -->
@@ -380,22 +380,19 @@
             </div>
         </section>
 
-        <!-- TAB 4: ALL MODELS LIST (GOOGLE & OLLAMA) -->
+        <!-- TAB 4: ALL MODELS LIST (GOOGLE, OSS ENDPOINTS, OLLAMA) -->
         <section id="tab-models" class="hidden flex-1 p-6 overflow-y-auto">
             <div class="max-w-5xl mx-auto space-y-6">
                 <div class="border-b border-[#1a1f35] pb-4 flex flex-wrap items-center justify-between gap-4">
                     <div>
                         <h2 class="text-xl font-bold text-white flex items-center">
-                            <i class="fa-solid fa-layer-group text-emerald-400 mr-2"></i> Všetky Modely (Google Gemini & Ollama)
+                            <i class="fa-solid fa-layer-group text-emerald-400 mr-2"></i> Všetky AI Modely (Open-Source, Gemini, Ollama)
                         </h2>
-                        <p class="text-xs text-gray-400">Prehľad modelov. Ollama Open-Source modely majú nastavené mimoriadne vysoké limity (0.1 % / prompt).</p>
+                        <p class="text-xs text-gray-400">Pripojte sa k pokročilým modelom ako DeepSeek R1 a Llama 3.3 cez Cloud Endpoints s férovou spotrebou.</p>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <button onclick="fetchGoogleModelsOnline(true)" class="px-3 py-2 text-xs font-semibold bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 border border-purple-500/40 rounded-xl transition flex items-center">
-                            <i class="fa-brands fa-google mr-1.5"></i> Sync Gemini
-                        </button>
-                        <button onclick="fetchOllamaModels(true)" class="px-3 py-2 text-xs font-semibold bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/40 rounded-xl transition flex items-center">
-                            <i class="fa-solid fa-server mr-1.5"></i> Sync Ollama
+                        <button onclick="refreshAllModelsList(true)" class="px-3 py-2 text-xs font-semibold bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/40 rounded-xl transition flex items-center">
+                            <i class="fa-solid fa-rotate mr-1.5"></i> Synchronizovať Všetky Modely
                         </button>
                     </div>
                 </div>
@@ -406,14 +403,41 @@
             </div>
         </section>
 
-        <!-- TAB 5: SETTINGS & API KEYS (GEMINI & OLLAMA) -->
+        <!-- TAB 5: SETTINGS & API KEYS -->
         <section id="tab-settings" class="hidden flex-1 p-6 overflow-y-auto">
             <div class="max-w-3xl mx-auto space-y-6">
                 <div class="border-b border-[#1a1f35] pb-4">
                     <h2 class="text-xl font-bold text-white flex items-center">
                         <i class="fa-solid fa-sliders text-amber-400 mr-2"></i> Nastavenia Aplikácie & API
                     </h2>
-                    <p class="text-xs text-gray-400">Konfigurácia Gemini API kľúča, Ollama Open-Source servera, správa limitov a IndexedDB.</p>
+                    <p class="text-xs text-gray-400">Konfigurácia Cloudových Open-Source Endpoints, Google Gemini, Ollama a správa limitov.</p>
+                </div>
+
+                <!-- Open-Source Cloud Endpoints Card -->
+                <div class="glass-card rounded-2xl p-5 space-y-4 rainbow-border">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-sm text-cyan-300 flex items-center">
+                            <i class="fa-solid fa-globe mr-2 text-cyan-400"></i> Open-Source Cloud Endpoint (OpenRouter, Groq, Together, HF)
+                        </h3>
+                        <span class="text-[10px] bg-cyan-950/60 text-cyan-300 px-2 py-0.5 rounded-full border border-cyan-500/30 font-mono">0.2 % / prompt</span>
+                    </div>
+                    <p class="text-xs text-gray-400">Pripojte sa k serverless cloudovým endpointom pre modely DeepSeek R1, Llama 3.3, Qwen 2.5 a ďalšie.</p>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Open-Source Endpoint URL (napr. https://openrouter.ai/api/v1 alebo https://api.groq.com/openai/v1):</label>
+                            <input type="text" id="oss-endpoint-input" placeholder="https://openrouter.ai/api/v1" class="w-full bg-[#101426] border border-gray-700/70 rounded-xl px-4 py-2.5 text-sm text-cyan-300 font-mono focus:outline-none focus:border-cyan-400 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Open-Source API Kľúč / Token (OpenRouter / Groq / Vlastný):</label>
+                            <input type="password" id="oss-key-input" placeholder="sk-or-v1-... alebo gsk_..." class="w-full bg-[#101426] border border-gray-700/70 rounded-xl px-4 py-2.5 text-sm text-cyan-300 font-mono focus:outline-none focus:border-cyan-400 transition">
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button onclick="saveOssSettings()" class="px-5 py-2.5 text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-gray-950 font-bold rounded-xl transition shadow-lg flex items-center">
+                            <i class="fa-solid fa-cloud-arrow-down mr-1.5"></i> Uložiť Open-Source Endpoint
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Google Gemini API Key Card -->
@@ -432,29 +456,20 @@
                     </div>
                 </div>
 
-                <!-- Ollama Open-Source Configuration Card -->
-                <div class="glass-card rounded-2xl p-5 space-y-4 rainbow-border">
-                    <div class="flex items-center justify-between">
-                        <h3 class="font-bold text-sm text-emerald-300 flex items-center">
-                            <i class="fa-solid fa-server mr-2 text-emerald-400"></i> Ollama Open-Source Server (Mega Limity)
-                        </h3>
-                        <span class="text-[10px] bg-emerald-950/60 text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-500/30 font-mono">Iba 0.1 % / prompt</span>
-                    </div>
-                    <p class="text-xs text-gray-400">Pripojte lokálny alebo vzdialený Ollama server (napr. DeepSeek-R1, Llama 3, Qwen 2.5 Coder).</p>
-                    
+                <!-- Ollama Local Configuration Card -->
+                <div class="glass-card rounded-2xl p-5 space-y-4">
+                    <h3 class="font-bold text-sm text-emerald-300 flex items-center">
+                        <i class="fa-solid fa-server mr-2 text-emerald-400"></i> Ollama Lokálny Server (Voliteľné)
+                    </h3>
                     <div class="space-y-3">
                         <div>
                             <label class="block text-xs text-gray-400 mb-1">Ollama Host URL (Predvolené: http://localhost:11434):</label>
                             <input type="text" id="ollama-url-input" placeholder="http://localhost:11434" class="w-full bg-[#101426] border border-gray-700/70 rounded-xl px-4 py-2.5 text-sm text-emerald-300 font-mono focus:outline-none focus:border-emerald-400 transition">
                         </div>
-                        <div>
-                            <label class="block text-xs text-gray-400 mb-1">Ollama API Kľúč / Auth Token (Voliteľné):</label>
-                            <input type="password" id="ollama-key-input" placeholder="Bearer token (ak je vyžadovaný)..." class="w-full bg-[#101426] border border-gray-700/70 rounded-xl px-4 py-2.5 text-sm text-emerald-300 font-mono focus:outline-none focus:border-emerald-400 transition">
-                        </div>
                     </div>
                     <div class="flex justify-end">
-                        <button onclick="saveOllamaSettings()" class="px-5 py-2.5 text-xs bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-gray-950 font-bold rounded-xl transition shadow-lg flex items-center">
-                            <i class="fa-solid fa-cloud-arrow-down mr-1.5"></i> Uložiť a Načítať Ollama Modely
+                        <button onclick="saveOllamaSettings()" class="px-4 py-2 text-xs bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 rounded-xl hover:bg-emerald-600/50 transition">
+                            Uložiť Ollama Host
                         </button>
                     </div>
                 </div>
@@ -462,9 +477,9 @@
                 <!-- Limits Management Panel -->
                 <div class="glass-card rounded-2xl p-5 space-y-4">
                     <h3 class="font-bold text-sm text-purple-300 flex items-center">
-                        <i class="fa-solid fa-chart-pie mr-2"></i> Správa Mesačného Limitu
+                        <i class="fa-solid fa-chart-pie mr-2"></i> Správa Mesačného Limitu (Prísny Režim)
                     </h3>
-                    <p class="text-xs text-gray-400">Gemini modely spotrebúvajú 1.0 % - 4.5 %, zatiaľ čo Ollama modely spotrebúvajú len 0.1 % (10x až 40x väčšia kapacita!).</p>
+                    <p class="text-xs text-gray-400">Open-Source Endpoints spotrebúvajú len 0.2 % na správu (500 správ), Gemini spotrebúva 1.0 % - 4.5 %. Pri 0.0 % je chat striktne zablokovaný.</p>
                     
                     <div class="flex items-center justify-between p-3.5 bg-[#101426] border border-[#1d243e] rounded-xl">
                         <div>
@@ -561,31 +576,38 @@
         const DB_VERSION = 1;
         let db = null;
 
+        // Vstavané Cloud Open-Source Endpoints Modely
+        const BASE_OSS_MODELS = [
+            { id: 'oss:deepseek/deepseek-r1', name: 'DeepSeek R1 (Deep Reasoning)', provider: 'oss', cost: 0.2, desc: 'Revolučný open-source model s uvažovaním a riešením komplexného kódu.', badge: 'Open-Source R1' },
+            { id: 'oss:meta-llama/llama-3.3-70b-instruct', name: 'Llama 3.3 70B Instruct', provider: 'oss', cost: 0.2, desc: 'Vlajková loď od Meta AI pre programovanie, architektúru a všeobecné úlohy.', badge: 'Llama 3.3' },
+            { id: 'oss:qwen/qwen-2.5-coder-32b-instruct', name: 'Qwen 2.5 Coder 32B', provider: 'oss', cost: 0.2, desc: 'Špičkový model špecializovaný na generovanie, refaktorovanie a debugovanie kódu.', badge: 'Qwen Coder' },
+            { id: 'oss:mistralai/mistral-large-2411', name: 'Mistral Large 2411', provider: 'oss', cost: 0.2, desc: 'Najvýkonnejší európsky open-source model s vysokou presnosťou a rýchlosťou.', badge: 'Mistral Large' },
+            { id: 'oss:microsoft/phi-4', name: 'Microsoft Phi-4', provider: 'oss', cost: 0.2, desc: 'Vysoko optimalizovaný kompaktný model s pokročilým matematickým uvažovaním.', badge: 'Microsoft Phi' }
+        ];
+
         // Base Gemini Modely
         const BASE_GEMINI_MODELS = [
             { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', provider: 'gemini', cost: 1.5, desc: 'Najrýchlejší a vyvážený model pre kódovanie a všeobecné úlohy.', badge: 'Google Flash' },
             { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', provider: 'gemini', cost: 4.5, desc: 'Najvýkonnejší model pre komplexné programovanie, logiku a matematiku.', badge: 'Google Pro' },
             { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', provider: 'gemini', cost: 1.2, desc: 'Univerzálny model novej generácie pre všestranný vývoj.', badge: 'Google Štandard' },
             { id: 'gemini-2.0-flash-lite', name: 'Gemini 2.0 Flash Lite', provider: 'gemini', cost: 0.8, desc: 'Ultra-ľahký model s minimálnou spotrebou mesačného limitu.', badge: 'Google Úsporný' },
-            { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', provider: 'gemini', cost: 3.5, desc: 'Model s obrovským 2M tokenovým kontextom na analýzu projektov.', badge: 'Google Veľký kontext' }
+            { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', provider: 'gemini', cost: 3.5, desc: 'Model s obrovským 2M tokenovým kontextom na analýzu projektov.', badge: 'Google Kontext' }
         ];
 
-        // Base Ollama Open-Source Modely s obrovskými limitmi (0.1% cost)
+        // Base Ollama Modely
         const BASE_OLLAMA_MODELS = [
-            { id: 'ollama:deepseek-r1', name: 'DeepSeek R1 (Open-Source Reasoning)', provider: 'ollama', cost: 0.1, desc: 'Špičkový open-source model s hlbokým uvažovaním cez Ollama.', badge: 'Ollama Open-Source' },
-            { id: 'ollama:llama3.3', name: 'Llama 3.3 70B', provider: 'ollama', cost: 0.1, desc: 'Veľmi schopný model pre programovanie a logiku od Meta.', badge: 'Ollama Open-Source' },
-            { id: 'ollama:qwen2.5-coder', name: 'Qwen 2.5 Coder', provider: 'ollama', cost: 0.1, desc: 'Špecializovaný model pre programovanie a generovanie kódu.', badge: 'Ollama Coder' },
-            { id: 'ollama:mistral', name: 'Mistral 7B / Nemo', provider: 'ollama', cost: 0.1, desc: 'Rýchly a kompaktný open-source model pre lokálne použitie.', badge: 'Ollama Open-Source' }
+            { id: 'ollama:deepseek-r1', name: 'Ollama: DeepSeek R1 (Local)', provider: 'ollama', cost: 0.1, desc: 'Lokálny open-source model spustený priamo cez Ollama na vašom PC.', badge: 'Ollama Local' }
         ];
 
         const state = {
             apiKey: '',
+            ossEndpoint: 'https://openrouter.ai/api/v1',
+            ossApiKey: '',
             ollamaUrl: 'http://localhost:11434',
-            ollamaApiKey: '',
             currentUser: null,
             limitRemaining: 100.0,
             lastResetTime: Date.now(),
-            selectedModel: 'gemini-2.5-flash',
+            selectedModel: 'oss:deepseek/deepseek-r1',
             enableReasoning: false,
             enableWebSearch: false,
             enableYtSearch: false,
@@ -689,8 +711,9 @@
                 await initDB();
                 
                 state.apiKey = (await getDBItem('settings', 'apiKey')) || '';
+                state.ossEndpoint = (await getDBItem('settings', 'ossEndpoint')) || 'https://openrouter.ai/api/v1';
+                state.ossApiKey = (await getDBItem('settings', 'ossApiKey')) || '';
                 state.ollamaUrl = (await getDBItem('settings', 'ollamaUrl')) || 'http://localhost:11434';
-                state.ollamaApiKey = (await getDBItem('settings', 'ollamaApiKey')) || '';
 
                 const savedLimit = await getDBItem('settings', 'limitRemaining');
                 if (savedLimit !== null && savedLimit !== undefined) {
@@ -698,17 +721,15 @@
                 }
 
                 document.getElementById('api-key-input').value = state.apiKey;
+                document.getElementById('oss-endpoint-input').value = state.ossEndpoint;
+                document.getElementById('oss-key-input').value = state.ossApiKey;
                 document.getElementById('ollama-url-input').value = state.ollamaUrl;
-                document.getElementById('ollama-key-input').value = state.ollamaApiKey;
 
-                // Načítanie modelov
                 await refreshAllModelsList();
 
-                // Načítanie používateľa
                 state.currentUser = await getDBItem('settings', 'currentUser');
                 updateUserUI();
 
-                // Načítanie dát
                 renderMemories();
                 renderCalendar();
                 updateLimitUI();
@@ -719,11 +740,11 @@
             }
         };
 
-        // Zjednotené načítanie Gemini aj Ollama modelov
-        async function refreshAllModelsList() {
-            let combined = [...BASE_GEMINI_MODELS, ...BASE_OLLAMA_MODELS];
+        // Zjednotený zoznam modelov
+        async function refreshAllModelsList(showNotification = false) {
+            let combined = [...BASE_OSS_MODELS, ...BASE_GEMINI_MODELS, ...BASE_OLLAMA_MODELS];
 
-            // 1. Ak máme Gemini kľúč, skúsime načítať online Gemini zoznam
+            // 1. Ak máme Gemini kľúč, načítame Gemini modely
             if (state.apiKey) {
                 try {
                     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${state.apiKey}`);
@@ -737,74 +758,61 @@
                                     let cost = 1.2;
                                     if (cleanId.includes('pro')) cost = 4.5;
                                     if (cleanId.includes('lite') || cleanId.includes('flash-8b')) cost = 0.8;
-                                    if (cleanId.includes('image')) cost = 2.0;
-
-                                    let badge = 'Google Gemini';
-                                    if (cleanId.includes('exp') || cleanId.includes('preview')) badge = 'Gemini Preview';
-                                    if (cleanId.includes('pro')) badge = 'Gemini Pro';
-                                    if (cleanId.includes('flash')) badge = 'Gemini Flash';
 
                                     dynamicGemini.push({
                                         id: cleanId,
                                         name: m.displayName || cleanId,
                                         provider: 'gemini',
-                                        desc: m.description || 'Oficiálny model umelej inteligencie Google Gemini.',
+                                        desc: m.description || 'Google Gemini Model.',
                                         cost: cost,
-                                        badge: badge
+                                        badge: 'Google Gemini'
                                     });
                                 }
                             });
                             if (dynamicGemini.length > 0) {
-                                combined = [...dynamicGemini, ...BASE_OLLAMA_MODELS];
+                                combined = [...BASE_OSS_MODELS, ...dynamicGemini, ...BASE_OLLAMA_MODELS];
                             }
                         }
                     }
                 } catch (e) {
-                    console.warn("Nepodarilo sa načítať Gemini modely cez API, použité predvolené.", e);
+                    console.warn("Gemini synchronizácia neprebehla, použité predvolené.", e);
                 }
             }
 
-            // 2. Skúsime načítať nainštalované modely z Ollama servera
-            try {
-                const ollamaHost = state.ollamaUrl.replace(/\/+$/, '');
-                const headers = {};
-                if (state.ollamaApiKey) headers['Authorization'] = `Bearer ${state.ollamaApiKey}`;
-
-                const oRes = await fetch(`${ollamaHost}/api/tags`, { headers });
-                if (oRes.ok) {
-                    const oData = await oRes.json();
-                    if (oData.models && Array.isArray(oData.models)) {
-                        const dynamicOllama = oData.models.map(om => ({
-                            id: `ollama:${om.name}`,
-                            name: `Ollama: ${om.name}`,
-                            provider: 'ollama',
-                            desc: `Lokálny open-source model (${(om.size / (1024*1024*1024)).toFixed(1)} GB). Obrovská limitová kapacita!`,
-                            cost: 0.1,
-                            badge: 'Ollama Local'
-                        }));
-
-                        if (dynamicOllama.length > 0) {
-                            // Nahradíme base ollama modely skutočnými nainštalovanými
-                            combined = combined.filter(m => m.provider !== 'ollama').concat(dynamicOllama);
+            // 2. Ak máme nastavený vlastný Open-Source Endpoint s modelmi, skúsime načítať
+            if (state.ossApiKey && state.ossEndpoint) {
+                try {
+                    const cleanBase = state.ossEndpoint.replace(/\/+$/, '');
+                    const oRes = await fetch(`${cleanBase}/models`, {
+                        headers: { 'Authorization': `Bearer ${state.ossApiKey}` }
+                    });
+                    if (oRes.ok) {
+                        const oData = await oRes.json();
+                        if (oData.data && Array.isArray(oData.data)) {
+                            const dynamicOss = oData.data.slice(0, 8).map(dm => ({
+                                id: `oss:${dm.id}`,
+                                name: dm.name || dm.id,
+                                provider: 'oss',
+                                desc: `Cloud Open-Source Endpoint Model (${dm.id}).`,
+                                cost: 0.2,
+                                badge: 'Open-Source Cloud'
+                            }));
+                            if (dynamicOss.length > 0) {
+                                combined = [...dynamicOss, ...combined.filter(m => m.provider !== 'oss')];
+                            }
                         }
                     }
+                } catch (e) {
+                    console.warn("OSS Endpoint list nebol dostupný, použité vstavané OSS modely.");
                 }
-            } catch (e) {
-                // Ollama nie je spustená lokálne, ponecháme base modely
             }
 
             state.loadedModels = combined;
             populateModelsUI();
-        }
 
-        async function fetchGoogleModelsOnline(showNotification = false) {
-            await refreshAllModelsList();
-            if (showNotification) alert("Zoznam Google Gemini modelov bol synchronizovaný.");
-        }
-
-        async function fetchOllamaModels(showNotification = false) {
-            await refreshAllModelsList();
-            if (showNotification) alert("Zoznam Ollama modelov bol synchronizovaný.");
+            if (showNotification) {
+                alert(`Všetky modely boli synchronizované (${state.loadedModels.length} modelov pripravených).`);
+            }
         }
 
         function populateModelsUI() {
@@ -822,25 +830,33 @@
                 const opt = document.createElement('option');
                 opt.value = m.id;
                 opt.disabled = false;
-                const icon = m.provider === 'ollama' ? '🦙' : '⚡';
+                
+                let icon = '🌐';
+                if (m.provider === 'gemini') icon = '⚡';
+                if (m.provider === 'ollama') icon = '🦙';
+
                 opt.textContent = `${icon} ${m.name} (${m.cost}% limit)`;
                 select.appendChild(opt);
 
                 const card = document.createElement('div');
+                const isOss = m.provider === 'oss';
                 const isOllama = m.provider === 'ollama';
-                card.className = 'glass-card border border-gray-800 hover:border-purple-500/50 p-4 space-y-3 rounded-2xl relative transition duration-200 shadow-md rainbow-border';
+
+                card.className = 'glass-card border border-gray-800 hover:border-cyan-500/50 p-4 space-y-3 rounded-2xl relative transition duration-200 shadow-md rainbow-border';
                 
                 card.innerHTML = `
                     <div class="flex items-center justify-between">
                         <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${
-                            isOllama 
-                                ? 'bg-emerald-950/70 text-emerald-300 border border-emerald-500/40' 
-                                : 'bg-purple-950/60 text-purple-300 border border-purple-500/30'
+                            isOss 
+                                ? 'bg-cyan-950/70 text-cyan-300 border border-cyan-500/40' 
+                                : isOllama 
+                                    ? 'bg-emerald-950/70 text-emerald-300 border border-emerald-500/40' 
+                                    : 'bg-purple-950/60 text-purple-300 border border-purple-500/30'
                         }">
-                            <i class="${isOllama ? 'fa-solid fa-server' : 'fa-brands fa-google'} mr-1"></i> ${m.badge}
+                            <i class="${isOss ? 'fa-solid fa-globe' : isOllama ? 'fa-solid fa-server' : 'fa-brands fa-google'} mr-1"></i> ${m.badge}
                         </span>
-                        <span class="text-xs font-mono font-bold ${isOllama ? 'text-emerald-400 font-extrabold' : 'text-amber-400'}">
-                            Spotreba: ${m.cost}% / prompt ${isOllama ? '(Mega Limity)' : ''}
+                        <span class="text-xs font-mono font-bold ${isOss || isOllama ? 'text-cyan-400 font-extrabold' : 'text-amber-400'}">
+                            Spotreba: ${m.cost}% / prompt
                         </span>
                     </div>
 
@@ -887,6 +903,7 @@
             });
         }
 
+        // PRÍSNA KONTROLA A STRÁŽENIE LIMITU
         function updateLimitUI() {
             const bar = document.getElementById('limit-progress-bar');
             const txt = document.getElementById('limit-percentage-text');
@@ -913,7 +930,7 @@
         }
 
         function deductLimitForModel(modelId) {
-            const modelObj = state.loadedModels.find(m => m.id === modelId) || { cost: 1.0 };
+            const modelObj = state.loadedModels.find(m => m.id === modelId) || { cost: 0.2 };
             state.limitRemaining = Math.max(0, state.limitRemaining - modelObj.cost);
             setDBItem('settings', 'limitRemaining', state.limitRemaining);
             updateLimitUI();
@@ -1079,6 +1096,64 @@
             renderCalendar();
         }
 
+        // VOLANIE OPEN-SOURCE CLOUD ENDPOINTU (OpenRouter / Groq / OpenAI Compatible)
+        async function callOpenSourceEndpoint(modelId, systemPrompt, chatHistory, userText) {
+            const cleanModel = modelId.replace(/^oss:/, '');
+            const endpointBase = (state.ossEndpoint || 'https://openrouter.ai/api/v1').replace(/\/+$/, '');
+            const targetUrl = endpointBase.includes('/chat/completions') ? endpointBase : `${endpointBase}/chat/completions`;
+
+            const messages = [
+                { role: 'system', content: systemPrompt },
+                ...chatHistory.slice(-8).map(m => ({ role: m.role, content: m.text })),
+                { role: 'user', content: userText }
+            ];
+
+            const headers = { 'Content-Type': 'application/json' };
+            if (state.ossApiKey) {
+                headers['Authorization'] = `Bearer ${state.ossApiKey}`;
+            }
+
+            let attempt = 0;
+            const maxRetries = 3;
+            let delay = 1000;
+
+            while (attempt < maxRetries) {
+                try {
+                    const response = await fetch(targetUrl, {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify({
+                            model: cleanModel,
+                            messages: messages,
+                            temperature: 0.7
+                        })
+                    });
+
+                    if (response.status === 503 || response.status === 429) {
+                        attempt++;
+                        if (attempt < maxRetries) {
+                            await new Promise(res => setTimeout(res, delay));
+                            delay *= 2;
+                            continue;
+                        }
+                    }
+
+                    const data = await response.json();
+                    if (!response.ok) {
+                        const errMsg = data.error?.message || `Chyba Open-Source Endpointu (${response.status})`;
+                        throw new Error(errMsg);
+                    }
+
+                    return data.choices?.[0]?.message?.content || "Žiadna odpoveď z modelu.";
+                } catch (err) {
+                    attempt++;
+                    if (attempt >= maxRetries) throw err;
+                    await new Promise(res => setTimeout(res, delay));
+                    delay *= 2;
+                }
+            }
+        }
+
         // VOLANIE GOOGLE GEMINI API
         async function callGeminiDirectAPI(modelId, systemPrompt, chatHistory, userText) {
             if (!state.apiKey) {
@@ -1105,9 +1180,7 @@
 
             const payload = {
                 contents: contents,
-                systemInstruction: {
-                    parts: [{ text: systemPrompt }]
-                }
+                systemInstruction: { parts: [{ text: systemPrompt }] }
             };
 
             const response = await fetch(endpoint, {
@@ -1118,7 +1191,7 @@
 
             const data = await response.json();
             if (!response.ok) {
-                const errMsg = data.error?.message || `HTTP ${response.status} (${data.error?.status || 'Chyba API'})`;
+                const errMsg = data.error?.message || `HTTP ${response.status}`;
                 throw new Error(errMsg);
             }
 
@@ -1131,7 +1204,7 @@
             return candidate.content.parts[0].text;
         }
 
-        // VOLANIE OLLAMA OPEN-SOURCE API
+        // VOLANIE OLLAMA
         async function callOllamaAPI(modelId, systemPrompt, chatHistory, userText) {
             const baseUrl = (state.ollamaUrl || 'http://localhost:11434').replace(/\/+$/, '');
             const cleanModel = modelId.replace(/^ollama:/, '');
@@ -1142,14 +1215,9 @@
                 { role: 'user', content: userText }
             ];
 
-            const headers = { 'Content-Type': 'application/json' };
-            if (state.ollamaApiKey) {
-                headers['Authorization'] = `Bearer ${state.ollamaApiKey}`;
-            }
-
             const response = await fetch(`${baseUrl}/api/chat`, {
                 method: 'POST',
-                headers: headers,
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     model: cleanModel,
                     messages: messages,
@@ -1159,7 +1227,7 @@
 
             if (!response.ok) {
                 const errText = await response.text();
-                throw new Error(`Ollama server hlási chybu (HTTP ${response.status}): ${errText || 'Skontrolujte či Ollama beží a model je stiahnutý (ollama run ' + cleanModel + ')'}`);
+                throw new Error(`Ollama chyba (${response.status}): ${errText || 'Uistite sa, že Ollama beží.'}`);
             }
 
             const data = await response.json();
@@ -1229,7 +1297,9 @@
 
             try {
                 let replyText = '';
-                if (state.selectedModel.startsWith('ollama:')) {
+                if (state.selectedModel.startsWith('oss:')) {
+                    replyText = await callOpenSourceEndpoint(state.selectedModel, systemPrompt, state.chatHistory, userText);
+                } else if (state.selectedModel.startsWith('ollama:')) {
                     replyText = await callOllamaAPI(state.selectedModel, systemPrompt, state.chatHistory, userText);
                 } else {
                     replyText = await callGeminiDirectAPI(state.selectedModel, systemPrompt, state.chatHistory, userText);
@@ -1239,7 +1309,7 @@
                 appendMessage('assistant', replyText);
             } catch (err) {
                 reasoningInd.classList.add('hidden');
-                appendMessage('assistant', `⚠️ **Systémové hlásenie**: Požiadavku sa nepodarilo spracovať.\n\n\`\`\`text\nPodrobnosti: ${err.message}\n\`\`\``);
+                appendMessage('assistant', `⚠️ **Systémové hlásenie**: Požiadavku sa nepodarilo spracovať.\n\n\`\`\`text\nPodrobnosti: ${err.message}\n\`\`\`\n*Skontrolujte váš API kľúč alebo Endpoint v Nastaveniach.*`);
             }
         }
 
@@ -1372,21 +1442,29 @@
             const key = document.getElementById('api-key-input').value.trim();
             state.apiKey = key;
             await setDBItem('settings', 'apiKey', key);
-            await fetchGoogleModelsOnline(true);
+            await refreshAllModelsList(true);
+        }
+
+        async function saveOssSettings() {
+            const endpoint = document.getElementById('oss-endpoint-input').value.trim() || 'https://openrouter.ai/api/v1';
+            const key = document.getElementById('oss-key-input').value.trim();
+
+            state.ossEndpoint = endpoint;
+            state.ossApiKey = key;
+
+            await setDBItem('settings', 'ossEndpoint', endpoint);
+            await setDBItem('settings', 'ossApiKey', key);
+
+            await refreshAllModelsList(true);
+            alert("Open-Source Cloud Endpoint bol úspešne uložený!");
         }
 
         async function saveOllamaSettings() {
             const url = document.getElementById('ollama-url-input').value.trim() || 'http://localhost:11434';
-            const key = document.getElementById('ollama-key-input').value.trim();
-            
             state.ollamaUrl = url;
-            state.ollamaApiKey = key;
-
             await setDBItem('settings', 'ollamaUrl', url);
-            await setDBItem('settings', 'ollamaApiKey', key);
-
-            await refreshAllModelsList();
-            alert("Ollama nastavenia boli uložené a modely aktualizované!");
+            await refreshAllModelsList(true);
+            alert("Ollama nastavenia boli uložené!");
         }
 
         async function clearDatabase() {
