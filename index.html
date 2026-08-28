@@ -92,7 +92,7 @@
 
         /* Sidebar */
         aside {
-            width: 350px;
+            width: 360px;
             background: rgba(8, 10, 18, 0.88);
             backdrop-filter: blur(25px);
             border-right: 1px solid var(--panel-border);
@@ -205,7 +205,7 @@
             color: #fff;
             padding: 9px 12px;
             border-radius: 10px;
-            font-size: 12.5px;
+            font-size: 12px;
             font-family: inherit;
             transition: all 0.3s;
         }
@@ -846,27 +846,89 @@
             <button class="tool-btn" id="open-search-btn"><i class="fa-solid fa-globe" style="color:#ffea00;"></i> Web / YT</button>
         </div>
 
-        <!-- Model Selection -->
+        <!-- Comprehensive Google Gemini Model Selector -->
         <div class="select-group">
-            <label><i class="fa-solid fa-microchip"></i> Architektúra Modelu</label>
+            <label><i class="fa-solid fa-microchip"></i> Architektúra Modelu (Všetky Google Modely)</label>
             <select id="model-select">
-                <optgroup label="👑 Gemini 2.5 & Reasoning Suite">
-                    <option value="gemini-2.5-pro" data-cost="2.0" data-type="deep-reasoning" selected>Gemini 2.5 Pro (Deep Reasoning & Codex)</option>
-                    <option value="gemini-2.5-flash" data-cost="0.3" data-type="multimodal">Gemini 2.5 Flash (Superfast)</option>
-                    <option value="gemini-2.0-flash-thinking-exp" data-cost="1.2" data-type="deep-reasoning">Gemini 2.0 Flash Thinking Exp</option>
+                <!-- 👑 Gemini 2.5 Séria -->
+                <optgroup label="👑 Gemini 2.5 Séria (Vlajkové lode)">
+                    <option value="gemini-2.5-pro" data-cost="2.0" data-type="deep-reasoning" selected>Gemini 2.5 Pro (Deep Reasoning, Codex & Logic)</option>
+                    <option value="gemini-2.5-pro-preview-05-06" data-cost="2.0" data-type="deep-reasoning">Gemini 2.5 Pro Preview (05-06)</option>
+                    <option value="gemini-2.5-flash" data-cost="0.3" data-type="multimodal">Gemini 2.5 Flash (Superfast Multimodal)</option>
+                    <option value="gemini-2.5-flash-preview-04-17" data-cost="0.3" data-type="multimodal">Gemini 2.5 Flash Preview (04-17)</option>
                 </optgroup>
+
+                <!-- ⚡ Gemini 2.0 Séria -->
                 <optgroup label="⚡ Gemini 2.0 Séria">
-                    <option value="gemini-2.0-pro-exp-02-05" data-cost="1.8" data-type="code">Gemini 2.0 Pro Experimental</option>
-                    <option value="gemini-2.0-flash" data-cost="0.4" data-type="multimodal">Gemini 2.0 Flash Core</option>
-                    <option value="gemini-2.0-flash-lite" data-cost="0.1" data-type="multimodal">Gemini 2.0 Flash Lite</option>
+                    <option value="gemini-2.0-pro-exp-02-05" data-cost="1.8" data-type="deep-reasoning">Gemini 2.0 Pro Experimental (02-05)</option>
+                    <option value="gemini-2.0-pro-exp" data-cost="1.8" data-type="deep-reasoning">Gemini 2.0 Pro Experimental</option>
+                    <option value="gemini-2.0-flash" data-cost="0.4" data-type="multimodal">Gemini 2.0 Flash Core (Stable)</option>
+                    <option value="gemini-2.0-flash-001" data-cost="0.4" data-type="multimodal">Gemini 2.0 Flash (001)</option>
+                    <option value="gemini-2.0-flash-lite" data-cost="0.1" data-type="speed">Gemini 2.0 Flash Lite (Ultra Low Latency)</option>
+                    <option value="gemini-2.0-flash-lite-001" data-cost="0.1" data-type="speed">Gemini 2.0 Flash Lite (001)</option>
+                    <option value="gemini-2.0-flash-lite-preview-02-05" data-cost="0.1" data-type="speed">Gemini 2.0 Flash Lite Preview (02-05)</option>
+                    <option value="gemini-2.0-flash-thinking-exp-01-21" data-cost="1.2" data-type="deep-reasoning">Gemini 2.0 Flash Thinking Exp (01-21)</option>
+                    <option value="gemini-2.0-flash-thinking-exp" data-cost="1.2" data-type="deep-reasoning">Gemini 2.0 Flash Thinking Exp</option>
+                    <option value="gemini-2.0-flash-realtime-exp" data-cost="1.5" data-type="multimodal">Gemini 2.0 Flash Realtime Experimental</option>
                 </optgroup>
-                <optgroup label="🌐 Gemini 1.5 Séria">
-                    <option value="gemini-1.5-pro" data-cost="1.2" data-type="context">Gemini 1.5 Pro (2M Context)</option>
-                    <option value="gemini-1.5-flash" data-cost="0.2" data-type="speed">Gemini 1.5 Flash</option>
+
+                <!-- 🧪 Experimentálne & Špeciálne Modely Google -->
+                <optgroup label="🧪 Google Experimental & LearnLM">
+                    <option value="gemini-exp-1206" data-cost="1.5" data-type="code">Gemini Exp 1206</option>
+                    <option value="gemini-exp-1121" data-cost="1.5" data-type="code">Gemini Exp 1121</option>
+                    <option value="gemini-exp-1114" data-cost="1.5" data-type="code">Gemini Exp 1114</option>
+                    <option value="learnlm-1.5-pro-experimental" data-cost="1.0" data-type="education">LearnLM 1.5 Pro Experimental (Pedagogický)</option>
                 </optgroup>
-                <optgroup label="🎨 Multimodálne Špeciály (Obrázky & Video)">
-                    <option value="imagen-3.0-generate-002" data-cost="4.0" data-type="image">Imagen 3.0 (Syntéza Obrázkov)</option>
-                    <option value="veo-2.0-generate-001" data-cost="7.0" data-type="video">Veo 2.0 (Kinematické Video)</option>
+
+                <!-- 🌐 Gemini 1.5 Pro Séria -->
+                <optgroup label="🌐 Gemini 1.5 Pro (2M Context Architektúra)">
+                    <option value="gemini-1.5-pro" data-cost="1.2" data-type="context">Gemini 1.5 Pro (Stable)</option>
+                    <option value="gemini-1.5-pro-latest" data-cost="1.2" data-type="context">Gemini 1.5 Pro Latest</option>
+                    <option value="gemini-1.5-pro-002" data-cost="1.2" data-type="context">Gemini 1.5 Pro (002)</option>
+                    <option value="gemini-1.5-pro-001" data-cost="1.2" data-type="context">Gemini 1.5 Pro (001)</option>
+                </optgroup>
+
+                <!-- ⚡ Gemini 1.5 Flash Séria -->
+                <optgroup label="⚡ Gemini 1.5 Flash Séria">
+                    <option value="gemini-1.5-flash" data-cost="0.2" data-type="speed">Gemini 1.5 Flash (Stable)</option>
+                    <option value="gemini-1.5-flash-latest" data-cost="0.2" data-type="speed">Gemini 1.5 Flash Latest</option>
+                    <option value="gemini-1.5-flash-002" data-cost="0.2" data-type="speed">Gemini 1.5 Flash (002)</option>
+                    <option value="gemini-1.5-flash-001" data-cost="0.2" data-type="speed">Gemini 1.5 Flash (001)</option>
+                    <option value="gemini-1.5-flash-8b" data-cost="0.05" data-type="speed">Gemini 1.5 Flash-8B (Stable)</option>
+                    <option value="gemini-1.5-flash-8b-latest" data-cost="0.05" data-type="speed">Gemini 1.5 Flash-8B Latest</option>
+                    <option value="gemini-1.5-flash-8b-001" data-cost="0.05" data-type="speed">Gemini 1.5 Flash-8B (001)</option>
+                </optgroup>
+
+                <!-- 🏛️ Gemini 1.0 Legacy -->
+                <optgroup label="🏛️ Gemini 1.0 Legacy">
+                    <option value="gemini-1.0-pro" data-cost="0.5" data-type="legacy">Gemini 1.0 Pro</option>
+                    <option value="gemini-1.0-pro-001" data-cost="0.5" data-type="legacy">Gemini 1.0 Pro (001)</option>
+                    <option value="gemini-1.0-pro-vision-latest" data-cost="0.8" data-type="legacy">Gemini 1.0 Pro Vision</option>
+                    <option value="gemini-pro" data-cost="0.5" data-type="legacy">Gemini Pro</option>
+                    <option value="gemini-pro-vision" data-cost="0.8" data-type="legacy">Gemini Pro Vision</option>
+                </optgroup>
+
+                <!-- 💎 Gemma & CodeGemma Séria (Google Open Models) -->
+                <optgroup label="💎 Google Gemma & CodeGemma Séria">
+                    <option value="gemma-2-27b-it" data-cost="0.8" data-type="code">Gemma 2 27B Instruct</option>
+                    <option value="gemma-2-9b-it" data-cost="0.3" data-type="code">Gemma 2 9B Instruct</option>
+                    <option value="gemma-2-2b-it" data-cost="0.1" data-type="speed">Gemma 2 2B Instruct</option>
+                    <option value="codegemma-7b-it" data-cost="0.4" data-type="code">CodeGemma 7B IT (Programátorský špeciál)</option>
+                </optgroup>
+
+                <!-- 🎨 Multimodálne Vizuály & Video -->
+                <optgroup label="🎨 Multimodálne Špeciály (Imagen & Veo)">
+                    <option value="imagen-3.0-generate-002" data-cost="4.0" data-type="image">Imagen 3.0 Generate (002)</option>
+                    <option value="imagen-3.0-fast-generate-001" data-cost="2.5" data-type="image">Imagen 3.0 Fast Generate</option>
+                    <option value="imagegeneration@006" data-cost="3.0" data-type="image">Google Imagen 2 (006)</option>
+                    <option value="veo-2.0-generate-001" data-cost="7.0" data-type="video">Veo 2.0 (Kinematické 60FPS Video)</option>
+                    <option value="veo-2" data-cost="7.0" data-type="video">Google Veo 2</option>
+                </optgroup>
+
+                <!-- 🔍 Embeddings & Vektorové Modely -->
+                <optgroup label="🔍 Google Embeddings">
+                    <option value="text-embedding-004" data-cost="0.05" data-type="embedding">Text Embedding 004</option>
+                    <option value="embedding-001" data-cost="0.05" data-type="embedding">Embedding 001</option>
                 </optgroup>
             </select>
         </div>
@@ -1432,12 +1494,11 @@ async function executeResilientCall(apiKey, model, messages, retryCount = 0) {
 const rawCodeCache = new Map();
 
 function customRenderMarkdown(text) {
-    // Configure marked
     const renderer = new marked.Renderer();
     
     renderer.code = function({ text: code, lang }) {
         const codeId = "code_" + Math.random().toString(36).substr(2, 9);
-        rawCodeCache.set(codeId, code); // Store verbatim raw code
+        rawCodeCache.set(codeId, code);
         
         const validLang = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
         const highlighted = hljs.highlight(code, { language: validLang, ignoreIllegals: true }).value;
@@ -1594,12 +1655,12 @@ async function handleSend() {
         if (promptText.toLowerCase().startsWith("/yt ") || promptText.toLowerCase().includes("youtube")) {
             const query = promptText.replace("/yt ", "").trim();
             botReply = `🎬 **Vyhľadávanie na YouTube pre:** \`${query}\`\n\nTu je nájdené video pripravené na prehratie:`;
-            mediaResult = { type: "youtube", videoId: "dQw4w9WgXcQ" }; // sample fallback embed
+            mediaResult = { type: "youtube", videoId: "dQw4w9WgXcQ" };
         } else if (modelType === "image") {
-            botReply = `🎨 **Generovanie Obrazového Návrhu cez Imagen 3.0**\nPrompt: \`${promptText}\``;
+            botReply = `🎨 **Generovanie Obrazového Návrhu cez ${model}**\nPrompt: \`${promptText}\``;
             mediaResult = { type: "image", url: `https://picsum.photos/seed/${encodeURIComponent(promptText)}/800/450` };
         } else if (modelType === "video") {
-            botReply = `🎬 **Kinematická Syntéza Videa cez Google Veo 2.0**\nScenár: \`${promptText}\``;
+            botReply = `🎬 **Kinematická Syntéza Videa cez ${model}**\nScenár: \`${promptText}\``;
             mediaResult = { type: "video", url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" };
         } else {
             botReply = await executeResilientCall(apiKey, model, apiMessages);
@@ -1664,7 +1725,7 @@ function startNewChat() {
     currentSessionId = "session_" + Date.now();
     currentMessages = [];
     document.getElementById("messages-container").innerHTML = "";
-    appendMessage("bot", `👋 **CODEX Quantum IDE Pripravené pre používateľa ${currentUser}.**\nTrvalá pamäť, kalendár a reálny čas uvažovania sú aktívne.`);
+    appendMessage("bot", `👋 **CODEX Quantum IDE Pripravené pre používateľa ${currentUser}.**\nTrvalá pamäť, kalendár a reálny čas uvažovania sú aktívne so všetkými Google modelmi.`);
     loadHistoryList();
 }
 
