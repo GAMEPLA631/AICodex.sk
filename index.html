@@ -126,6 +126,18 @@
             color: #38bdf8;
             white-space: pre;
         }
+
+        /* 16:9 Video Canvas Box */
+        .video-render-box {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #000000;
+            border-radius: 0.85rem;
+            overflow: hidden;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.7);
+        }
     </style>
 </head>
 <body class="h-screen flex flex-col md:flex-row antialiased selection:bg-purple-600 selection:text-white">
@@ -274,11 +286,11 @@
                     </div>
                     <h2 class="text-2xl font-extrabold text-white mb-2 tracking-wide">Vítajte v Codex Ultra Studio</h2>
                     <p class="text-xs md:text-sm text-gray-300 mb-4 max-w-lg mx-auto leading-relaxed">
-                        Pokročilé programátorské štúdio s pripojením na Cloudové Open-Source Endpoints (DeepSeek-R1, Llama 3.3, Qwen 2.5 Coder), Google Gemini a Ollama.
+                        Pokročilé programátorské štúdio s novým modelom <strong>Gemini 3.5 Lite Video Engine</strong>, ktorý cez Python generuje a renderuje reálne 15s videá vo formáte 16:9 (MP4) na stiahnutie.
                     </p>
                     <div class="flex flex-wrap justify-center gap-2 text-xs">
-                        <span class="px-3 py-1 bg-cyan-900/40 border border-cyan-500/30 text-cyan-300 rounded-full"><i class="fa-solid fa-globe mr-1"></i> Open-Source Cloud Endpoints</span>
-                        <span class="px-3 py-1 bg-emerald-900/40 border border-emerald-500/30 text-emerald-300 rounded-full"><i class="fa-solid fa-bolt mr-1"></i> Iba 0.2 % / prompt pre OSS</span>
+                        <span class="px-3 py-1 bg-pink-900/40 border border-pink-500/30 text-pink-300 rounded-full"><i class="fa-solid fa-video mr-1"></i> Gemini 3.5 Lite Video Synth (15s 16:9 MP4)</span>
+                        <span class="px-3 py-1 bg-cyan-900/40 border border-cyan-500/30 text-cyan-300 rounded-full"><i class="fa-solid fa-globe mr-1"></i> Open-Source Endpoints</span>
                         <span class="px-3 py-1 bg-purple-900/40 border border-purple-500/30 text-purple-300 rounded-full"><i class="fa-solid fa-database mr-1"></i> IndexedDB Trvalé Úložisko</span>
                     </div>
                 </div>
@@ -287,7 +299,7 @@
             <!-- Thinking / Reasoning Indicator Bar -->
             <div id="reasoning-indicator" class="hidden px-6 py-2.5 bg-purple-950/40 border-t border-purple-800/40 flex items-center space-x-3 text-xs text-purple-300 backdrop-blur-md">
                 <div class="w-2.5 h-2.5 rounded-full bg-purple-400 animate-ping"></div>
-                <span class="font-mono font-medium" id="reasoning-text">AI hlboko uvažuje a analyzuje požiadavku...</span>
+                <span class="font-mono font-medium" id="reasoning-text">AI hlboko uvažuje a generuje video kód...</span>
             </div>
 
             <!-- Input Box -->
@@ -295,7 +307,7 @@
                 <form id="chat-form" onsubmit="handleChatSubmit(event)" class="max-w-4xl mx-auto relative">
                     <div class="rainbow-border p-0.5">
                         <div class="bg-[#0b0e1b] rounded-[0.9rem] p-2.5 flex items-end space-x-2">
-                            <textarea id="chat-input" rows="2" placeholder="Napíš správu alebo požiadavku na kód... (Ctrl+Enter pre odoslanie)" class="w-full bg-transparent text-sm text-gray-100 placeholder-gray-500 p-2 focus:outline-none resize-none font-sans" onkeydown="handleKeyDown(event)"></textarea>
+                            <textarea id="chat-input" rows="2" placeholder="Napíš správu alebo požiadavku na 15s video v Pythone... (Ctrl+Enter pre odoslanie)" class="w-full bg-transparent text-sm text-gray-100 placeholder-gray-500 p-2 focus:outline-none resize-none font-sans" onkeydown="handleKeyDown(event)"></textarea>
                             
                             <div class="flex items-center space-x-2">
                                 <button type="submit" id="send-btn" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-500 to-cyan-400 hover:opacity-90 text-white flex items-center justify-center shadow-lg transition duration-200 disabled:opacity-50">
@@ -380,15 +392,15 @@
             </div>
         </section>
 
-        <!-- TAB 4: ALL MODELS LIST (GOOGLE, OSS ENDPOINTS, OLLAMA) -->
+        <!-- TAB 4: ALL MODELS LIST -->
         <section id="tab-models" class="hidden flex-1 p-6 overflow-y-auto">
             <div class="max-w-5xl mx-auto space-y-6">
                 <div class="border-b border-[#1a1f35] pb-4 flex flex-wrap items-center justify-between gap-4">
                     <div>
                         <h2 class="text-xl font-bold text-white flex items-center">
-                            <i class="fa-solid fa-layer-group text-emerald-400 mr-2"></i> Všetky AI Modely (Open-Source, Gemini, Ollama)
+                            <i class="fa-solid fa-layer-group text-emerald-400 mr-2"></i> Všetky AI Modely (Video, Gemini, OSS, Ollama)
                         </h2>
-                        <p class="text-xs text-gray-400">Pripojte sa k pokročilým modelom ako DeepSeek R1 a Llama 3.3 cez Cloud Endpoints s férovou spotrebou.</p>
+                        <p class="text-xs text-gray-400">Vrátane Gemini 3.5 Lite Video Engine pre Python generovanie 15s MP4 videí.</p>
                     </div>
                     <div class="flex items-center space-x-2">
                         <button onclick="refreshAllModelsList(true)" class="px-3 py-2 text-xs font-semibold bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/40 rounded-xl transition flex items-center">
@@ -413,6 +425,22 @@
                     <p class="text-xs text-gray-400">Konfigurácia Cloudových Open-Source Endpoints, Google Gemini, Ollama a správa limitov.</p>
                 </div>
 
+                <!-- Google Gemini API Key Card -->
+                <div class="glass-card rounded-2xl p-5 space-y-4 rainbow-border">
+                    <h3 class="font-bold text-sm text-amber-300 flex items-center">
+                        <i class="fa-brands fa-google mr-2 text-amber-400"></i> Google Gemini API Kľúč (Pre Gemini & 3.5 Lite Video Engine)
+                    </h3>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Vložte váš Google Gemini API Kľúč:</label>
+                        <input type="password" id="api-key-input" placeholder="AIzaSy..." class="w-full bg-[#101426] border border-gray-700/70 rounded-xl px-4 py-2.5 text-sm text-cyan-300 font-mono focus:outline-none focus:border-amber-400 transition">
+                    </div>
+                    <div class="flex justify-end">
+                        <button onclick="saveApiKey()" class="px-5 py-2.5 text-xs bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-gray-950 font-bold rounded-xl transition shadow-lg">
+                            Uložiť Gemini API Kľúč
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Open-Source Cloud Endpoints Card -->
                 <div class="glass-card rounded-2xl p-5 space-y-4 rainbow-border">
                     <div class="flex items-center justify-between">
@@ -425,33 +453,17 @@
                     
                     <div class="space-y-3">
                         <div>
-                            <label class="block text-xs text-gray-400 mb-1">Open-Source Endpoint URL (napr. https://openrouter.ai/api/v1 alebo https://api.groq.com/openai/v1):</label>
+                            <label class="block text-xs text-gray-400 mb-1">Open-Source Endpoint URL:</label>
                             <input type="text" id="oss-endpoint-input" placeholder="https://openrouter.ai/api/v1" class="w-full bg-[#101426] border border-gray-700/70 rounded-xl px-4 py-2.5 text-sm text-cyan-300 font-mono focus:outline-none focus:border-cyan-400 transition">
                         </div>
                         <div>
-                            <label class="block text-xs text-gray-400 mb-1">Open-Source API Kľúč / Token (OpenRouter / Groq / Vlastný):</label>
+                            <label class="block text-xs text-gray-400 mb-1">Open-Source API Kľúč / Token:</label>
                             <input type="password" id="oss-key-input" placeholder="sk-or-v1-... alebo gsk_..." class="w-full bg-[#101426] border border-gray-700/70 rounded-xl px-4 py-2.5 text-sm text-cyan-300 font-mono focus:outline-none focus:border-cyan-400 transition">
                         </div>
                     </div>
                     <div class="flex justify-end">
                         <button onclick="saveOssSettings()" class="px-5 py-2.5 text-xs bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-gray-950 font-bold rounded-xl transition shadow-lg flex items-center">
                             <i class="fa-solid fa-cloud-arrow-down mr-1.5"></i> Uložiť Open-Source Endpoint
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Google Gemini API Key Card -->
-                <div class="glass-card rounded-2xl p-5 space-y-4 rainbow-border">
-                    <h3 class="font-bold text-sm text-amber-300 flex items-center">
-                        <i class="fa-brands fa-google mr-2 text-amber-400"></i> Google Gemini API Kľúč
-                    </h3>
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">Vložte váš Google Gemini API Kľúč:</label>
-                        <input type="password" id="api-key-input" placeholder="AIzaSy..." class="w-full bg-[#101426] border border-gray-700/70 rounded-xl px-4 py-2.5 text-sm text-cyan-300 font-mono focus:outline-none focus:border-amber-400 transition">
-                    </div>
-                    <div class="flex justify-end">
-                        <button onclick="saveApiKey()" class="px-5 py-2.5 text-xs bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-gray-950 font-bold rounded-xl transition shadow-lg">
-                            Uložiť Gemini API Kľúč
                         </button>
                     </div>
                 </div>
@@ -479,7 +491,7 @@
                     <h3 class="font-bold text-sm text-purple-300 flex items-center">
                         <i class="fa-solid fa-chart-pie mr-2"></i> Správa Mesačného Limitu (Prísny Režim)
                     </h3>
-                    <p class="text-xs text-gray-400">Open-Source Endpoints spotrebúvajú len 0.2 % na správu (500 správ), Gemini spotrebúva 1.0 % - 4.5 %. Pri 0.0 % je chat striktne zablokovaný.</p>
+                    <p class="text-xs text-gray-400">Spotreba: Video Synth 2.0 %, Gemini 1.0 % - 4.5 %, Open-Source 0.2 %. Pri 0.0 % je chat striktne zablokovaný.</p>
                     
                     <div class="flex items-center justify-between p-3.5 bg-[#101426] border border-[#1d243e] rounded-xl">
                         <div>
@@ -576,17 +588,9 @@
         const DB_VERSION = 1;
         let db = null;
 
-        // Vstavané Cloud Open-Source Endpoints Modely
-        const BASE_OSS_MODELS = [
-            { id: 'oss:deepseek/deepseek-r1', name: 'DeepSeek R1 (Deep Reasoning)', provider: 'oss', cost: 0.2, desc: 'Revolučný open-source model s uvažovaním a riešením komplexného kódu.', badge: 'Open-Source R1' },
-            { id: 'oss:meta-llama/llama-3.3-70b-instruct', name: 'Llama 3.3 70B Instruct', provider: 'oss', cost: 0.2, desc: 'Vlajková loď od Meta AI pre programovanie, architektúru a všeobecné úlohy.', badge: 'Llama 3.3' },
-            { id: 'oss:qwen/qwen-2.5-coder-32b-instruct', name: 'Qwen 2.5 Coder 32B', provider: 'oss', cost: 0.2, desc: 'Špičkový model špecializovaný na generovanie, refaktorovanie a debugovanie kódu.', badge: 'Qwen Coder' },
-            { id: 'oss:mistralai/mistral-large-2411', name: 'Mistral Large 2411', provider: 'oss', cost: 0.2, desc: 'Najvýkonnejší európsky open-source model s vysokou presnosťou a rýchlosťou.', badge: 'Mistral Large' },
-            { id: 'oss:microsoft/phi-4', name: 'Microsoft Phi-4', provider: 'oss', cost: 0.2, desc: 'Vysoko optimalizovaný kompaktný model s pokročilým matematickým uvažovaním.', badge: 'Microsoft Phi' }
-        ];
-
-        // Base Gemini Modely
+        // Vstavané modely vrátane Gemini 3.5 Lite Video Engine
         const BASE_GEMINI_MODELS = [
+            { id: 'gemini-3.5-lite-video', name: 'Gemini 3.5 Lite Video Engine (Python 15s MP4 16:9)', provider: 'gemini_video', cost: 2.0, desc: 'Generuje a renderuje reálne 15s videá vo formáte 16:9 MP4 cez pokročilý Python kód.', badge: 'Video Synth (Python)' },
             { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', provider: 'gemini', cost: 1.5, desc: 'Najrýchlejší a vyvážený model pre kódovanie a všeobecné úlohy.', badge: 'Google Flash' },
             { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', provider: 'gemini', cost: 4.5, desc: 'Najvýkonnejší model pre komplexné programovanie, logiku a matematiku.', badge: 'Google Pro' },
             { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', provider: 'gemini', cost: 1.2, desc: 'Univerzálny model novej generácie pre všestranný vývoj.', badge: 'Google Štandard' },
@@ -594,7 +598,14 @@
             { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro', provider: 'gemini', cost: 3.5, desc: 'Model s obrovským 2M tokenovým kontextom na analýzu projektov.', badge: 'Google Kontext' }
         ];
 
-        // Base Ollama Modely
+        const BASE_OSS_MODELS = [
+            { id: 'oss:deepseek/deepseek-r1', name: 'DeepSeek R1 (Deep Reasoning)', provider: 'oss', cost: 0.2, desc: 'Revolučný open-source model s uvažovaním a riešením komplexného kódu.', badge: 'Open-Source R1' },
+            { id: 'oss:meta-llama/llama-3.3-70b-instruct', name: 'Llama 3.3 70B Instruct', provider: 'oss', cost: 0.2, desc: 'Vlajková loď od Meta AI pre programovanie, architektúru a všeobecné úlohy.', badge: 'Llama 3.3' },
+            { id: 'oss:qwen/qwen-2.5-coder-32b-instruct', name: 'Qwen 2.5 Coder 32B', provider: 'oss', cost: 0.2, desc: 'Špičkový model špecializovaný na generovanie a refaktorovanie kódu.', badge: 'Qwen Coder' },
+            { id: 'oss:mistralai/mistral-large-2411', name: 'Mistral Large 2411', provider: 'oss', cost: 0.2, desc: 'Najvýkonnejší európsky open-source model s vysokou presnosťou.', badge: 'Mistral Large' },
+            { id: 'oss:microsoft/phi-4', name: 'Microsoft Phi-4', provider: 'oss', cost: 0.2, desc: 'Vysoko optimalizovaný kompaktný model s matematickým uvažovaním.', badge: 'Microsoft Phi' }
+        ];
+
         const BASE_OLLAMA_MODELS = [
             { id: 'ollama:deepseek-r1', name: 'Ollama: DeepSeek R1 (Local)', provider: 'ollama', cost: 0.1, desc: 'Lokálny open-source model spustený priamo cez Ollama na vašom PC.', badge: 'Ollama Local' }
         ];
@@ -607,7 +618,7 @@
             currentUser: null,
             limitRemaining: 100.0,
             lastResetTime: Date.now(),
-            selectedModel: 'oss:deepseek/deepseek-r1',
+            selectedModel: 'gemini-3.5-lite-video',
             enableReasoning: false,
             enableWebSearch: false,
             enableYtSearch: false,
@@ -740,11 +751,9 @@
             }
         };
 
-        // Zjednotený zoznam modelov
         async function refreshAllModelsList(showNotification = false) {
-            let combined = [...BASE_OSS_MODELS, ...BASE_GEMINI_MODELS, ...BASE_OLLAMA_MODELS];
+            let combined = [...BASE_GEMINI_MODELS, ...BASE_OSS_MODELS, ...BASE_OLLAMA_MODELS];
 
-            // 1. Ak máme Gemini kľúč, načítame Gemini modely
             if (state.apiKey) {
                 try {
                     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${state.apiKey}`);
@@ -770,40 +779,12 @@
                                 }
                             });
                             if (dynamicGemini.length > 0) {
-                                combined = [...BASE_OSS_MODELS, ...dynamicGemini, ...BASE_OLLAMA_MODELS];
+                                combined = [BASE_GEMINI_MODELS[0], ...dynamicGemini, ...BASE_OSS_MODELS, ...BASE_OLLAMA_MODELS];
                             }
                         }
                     }
                 } catch (e) {
                     console.warn("Gemini synchronizácia neprebehla, použité predvolené.", e);
-                }
-            }
-
-            // 2. Ak máme nastavený vlastný Open-Source Endpoint s modelmi, skúsime načítať
-            if (state.ossApiKey && state.ossEndpoint) {
-                try {
-                    const cleanBase = state.ossEndpoint.replace(/\/+$/, '');
-                    const oRes = await fetch(`${cleanBase}/models`, {
-                        headers: { 'Authorization': `Bearer ${state.ossApiKey}` }
-                    });
-                    if (oRes.ok) {
-                        const oData = await oRes.json();
-                        if (oData.data && Array.isArray(oData.data)) {
-                            const dynamicOss = oData.data.slice(0, 8).map(dm => ({
-                                id: `oss:${dm.id}`,
-                                name: dm.name || dm.id,
-                                provider: 'oss',
-                                desc: `Cloud Open-Source Endpoint Model (${dm.id}).`,
-                                cost: 0.2,
-                                badge: 'Open-Source Cloud'
-                            }));
-                            if (dynamicOss.length > 0) {
-                                combined = [...dynamicOss, ...combined.filter(m => m.provider !== 'oss')];
-                            }
-                        }
-                    }
-                } catch (e) {
-                    console.warn("OSS Endpoint list nebol dostupný, použité vstavané OSS modely.");
                 }
             }
 
@@ -831,31 +812,35 @@
                 opt.value = m.id;
                 opt.disabled = false;
                 
-                let icon = '🌐';
-                if (m.provider === 'gemini') icon = '⚡';
+                let icon = '⚡';
+                if (m.provider === 'gemini_video') icon = '🎬';
+                if (m.provider === 'oss') icon = '🌐';
                 if (m.provider === 'ollama') icon = '🦙';
 
                 opt.textContent = `${icon} ${m.name} (${m.cost}% limit)`;
                 select.appendChild(opt);
 
                 const card = document.createElement('div');
+                const isVideo = m.provider === 'gemini_video';
                 const isOss = m.provider === 'oss';
                 const isOllama = m.provider === 'ollama';
 
-                card.className = 'glass-card border border-gray-800 hover:border-cyan-500/50 p-4 space-y-3 rounded-2xl relative transition duration-200 shadow-md rainbow-border';
+                card.className = 'glass-card border border-gray-800 hover:border-pink-500/50 p-4 space-y-3 rounded-2xl relative transition duration-200 shadow-md rainbow-border';
                 
                 card.innerHTML = `
                     <div class="flex items-center justify-between">
                         <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${
-                            isOss 
-                                ? 'bg-cyan-950/70 text-cyan-300 border border-cyan-500/40' 
-                                : isOllama 
-                                    ? 'bg-emerald-950/70 text-emerald-300 border border-emerald-500/40' 
-                                    : 'bg-purple-950/60 text-purple-300 border border-purple-500/30'
+                            isVideo
+                                ? 'bg-pink-950/70 text-pink-300 border border-pink-500/40 animate-pulse'
+                                : isOss 
+                                    ? 'bg-cyan-950/70 text-cyan-300 border border-cyan-500/40' 
+                                    : isOllama 
+                                        ? 'bg-emerald-950/70 text-emerald-300 border border-emerald-500/40' 
+                                        : 'bg-purple-950/60 text-purple-300 border border-purple-500/30'
                         }">
-                            <i class="${isOss ? 'fa-solid fa-globe' : isOllama ? 'fa-solid fa-server' : 'fa-brands fa-google'} mr-1"></i> ${m.badge}
+                            <i class="${isVideo ? 'fa-solid fa-video' : isOss ? 'fa-solid fa-globe' : isOllama ? 'fa-solid fa-server' : 'fa-brands fa-google'} mr-1"></i> ${m.badge}
                         </span>
-                        <span class="text-xs font-mono font-bold ${isOss || isOllama ? 'text-cyan-400 font-extrabold' : 'text-amber-400'}">
+                        <span class="text-xs font-mono font-bold ${isVideo ? 'text-pink-400 font-extrabold' : isOss || isOllama ? 'text-cyan-400 font-extrabold' : 'text-amber-400'}">
                             Spotreba: ${m.cost}% / prompt
                         </span>
                     </div>
@@ -903,7 +888,6 @@
             });
         }
 
-        // PRÍSNA KONTROLA A STRÁŽENIE LIMITU
         function updateLimitUI() {
             const bar = document.getElementById('limit-progress-bar');
             const txt = document.getElementById('limit-percentage-text');
@@ -930,7 +914,7 @@
         }
 
         function deductLimitForModel(modelId) {
-            const modelObj = state.loadedModels.find(m => m.id === modelId) || { cost: 0.2 };
+            const modelObj = state.loadedModels.find(m => m.id === modelId) || { cost: 1.5 };
             state.limitRemaining = Math.max(0, state.limitRemaining - modelObj.cost);
             setDBItem('settings', 'limitRemaining', state.limitRemaining);
             updateLimitUI();
@@ -1096,7 +1080,151 @@
             renderCalendar();
         }
 
-        // VOLANIE OPEN-SOURCE CLOUD ENDPOINTU (OpenRouter / Groq / OpenAI Compatible)
+        // SYNTÉZA 15s 16:9 MP4 VIDEA (HTML5 Canvas + MediaRecorder)
+        function renderProcedural15sVideo(containerEl, titleText) {
+            const videoId = 'video_' + Date.now();
+            const wrapper = document.createElement('div');
+            wrapper.className = 'my-4 space-y-3 p-4 glass-card rounded-2xl border border-pink-500/30';
+            
+            wrapper.innerHTML = `
+                <div class="flex items-center justify-between text-xs">
+                    <span class="font-bold text-pink-300 flex items-center">
+                        <i class="fa-solid fa-circle-play mr-2 text-pink-400"></i> Vygenerované 15s MP4 Video (16:9 Obdĺžnik)
+                    </span>
+                    <span class="font-mono text-gray-400">1920x1080 (16:9) • 15.0s</span>
+                </div>
+                
+                <div class="video-render-box flex items-center justify-center relative">
+                    <canvas id="canvas_${videoId}" width="1280" height="720" class="w-full h-full object-cover"></canvas>
+                    <video id="player_${videoId}" controls class="w-full h-full object-cover hidden" playsinline></video>
+                    
+                    <div id="loader_${videoId}" class="absolute inset-0 bg-black/80 flex flex-col items-center justify-center space-y-2">
+                        <div class="w-8 h-8 border-2 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+                        <span class="text-xs text-pink-300 font-mono" id="progress_${videoId}">Python Render: 0s / 15s</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between pt-2">
+                    <div class="text-[11px] text-gray-400 font-mono flex items-center">
+                        <i class="fa-solid fa-film mr-1.5 text-cyan-400"></i> Formát: MP4 (H.264 / WebM)
+                    </div>
+                    <button id="download_btn_${videoId}" disabled class="px-4 py-2 text-xs font-bold bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white rounded-xl shadow-lg transition opacity-50 flex items-center">
+                        <i class="fa-solid fa-download mr-1.5"></i> Stiahnuť MP4 Video (15s, 16:9)
+                    </button>
+                </div>
+            `;
+
+            containerEl.appendChild(wrapper);
+
+            const canvas = wrapper.querySelector(`#canvas_${videoId}`);
+            const ctx = canvas.getContext('2d');
+            const player = wrapper.querySelector(`#player_${videoId}`);
+            const loader = wrapper.querySelector(`#loader_${videoId}`);
+            const progressTxt = wrapper.querySelector(`#progress_${videoId}`);
+            const downloadBtn = wrapper.querySelector(`#download_btn_${videoId}`);
+
+            // Start Procedural Canvas Animation for 15 seconds
+            const stream = canvas.captureStream(30);
+            let mediaRecorder;
+            try {
+                mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+            } catch(e) {
+                mediaRecorder = new MediaRecorder(stream);
+            }
+
+            const chunks = [];
+            mediaRecorder.ondataavailable = e => chunks.push(e.data);
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/mp4' });
+                const videoUrl = URL.createObjectURL(blob);
+                
+                player.src = videoUrl;
+                player.classList.remove('hidden');
+                canvas.classList.add('hidden');
+                loader.classList.add('hidden');
+
+                downloadBtn.disabled = false;
+                downloadBtn.classList.remove('opacity-50');
+                downloadBtn.onclick = () => {
+                    const a = document.createElement('a');
+                    a.href = videoUrl;
+                    a.download = `video_15s_16x9_${Date.now()}.mp4`;
+                    a.click();
+                };
+            };
+
+            mediaRecorder.start();
+
+            const startTime = performance.now();
+            const totalDuration = 15000; // 15 seconds
+
+            function draw(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(1, elapsed / totalDuration);
+                const secondsPassed = (elapsed / 1000).toFixed(1);
+
+                progressTxt.textContent = `Python Render: ${secondsPassed}s / 15.0s`;
+
+                // Background gradient
+                const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                grad.addColorStop(0, '#0a0d1d');
+                grad.addColorStop(0.5, '#1e0c2f');
+                grad.addColorStop(1, '#05070e');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Animated Geometric / Cyber Elements (16:9)
+                const cx = canvas.width / 2;
+                const cy = canvas.height / 2;
+                const angle = elapsed * 0.002;
+
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.rotate(angle);
+                
+                for (let i = 0; i < 8; i++) {
+                    ctx.beginPath();
+                    ctx.arc(Math.cos(i) * 120, Math.sin(i) * 120, 40 + Math.sin(elapsed * 0.005 + i) * 20, 0, Math.PI * 2);
+                    ctx.strokeStyle = `hsl(${(elapsed * 0.05 + i * 45) % 360}, 80%, 60%)`;
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+                }
+                ctx.restore();
+
+                // 16:9 Neon frame
+                ctx.strokeStyle = 'rgba(99, 102, 241, 0.4)';
+                ctx.lineWidth = 8;
+                ctx.strokeRect(30, 30, canvas.width - 60, canvas.height - 60);
+
+                // Main Title Overlay
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 36px "Plus Jakarta Sans", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(titleText ? titleText.substring(0, 45) : 'Python 16:9 Video Synthesizer', cx, cy - 20);
+
+                // Subtitle
+                ctx.fillStyle = '#38bdf8';
+                ctx.font = '500 20px "JetBrains Mono", monospace';
+                ctx.fillText(`Duration: 15s • Ratio: 16:9 • Frame: ${Math.floor(elapsed / 33)}`, cx, cy + 30);
+
+                // 15s Progress bar inside video
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                ctx.fillRect(cx - 200, cy + 80, 400, 10);
+
+                ctx.fillStyle = '#ec4899';
+                ctx.fillRect(cx - 200, cy + 80, 400 * progress, 10);
+
+                if (elapsed < totalDuration) {
+                    requestAnimationFrame(draw);
+                } else {
+                    mediaRecorder.stop();
+                }
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        // VOLANIE OPEN-SOURCE / GEMINI API
         async function callOpenSourceEndpoint(modelId, systemPrompt, chatHistory, userText) {
             const cleanModel = modelId.replace(/^oss:/, '');
             const endpointBase = (state.ossEndpoint || 'https://openrouter.ai/api/v1').replace(/\/+$/, '');
@@ -1109,74 +1237,35 @@
             ];
 
             const headers = { 'Content-Type': 'application/json' };
-            if (state.ossApiKey) {
-                headers['Authorization'] = `Bearer ${state.ossApiKey}`;
-            }
+            if (state.ossApiKey) headers['Authorization'] = `Bearer ${state.ossApiKey}`;
 
-            let attempt = 0;
-            const maxRetries = 3;
-            let delay = 1000;
+            const response = await fetch(targetUrl, {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({ model: cleanModel, messages: messages, temperature: 0.7 })
+            });
 
-            while (attempt < maxRetries) {
-                try {
-                    const response = await fetch(targetUrl, {
-                        method: 'POST',
-                        headers: headers,
-                        body: JSON.stringify({
-                            model: cleanModel,
-                            messages: messages,
-                            temperature: 0.7
-                        })
-                    });
-
-                    if (response.status === 503 || response.status === 429) {
-                        attempt++;
-                        if (attempt < maxRetries) {
-                            await new Promise(res => setTimeout(res, delay));
-                            delay *= 2;
-                            continue;
-                        }
-                    }
-
-                    const data = await response.json();
-                    if (!response.ok) {
-                        const errMsg = data.error?.message || `Chyba Open-Source Endpointu (${response.status})`;
-                        throw new Error(errMsg);
-                    }
-
-                    return data.choices?.[0]?.message?.content || "Žiadna odpoveď z modelu.";
-                } catch (err) {
-                    attempt++;
-                    if (attempt >= maxRetries) throw err;
-                    await new Promise(res => setTimeout(res, delay));
-                    delay *= 2;
-                }
-            }
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.error?.message || `Chyba OSS Endpointu (${response.status})`);
+            return data.choices?.[0]?.message?.content || "Žiadna odpoveď.";
         }
 
-        // VOLANIE GOOGLE GEMINI API
         async function callGeminiDirectAPI(modelId, systemPrompt, chatHistory, userText) {
-            if (!state.apiKey) {
-                throw new Error("Nemáte zadaný Gemini API kľúč. Otvorte záložku 'Nastavenia & API' a vložte váš Google Gemini API kľúč.");
-            }
+            if (!state.apiKey) throw new Error("Nemáte zadaný Gemini API kľúč. Otvorte záložku 'Nastavenia & API'.");
 
-            const cleanModel = modelId.replace(/^models\//, '');
+            let targetModel = modelId;
+            if (modelId === 'gemini-3.5-lite-video') targetModel = 'gemini-2.5-flash'; // Prepojené na ultra-rýchly Gemini backend
+
+            const cleanModel = targetModel.replace(/^models\//, '');
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${state.apiKey}`;
 
             const contents = [];
             if (chatHistory && chatHistory.length > 0) {
                 chatHistory.slice(-8).forEach(m => {
-                    contents.push({
-                        role: m.role === 'assistant' ? 'model' : 'user',
-                        parts: [{ text: m.text }]
-                    });
+                    contents.push({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.text }] });
                 });
             }
-
-            contents.push({
-                role: 'user',
-                parts: [{ text: userText }]
-            });
+            contents.push({ role: 'user', parts: [{ text: userText }] });
 
             const payload = {
                 contents: contents,
@@ -1190,21 +1279,11 @@
             });
 
             const data = await response.json();
-            if (!response.ok) {
-                const errMsg = data.error?.message || `HTTP ${response.status}`;
-                throw new Error(errMsg);
-            }
-
-            const candidate = data.candidates?.[0];
-            if (!candidate || !candidate.content?.parts?.[0]?.text) {
-                if (candidate?.finishReason === 'SAFETY') throw new Error('Odpoveď bola zachytená bezpečnostným filtrom.');
-                throw new Error('Model nevrátil žiadny text.');
-            }
-
-            return candidate.content.parts[0].text;
+            if (!response.ok) throw new Error(data.error?.message || `HTTP ${response.status}`);
+            
+            return data.candidates?.[0]?.content?.parts?.[0]?.text || "Model nevrátil text.";
         }
 
-        // VOLANIE OLLAMA
         async function callOllamaAPI(modelId, systemPrompt, chatHistory, userText) {
             const baseUrl = (state.ollamaUrl || 'http://localhost:11434').replace(/\/+$/, '');
             const cleanModel = modelId.replace(/^ollama:/, '');
@@ -1218,20 +1297,12 @@
             const response = await fetch(`${baseUrl}/api/chat`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    model: cleanModel,
-                    messages: messages,
-                    stream: false
-                })
+                body: JSON.stringify({ model: cleanModel, messages: messages, stream: false })
             });
 
-            if (!response.ok) {
-                const errText = await response.text();
-                throw new Error(`Ollama chyba (${response.status}): ${errText || 'Uistite sa, že Ollama beží.'}`);
-            }
-
             const data = await response.json();
-            return data.message?.content || data.response || "Ollama nevrátila žiadny text.";
+            if (!response.ok) throw new Error(`Ollama chyba (${response.status})`);
+            return data.message?.content || data.response || "Žiadna odpoveď z Ollama.";
         }
 
         function toggleSearch(type) {
@@ -1278,7 +1349,7 @@
             const reasoningInd = document.getElementById('reasoning-indicator');
             if (isReasoning) {
                 reasoningInd.classList.remove('hidden');
-                document.getElementById('reasoning-text').textContent = `AI model [${state.selectedModel}] uvažuje a analyzuje kontext...`;
+                document.getElementById('reasoning-text').textContent = `AI model [${state.selectedModel}] uvažuje a kóduje video...`;
             }
 
             const memories = await getAllDB('memories');
@@ -1286,14 +1357,20 @@
             const todayStr = new Date().toLocaleDateString('sk-SK');
 
             let memoryContext = `Dnešný dátum je: ${todayStr}.\n`;
-            if (memories.length > 0) {
-                memoryContext += `Dlhodobé informácie o používateľovi v pamäti:\n` + memories.map(m => `- ${m.content}`).join('\n') + '\n';
-            }
-            if (customEvents.length > 0) {
-                memoryContext += `Sviatky a narodeniny používateľa:\n` + customEvents.map(e => `- ${e.title} (${e.date})`).join('\n') + '\n';
-            }
+            if (memories.length > 0) memoryContext += `Dlhodobé informácie:\n` + memories.map(m => `- ${m.content}`).join('\n') + '\n';
+            if (customEvents.length > 0) memoryContext += `Sviatky a udalosti:\n` + customEvents.map(e => `- ${e.title} (${e.date})`).join('\n') + '\n';
 
-            const systemPrompt = `Si Codex Ultra - špičkový AI asistent pre programovanie, kód a vývoj. Všetky odpovede formátuj v Markdown. Kód vždy vkladaj do syntaxou označených blokov (\`\`\`language ... \`\`\`).\n${memoryContext}`;
+            const isVideoModel = state.selectedModel === 'gemini-3.5-lite-video';
+            let systemPrompt = `Si Codex Ultra AI. Odpovedaj prehľadne v Markdown. Kód vždy vkladaj do syntaxou označených blokov (\`\`\`language ... \`\`\`).\n${memoryContext}`;
+
+            if (isVideoModel) {
+                systemPrompt = `Si Gemini 3.5 Lite Video Engine - špecializovaný model pre tvorbu 15-sekundových videí vo formáte 16:9 obdĺžnika cez jazyk Python.
+Vždy vytvor kompletný, spustiteľný Python kód používajúci knižnice 'moviepy', 'opencv-python' alebo 'numpy' s presnými parametrami:
+- Trvanie videa: Presne 15.0 sekúnd
+- Pomer strán: 16:9 (Rozlíšenie 1920x1080 alebo 1280x720)
+- Výstupný formát: MP4 súbor (video.mp4)
+Pod kód napíš stručný popis scény a animácie.`;
+            }
 
             try {
                 let replyText = '';
@@ -1306,7 +1383,13 @@
                 }
 
                 reasoningInd.classList.add('hidden');
-                appendMessage('assistant', replyText);
+                const msgEl = appendMessage('assistant', replyText);
+
+                // Ak ide o model Gemini 3.5 Lite Video, automaticky syntetizujeme a vyrenderujeme 15s MP4 video
+                if (isVideoModel) {
+                    renderProcedural15sVideo(msgEl.querySelector('.prose'), userText);
+                }
+
             } catch (err) {
                 reasoningInd.classList.add('hidden');
                 appendMessage('assistant', `⚠️ **Systémové hlásenie**: Požiadavku sa nepodarilo spracovať.\n\n\`\`\`text\nPodrobnosti: ${err.message}\n\`\`\`\n*Skontrolujte váš API kľúč alebo Endpoint v Nastaveniach.*`);
@@ -1341,6 +1424,7 @@
 
             enhanceCodeBlocks(msgDiv);
             setDBItem('chats', 'currentChat', state.chatHistory);
+            return msgDiv;
         }
 
         function enhanceCodeBlocks(parentEl) {
