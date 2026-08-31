@@ -2,7 +2,9 @@
 <html lang="sk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Codex Ultra AI Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -12,19 +14,17 @@
     <script>
         tailwind.config = {
             theme: {
-                extend: {
-                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] }
-                }
+                extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] } }
             }
         }
     </script>
     <style>
         body {
             background-color: #040509; color: #e2e8f0; font-family: 'Plus Jakarta Sans', sans-serif;
-            background-image: radial-gradient(circle at 15% 15%, rgba(99,102,241,0.12) 0%, transparent 40%),
-                              radial-gradient(circle at 85% 85%, rgba(236,72,153,0.09) 0%, transparent 40%),
-                              radial-gradient(circle at 50% 50%, rgba(6,182,212,0.08) 0%, transparent 50%);
-            background-attachment: fixed;
+            background-image: radial-gradient(circle at 15% 15%, rgba(99,102,241,0.15) 0%, transparent 40%),
+                              radial-gradient(circle at 85% 85%, rgba(236,72,153,0.12) 0%, transparent 40%),
+                              radial-gradient(circle at 50% 50%, rgba(6,182,212,0.1) 0%, transparent 50%);
+            background-attachment: fixed; -webkit-tap-highlight-color: transparent;
         }
         .rainbow-border {
             position: relative; background: linear-gradient(135deg, rgba(14,17,26,0.95), rgba(22,27,38,0.95));
@@ -32,483 +32,429 @@
         }
         .rainbow-border::before {
             content: ''; position: absolute; top: -1.5px; left: -1.5px; right: -1.5px; bottom: -1.5px;
-            background: linear-gradient(90deg, #ff007f, #7928ca, #4299e1, #00f2fe, #4facfe, #ff007f);
+            background: linear-gradient(90deg, #ff007f, #f97316, #7928ca, #4299e1, #00f2fe, #ff007f);
             background-size: 400% 400%; border-radius: 1.1rem; z-index: -1; animation: rainbowGlow 8s ease infinite;
         }
-        .glass-card { background: rgba(13,16,26,0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.07); }
+        .glass-card { background: rgba(13,16,26,0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
         .rainbow-text {
-            background: linear-gradient(90deg, #ff416c, #8a2be2, #00bfff, #00ff88, #ff416c);
+            background: linear-gradient(90deg, #ff416c, #f97316, #8a2be2, #00bfff, #00ff88, #ff416c);
             background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: rainbowGlow 6s ease infinite;
         }
         @keyframes rainbowGlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: rgba(10,12,20,0.5); }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #8b5cf6, #06b6d4); border-radius: 4px; }
-        .code-block-wrapper { background-color: #070913; border: 1px solid rgba(99,102,241,0.2); border-radius: 0.85rem; overflow: hidden; margin: 1rem 0; }
-        .code-header { background: #0e1222; padding: 0.5rem 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: #94a3b8; }
-        .code-content { padding: 1rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; line-height: 1.6; color: #38bdf8; white-space: pre; }
+        .code-block-wrapper { background-color: #070913; border: 1px solid rgba(99,102,241,0.2); border-radius: 0.85rem; overflow: hidden; margin: 0.8rem 0; }
+        .code-header { background: #0e1222; padding: 0.4rem 0.8rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #94a3b8; }
+        .code-content { padding: 0.8rem; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.55; color: #38bdf8; white-space: pre; }
+        
+        /* Mobile Simulator Device Frame */
+        .simulator-active #app-container {
+            max-width: 410px; height: 860px; margin: auto; border: 12px solid #1a1d2e; border-radius: 46px;
+            box-shadow: 0 0 50px rgba(99,102,241,0.35), 0 25px 50px -12px rgba(0,0,0,0.9);
+            position: relative; overflow: hidden;
+        }
     </style>
 </head>
-<body class="h-screen flex flex-col md:flex-row antialiased selection:bg-purple-600 selection:text-white">
+<body class="h-screen w-screen flex flex-col antialiased selection:bg-purple-600 selection:text-white overflow-hidden">
 
-    <!-- Sidebar -->
-    <aside class="w-full md:w-72 bg-[#080a12]/90 backdrop-blur-xl border-r border-[#1a1f35] flex flex-col justify-between shrink-0 z-20 overflow-y-auto">
-        <div>
-            <div class="p-4 border-b border-[#1a1f35]/80 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-500 to-cyan-400 p-0.5 shadow-lg shadow-purple-500/20">
-                        <div class="w-full h-full bg-[#080a12] rounded-[10px] flex items-center justify-center">
-                            <i class="fa-solid fa-code text-cyan-400 text-lg"></i>
-                        </div>
-                    </div>
-                    <div>
-                        <h1 class="font-extrabold text-base tracking-wider rainbow-text">CODEX ULTRA</h1>
-                        <p class="text-[9px] text-gray-400 font-mono uppercase tracking-widest">Next-Gen Studio</p>
-                    </div>
+    <!-- INTRO SPLASH SCREEN -->
+    <div id="splash-screen" class="fixed inset-0 bg-[#04050a] z-[100] flex flex-col items-center justify-center transition-opacity duration-700">
+        <div class="relative flex flex-col items-center space-y-5">
+            <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-orange-500 via-purple-600 to-cyan-400 p-1 shadow-2xl shadow-purple-500/40 animate-pulse">
+                <div class="w-full h-full bg-[#080a12] rounded-[22px] flex items-center justify-center">
+                    <i class="fa-solid fa-bolt text-3xl text-orange-400 animate-bounce"></i>
                 </div>
             </div>
-
-            <div class="p-3 border-b border-[#1a1f35]/60 bg-[#0d101d]/40 flex items-center justify-between">
-                <div class="flex items-center space-x-2.5">
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-600 to-indigo-700 border border-purple-400/40 flex items-center justify-center text-white font-bold text-xs" id="avatar-initials">?</div>
-                    <div>
-                        <p class="text-xs font-semibold text-gray-200" id="user-display-name">Neprihlásený</p>
-                        <p class="text-[10px] text-cyan-400" id="user-plan-badge">Balíček: Free Tier</p>
-                    </div>
-                </div>
-                <button onclick="openAuthModal()" class="px-2 py-1 text-xs bg-purple-600/10 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 rounded-lg">
-                    <i class="fa-solid fa-user"></i>
-                </button>
-            </div>
-
-            <nav class="p-2.5 space-y-1">
-                <button onclick="switchTab('chat')" id="nav-chat" class="w-full flex items-center space-x-3 px-3.5 py-2 rounded-xl text-xs font-medium bg-purple-600/20 text-purple-300 border border-purple-500/30">
-                    <i class="fa-solid fa-comments w-4 text-indigo-400"></i><span>Chat Studio</span>
-                </button>
-                <button onclick="switchTab('projects')" id="nav-projects" class="w-full flex items-center space-x-3 px-3.5 py-2 rounded-xl text-xs font-medium text-gray-400 hover:bg-gray-800/40 hover:text-gray-200">
-                    <i class="fa-solid fa-folder-tree w-4 text-blue-400"></i>
-                    <span class="flex-1 text-left">Projekty & Súbory</span>
-                    <span id="projects-count-badge" class="text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.2 rounded border border-blue-500/30">0</span>
-                </button>
-                <button onclick="switchTab('pricing')" id="nav-pricing" class="w-full flex items-center space-x-3 px-3.5 py-2 rounded-xl text-xs font-medium text-gray-400 hover:bg-gray-800/40 hover:text-gray-200">
-                    <i class="fa-solid fa-gem w-4 text-pink-400"></i>
-                    <span class="flex-1 text-left">Tarify & Balíčky</span>
-                    <span class="text-[9px] bg-pink-500/20 text-pink-300 px-1 rounded border border-pink-500/30 font-bold">UPGRADE</span>
-                </button>
-                <button onclick="switchTab('memory')" id="nav-memory" class="w-full flex items-center space-x-3 px-3.5 py-2 rounded-xl text-xs font-medium text-gray-400 hover:bg-gray-800/40 hover:text-gray-200">
-                    <i class="fa-solid fa-brain w-4 text-purple-400"></i><span>Pamäť AI</span>
-                </button>
-                <button onclick="switchTab('calendar')" id="nav-calendar" class="w-full flex items-center space-x-3 px-3.5 py-2 rounded-xl text-xs font-medium text-gray-400 hover:bg-gray-800/40 hover:text-gray-200">
-                    <i class="fa-solid fa-calendar-days w-4 text-cyan-400"></i><span>Kalendár & Dni</span>
-                </button>
-                <button onclick="switchTab('models')" id="nav-models" class="w-full flex items-center space-x-3 px-3.5 py-2 rounded-xl text-xs font-medium text-gray-400 hover:bg-gray-800/40 hover:text-gray-200">
-                    <i class="fa-solid fa-layer-group w-4 text-emerald-400"></i>
-                    <span class="flex-1 text-left">Všetky AI Modely</span>
-                    <span id="models-count-badge" class="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.2 rounded border border-emerald-500/30">0</span>
-                </button>
-                <button onclick="switchTab('settings')" id="nav-settings" class="w-full flex items-center space-x-3 px-3.5 py-2 rounded-xl text-xs font-medium text-gray-400 hover:bg-gray-800/40 hover:text-gray-200">
-                    <i class="fa-solid fa-sliders w-4 text-amber-400"></i><span>Nastavenia & API</span>
-                </button>
-            </nav>
-        </div>
-
-        <div class="p-3.5 m-2.5 rainbow-border">
-            <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[11px] font-semibold text-gray-300 flex items-center"><i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Mesačný Limit</span>
-                <span class="text-xs font-mono font-bold rainbow-text" id="limit-percentage-text">100 %</span>
-            </div>
-            <div class="w-full bg-gray-900 h-2 rounded-full overflow-hidden p-0.5 border border-gray-700/40">
-                <div id="limit-progress-bar" class="h-full rounded-full bg-gradient-to-r from-cyan-400 via-indigo-500 to-fuchsia-500 transition-all duration-500" style="width: 100%;"></div>
-            </div>
-            <div class="mt-2 flex items-center justify-between text-[10px] text-gray-400">
-                <span id="limit-plan-name" class="truncate max-w-[120px]">Free Tier</span>
-                <button onclick="switchTab('pricing')" class="text-cyan-400 hover:underline font-bold">Dobiť</button>
-            </div>
-        </div>
-    </aside>
-
-    <!-- Main Panel -->
-    <main class="flex-1 flex flex-col h-full overflow-hidden relative">
-
-        <div id="limit-exceeded-banner" class="hidden bg-gradient-to-r from-red-950/90 via-pink-950/90 to-purple-950/90 border-b border-red-500/40 p-3 text-center z-30 animate-pulse">
-            <div class="max-w-xl mx-auto flex items-center justify-between text-left">
-                <div class="flex items-center space-x-2 text-xs text-white">
-                    <i class="fa-solid fa-triangle-exclamation text-amber-300"></i>
-                    <span>Limit vyčerpaný (0.0 %)! Písanie zablokované.</span>
-                </div>
-                <button onclick="switchTab('pricing')" class="px-3 py-1 bg-pink-600 hover:bg-pink-500 text-white font-bold text-xs rounded-lg">Zvýšiť limit</button>
-            </div>
-        </div>
-
-        <!-- TAB 1: CHAT STUDIO -->
-        <section id="tab-chat" class="flex-1 flex flex-col h-full">
-            <header class="p-3 bg-[#090b14]/80 backdrop-blur-md border-b border-[#1a1f35] flex flex-wrap items-center justify-between gap-2">
-                <div class="flex items-center space-x-2">
-                    <label class="text-[11px] font-semibold text-gray-400 uppercase hidden sm:block">Model:</label>
-                    <select id="model-select" class="bg-[#101424] text-xs font-semibold text-cyan-300 border border-purple-500/40 rounded-xl px-3 py-1.5 focus:outline-none max-w-xs truncate"></select>
-                </div>
-                <div class="flex items-center flex-wrap gap-1.5">
-                    <label class="flex items-center space-x-1.5 bg-[#101424] border border-[#202740] px-2.5 py-1 rounded-xl cursor-pointer">
-                        <input type="checkbox" id="toggle-reasoning" checked class="rounded text-purple-600 bg-gray-900 border-gray-700">
-                        <span class="text-xs text-purple-300 font-medium"><i class="fa-solid fa-brain mr-1 text-purple-400"></i> Architektúra & Plánovanie</span>
-                    </label>
-                    <button id="toggle-web-search" onclick="toggleSearch('web')" class="px-2.5 py-1 rounded-xl text-xs font-medium border border-gray-800 bg-[#101424] text-gray-400 hover:text-cyan-300"><i class="fa-solid fa-globe mr-1"></i> Web</button>
-                    <button id="toggle-yt-search" onclick="toggleSearch('yt')" class="px-2.5 py-1 rounded-xl text-xs font-medium border border-gray-800 bg-[#101424] text-gray-400 hover:text-red-400"><i class="fa-brands fa-youtube mr-1"></i> YT</button>
-                    <button onclick="clearCurrentChat()" class="p-1.5 text-xs text-gray-400 hover:text-red-400 bg-[#101424] border border-gray-800 rounded-xl"><i class="fa-solid fa-trash-can"></i></button>
-                </div>
-            </header>
-
-            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
-                <div class="max-w-3xl mx-auto rainbow-border p-5 text-center my-4 shadow-xl">
-                    <div class="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-purple-600 to-cyan-400 flex items-center justify-center text-white text-xl">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    </div>
-                    <h2 class="text-xl font-extrabold text-white mb-1">Codex Ultra AI Architect</h2>
-                    <p class="text-xs text-gray-300 mb-3 max-w-md mx-auto">Vytvárajte rozsiahle aplikácie a kód vopred rozložený na súbory bez syntaktických chýb.</p>
-                    <div class="flex flex-wrap justify-center gap-1.5 text-[11px]">
-                        <span class="px-2.5 py-0.5 bg-cyan-900/40 border border-cyan-500/30 text-cyan-300 rounded-full"><i class="fa-solid fa-cube mr-1"></i> Projektový Generátor</span>
-                        <span class="px-2.5 py-0.5 bg-emerald-900/40 border border-emerald-500/30 text-emerald-300 rounded-full"><i class="fa-solid fa-sync mr-1"></i> OpenRouter & Google Sync</span>
-                        <span class="px-2.5 py-0.5 bg-pink-900/40 border border-pink-500/30 text-pink-300 rounded-full"><i class="fa-solid fa-photo-film mr-1"></i> Multi-Upload Médií</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Thinking indicator -->
-            <div id="reasoning-indicator" class="hidden px-5 py-2.5 bg-purple-950/60 border-t border-purple-800/40 flex flex-col text-xs text-purple-200 backdrop-blur-md">
-                <div class="flex items-center space-x-2">
-                    <div class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></div>
-                    <span class="font-mono font-bold text-cyan-300" id="reasoning-stage-text">ARCHITEKTONICKÝ NÁVRH & PLÁNOVANIE SÚBOROV...</span>
-                </div>
-                <span class="text-[10px] text-gray-300 pl-4 font-mono" id="reasoning-detail-text">AI optimalizuje štruktúru bez syntaktických chýb.</span>
-            </div>
-
-            <!-- Media Previews -->
-            <div id="media-preview-container" class="hidden px-4 py-1.5 bg-[#0a0d1a] border-t border-[#1a1f35] flex items-center space-x-2 overflow-x-auto">
-                <span class="text-[10px] text-gray-400 shrink-0"><i class="fa-solid fa-paperclip text-cyan-400 mr-1"></i> Prílohy:</span>
-                <div id="media-previews-list" class="flex items-center space-x-2"></div>
-            </div>
-
-            <!-- Input area -->
-            <div class="p-3 bg-[#080a14]/90 backdrop-blur-lg border-t border-[#1a1f35]">
-                <form id="chat-form" onsubmit="handleChatSubmit(event)" class="max-w-4xl mx-auto relative">
-                    <div class="rainbow-border p-0.5">
-                        <div class="bg-[#0b0e1b] rounded-[0.9rem] p-2 flex items-end space-x-2">
-                            <input type="file" id="media-file-input" multiple accept="image/*,video/*" class="hidden" onchange="handleMediaFilesSelected(event)">
-                            <button type="button" onclick="document.getElementById('media-file-input').click()" class="w-9 h-9 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-cyan-300 flex items-center justify-center" title="Nahraj neobmedzene fotiek a videí">
-                                <i class="fa-solid fa-photo-film text-xs"></i>
-                            </button>
-                            <button type="button" onclick="insertProjectPromptTemplate()" class="w-9 h-9 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-pink-300 flex items-center justify-center" title="Šablóna Projektu">
-                                <i class="fa-solid fa-cubes text-xs"></i>
-                            </button>
-                            <textarea id="chat-input" rows="2" placeholder="Napíš požiadavku alebo celý projekt... (Ctrl+Enter pre odoslanie)" class="w-full bg-transparent text-xs text-gray-100 placeholder-gray-500 p-2 focus:outline-none resize-none font-sans" onkeydown="handleKeyDown(event)"></textarea>
-                            <button type="submit" id="send-btn" class="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 via-indigo-500 to-cyan-400 hover:opacity-90 text-white flex items-center justify-center shadow-lg transition">
-                                <i class="fa-solid fa-paper-plane text-xs"></i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        <!-- TAB 2: PROJECTS & FILES -->
-        <section id="tab-projects" class="hidden flex-1 p-5 overflow-y-auto">
-            <div class="max-w-6xl mx-auto space-y-4">
-                <div class="flex flex-wrap items-center justify-between border-b border-[#1a1f35] pb-3 gap-2">
-                    <div>
-                        <h2 class="text-lg font-bold text-white flex items-center"><i class="fa-solid fa-folder-tree text-blue-400 mr-2"></i> Generátor Projektov & Súbory</h2>
-                        <p class="text-xs text-gray-400">Automaticky vygenerované súbory z chatu rozložené do projektu.</p>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <button onclick="downloadAllFilesAsZip()" class="px-3.5 py-1.5 text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow flex items-center">
-                            <i class="fa-solid fa-file-zipper mr-1"></i> Stiahnuť ZIP
-                        </button>
-                        <button onclick="clearVirtualProject()" class="px-3 py-1.5 text-xs bg-red-950/40 text-red-300 border border-red-500/30 rounded-xl hover:bg-red-900/60">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="glass-card rounded-xl p-3 border border-[#1a1f35] rainbow-border h-[480px] flex flex-col">
-                        <h3 class="text-xs font-bold text-gray-300 uppercase mb-2 flex justify-between">
-                            <span><i class="fa-solid fa-folder-open text-amber-400 mr-1"></i> Súbory</span>
-                            <span id="file-tree-count" class="font-mono text-cyan-400">0</span>
-                        </h3>
-                        <div id="file-explorer-tree" class="flex-1 overflow-y-auto space-y-1 text-xs font-mono"></div>
-                    </div>
-                    <div class="md:col-span-2 glass-card rounded-xl p-3 border border-[#1a1f35] flex flex-col h-[480px]">
-                        <div class="flex items-center justify-between border-b border-gray-800 pb-2 mb-2 text-xs">
-                            <span class="font-mono text-cyan-300 font-bold" id="active-filename">Žiadny vybraný súbor</span>
-                            <div class="flex space-x-1.5">
-                                <button onclick="copyActiveFileContent()" class="px-2.5 py-1 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded-lg"><i class="fa-regular fa-copy mr-1"></i> Kopírovať</button>
-                                <button onclick="downloadActiveFile()" class="px-2.5 py-1 bg-cyan-600/30 border border-cyan-500/40 text-cyan-300 rounded-lg"><i class="fa-solid fa-download mr-1"></i> Stiahnuť</button>
-                            </div>
-                        </div>
-                        <pre class="flex-1 bg-[#060813] border border-gray-800 rounded-xl p-3 overflow-auto font-mono text-xs text-cyan-300"><code id="active-file-content">// Vyberte súbor pre zobrazenie kódu...</code></pre>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 3: TARIFY & BALÍČKY -->
-        <section id="tab-pricing" class="hidden flex-1 p-5 overflow-y-auto">
-            <div class="max-w-5xl mx-auto space-y-6">
-                <div class="text-center space-y-2">
-                    <h2 class="text-2xl font-extrabold text-white rainbow-text">Tarify & Dobíjanie Limitov</h2>
-                    <p class="text-xs text-gray-400">Vyberte si balíček v EUR (€) alebo CZK (Kč).</p>
-                    <div class="flex justify-center gap-3 pt-2">
-                        <div class="bg-[#101424] p-1 rounded-xl border border-gray-800 flex space-x-1 text-xs">
-                            <button id="billing-monthly-btn" onclick="setBillingCycle('monthly')" class="px-3 py-1 font-bold rounded-lg bg-purple-600 text-white">Mesačne</button>
-                            <button id="billing-yearly-btn" onclick="setBillingCycle('yearly')" class="px-3 py-1 font-bold rounded-lg text-gray-400">Ročne (-20%)</button>
-                        </div>
-                        <div class="bg-[#101424] p-1 rounded-xl border border-gray-800 flex space-x-1 text-xs">
-                            <button id="currency-eur-btn" onclick="setCurrency('EUR')" class="px-3 py-1 font-bold rounded-lg bg-cyan-600 text-white">EUR (€)</button>
-                            <button id="currency-czk-btn" onclick="setCurrency('CZK')" class="px-3 py-1 font-bold rounded-lg text-gray-400">CZK (Kč)</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="pricing-plans-grid"></div>
-
-                <div class="glass-card rounded-xl p-4 border border-[#1a1f35] rainbow-border flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                        <h3 class="font-bold text-white text-sm"><i class="fa-solid fa-bolt text-amber-400 mr-1.5"></i> Jednorazové Dobitie +100% Limitu</h3>
-                        <p class="text-xs text-gray-400">Okamžité obnovenie limitu bez zmeny balíčka.</p>
-                    </div>
-                    <button onclick="openPaymentGateway('Top-up +100% Limit', 'topup', 4.99, 125)" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 font-bold text-xs text-gray-950 rounded-xl">
-                        Dobiť limit (<span class="currency-label-topup">4.99 €</span>)
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 4: PAMÄŤ AI -->
-        <section id="tab-memory" class="hidden flex-1 p-5 overflow-y-auto">
-            <div class="max-w-4xl mx-auto space-y-4">
-                <div class="flex items-center justify-between border-b border-[#1a1f35] pb-3">
-                    <h2 class="text-lg font-bold text-white"><i class="fa-solid fa-brain text-purple-400 mr-2"></i> Dlhodobá Pamäť AI</h2>
-                    <button onclick="openAddMemoryModal()" class="px-3 py-1.5 text-xs font-semibold bg-purple-600 text-white rounded-xl"><i class="fa-solid fa-plus mr-1"></i> Pridať</button>
-                </div>
-                <div id="memory-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
-            </div>
-        </section>
-
-        <!-- TAB 5: KALENDÁR -->
-        <section id="tab-calendar" class="hidden flex-1 p-5 overflow-y-auto">
-            <div class="max-w-4xl mx-auto space-y-4">
-                <div class="flex items-center justify-between border-b border-[#1a1f35] pb-3">
-                    <h2 class="text-lg font-bold text-white"><i class="fa-solid fa-calendar-days text-cyan-400 mr-2"></i> Kalendár & Sviatky SR</h2>
-                    <button onclick="openAddEventModal()" class="px-3 py-1.5 text-xs font-semibold bg-cyan-600 text-white rounded-xl"><i class="fa-solid fa-plus mr-1"></i> Pridať Dátum</button>
-                </div>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                    <div class="lg:col-span-2 bg-[#0c0f1e] border border-[#1a1f35] rounded-xl p-4 rainbow-border">
-                        <div class="flex justify-between items-center mb-3">
-                            <h3 class="font-bold text-sm text-gray-200" id="calendar-month-year">August 2026</h3>
-                            <div class="space-x-1">
-                                <button onclick="changeMonth(-1)" class="p-1 rounded bg-gray-800 text-xs text-gray-300"><i class="fa-solid fa-chevron-left"></i></button>
-                                <button onclick="changeMonth(1)" class="p-1 rounded bg-gray-800 text-xs text-gray-300"><i class="fa-solid fa-chevron-right"></i></button>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-7 gap-1 text-center font-bold text-[11px] text-purple-400 mb-1">
-                            <div>Po</div><div>Ut</div><div>St</div><div>Št</div><div>Pi</div><div>So</div><div>Ne</div>
-                        </div>
-                        <div id="calendar-grid" class="grid grid-cols-7 gap-1 text-xs"></div>
-                    </div>
-                    <div class="space-y-2">
-                        <h3 class="font-bold text-xs text-gray-300 uppercase tracking-wider">Najbližšie udalosti</h3>
-                        <div id="upcoming-events-list" class="space-y-2"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- TAB 6: VŠETKY MODELY -->
-        <section id="tab-models" class="hidden flex-1 p-5 overflow-y-auto">
-            <div class="max-w-6xl mx-auto space-y-4">
-                <div class="border-b border-[#1a1f35] pb-3 flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                        <h2 class="text-lg font-bold text-white flex items-center"><i class="fa-solid fa-layer-group text-emerald-400 mr-2"></i> Synchronizácia Modelov</h2>
-                        <p class="text-xs text-gray-400">Kompletný zoznam modelov priamo z OpenRouter & Google Gemini API.</p>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <input type="text" id="models-search-input" oninput="filterModelsList()" placeholder="Hľadať model (gemini, claude, deepseek)..." class="bg-[#101426] border border-gray-700 rounded-xl px-3 py-1.5 text-xs text-cyan-300 w-56 font-mono focus:outline-none">
-                        <button onclick="refreshAllModelsList(true)" class="px-3 py-1.5 text-xs font-semibold bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 rounded-xl hover:bg-emerald-600/50">
-                            <i class="fa-solid fa-rotate mr-1"></i> Synchronizovať Všetko
-                        </button>
-                    </div>
-                </div>
-                <div id="all-models-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"></div>
-            </div>
-        </section>
-
-        <!-- TAB 7: NASTAVENIA & API -->
-        <section id="tab-settings" class="hidden flex-1 p-5 overflow-y-auto">
-            <div class="max-w-3xl mx-auto space-y-4">
-                <div class="border-b border-[#1a1f35] pb-3">
-                    <h2 class="text-lg font-bold text-white"><i class="fa-solid fa-sliders text-amber-400 mr-2"></i> Nastavenia & API Kľúče</h2>
-                </div>
-
-                <!-- Google Gemini Card -->
-                <div class="glass-card rounded-xl p-4 space-y-3 rainbow-border">
-                    <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-xs text-amber-300"><i class="fa-brands fa-google mr-1.5 text-amber-400"></i> Google Gemini API Kľúč (Automatická Synchronizácia)</h3>
-                        <span class="text-[10px] bg-amber-950/70 text-amber-300 px-2 py-0.5 rounded font-mono">Google Cloud AI</span>
-                    </div>
-                    <input type="password" id="api-key-input" placeholder="AIzaSy..." class="w-full bg-[#101426] border border-gray-700 rounded-xl px-3 py-2 text-xs text-cyan-300 font-mono">
-                    <div class="flex justify-end">
-                        <button onclick="saveApiKey()" class="px-4 py-1.5 text-xs bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold rounded-xl">Uložiť & Synchronizovať Gemini</button>
-                    </div>
-                </div>
-
-                <!-- OpenRouter Card -->
-                <div class="glass-card rounded-xl p-4 space-y-3 rainbow-border">
-                    <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-xs text-cyan-300"><i class="fa-solid fa-network-wired mr-1.5 text-cyan-400"></i> OpenRouter Cloud Endpoint & Kľúč</h3>
-                        <span class="text-[10px] bg-cyan-950/70 text-cyan-300 px-2 py-0.5 rounded font-mono">0.2% limit</span>
-                    </div>
-                    <input type="text" id="oss-endpoint-input" placeholder="https://openrouter.ai/api/v1" class="w-full bg-[#101426] border border-gray-700 rounded-xl px-3 py-2 text-xs text-cyan-300 font-mono">
-                    <input type="password" id="oss-key-input" placeholder="sk-or-v1-..." class="w-full bg-[#101426] border border-gray-700 rounded-xl px-3 py-2 text-xs text-cyan-300 font-mono">
-                    <div class="flex justify-end">
-                        <button onclick="saveOssSettings()" class="px-4 py-1.5 text-xs bg-cyan-500 hover:bg-cyan-400 text-gray-950 font-bold rounded-xl">Uložiť & Synchronizovať OpenRouter</button>
-                    </div>
-                </div>
-
-                <!-- Ollama Local Card -->
-                <div class="glass-card rounded-xl p-4 space-y-3">
-                    <h3 class="font-bold text-xs text-emerald-300"><i class="fa-solid fa-server mr-1.5 text-emerald-400"></i> Ollama Lokálny Server</h3>
-                    <input type="text" id="ollama-url-input" placeholder="http://localhost:11434" class="w-full bg-[#101426] border border-gray-700 rounded-xl px-3 py-2 text-xs text-emerald-300 font-mono">
-                    <div class="flex justify-end">
-                        <button onclick="saveOllamaSettings()" class="px-4 py-1.5 text-xs bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 rounded-xl">Uložiť Ollama</button>
-                    </div>
-                </div>
-
-                <div class="glass-card border-red-900/30 rounded-xl p-4 space-y-2">
-                    <h3 class="font-bold text-xs text-red-400"><i class="fa-solid fa-database mr-1 text-red-400"></i> Správa IndexedDB</h3>
-                    <button onclick="clearDatabase()" class="px-3 py-1.5 text-xs font-semibold bg-red-950 text-red-300 border border-red-700/50 rounded-xl">Vymazať Všetky Dáta</button>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- PAYMENT MODAL -->
-    <div id="payment-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="rainbow-border w-full max-w-md p-5 space-y-4">
-            <div class="flex justify-between items-center border-b border-gray-800 pb-2">
-                <h3 class="font-bold text-sm text-white flex items-center"><i class="fa-solid fa-shield-halved text-emerald-400 mr-2"></i> Platobná Brána Codex Ultra</h3>
-                <button onclick="closePaymentModal()" class="text-gray-400 hover:text-white">&times;</button>
-            </div>
-            <div class="p-3 bg-[#0a0d1c] border border-cyan-500/30 rounded-xl flex justify-between items-center">
-                <div>
-                    <h4 class="font-bold text-xs text-white" id="pay-modal-plan-title">Pro Studio</h4>
-                    <p class="text-[10px] text-gray-400" id="pay-modal-plan-desc">Aktivácia balíčka</p>
-                </div>
-                <span class="text-lg font-extrabold text-cyan-300 font-mono" id="pay-modal-price">19.99 €</span>
-            </div>
-            <form onsubmit="handlePaymentSubmit(event)" class="space-y-3 text-xs">
-                <input type="text" required placeholder="Číslo karty (4242 •••• •••• 4242)" class="w-full bg-[#101426] border border-gray-700 rounded-xl px-3 py-2 text-cyan-300 font-mono">
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="text" required placeholder="MM/YY" class="w-full bg-[#101426] border border-gray-700 rounded-xl px-3 py-2 text-cyan-300 font-mono">
-                    <input type="password" required maxlength="4" placeholder="CVC" class="w-full bg-[#101426] border border-gray-700 rounded-xl px-3 py-2 text-cyan-300 font-mono">
-                </div>
-                <button type="submit" id="pay-submit-btn" class="w-full py-2.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-gray-950 font-extrabold text-xs rounded-xl shadow-lg">
-                    Potvrdiť Platbu
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- AUTH MODAL -->
-    <div id="auth-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="rainbow-border w-full max-w-sm p-5 space-y-4">
-            <div class="flex justify-between items-center border-b border-gray-800 pb-2">
-                <h3 class="font-bold text-sm text-white" id="auth-modal-title">Prihlásenie</h3>
-                <button onclick="closeAuthModal()" class="text-gray-400 hover:text-white">&times;</button>
-            </div>
-            <form onsubmit="handleAuthSubmit(event)" class="space-y-3 text-xs">
-                <input type="text" id="auth-username" required placeholder="Meno / Login" class="w-full bg-[#101426] border border-gray-700 rounded-xl px-3 py-2 text-white">
-                <input type="password" id="auth-password" required placeholder="Heslo" class="w-full bg-[#101426] border border-gray-700 rounded-xl px-3 py-2 text-white">
-                <button type="submit" id="auth-submit-btn" class="w-full py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-xl">Prihlásiť sa</button>
-            </form>
             <div class="text-center">
-                <button onclick="toggleAuthMode()" id="auth-toggle-btn" class="text-[11px] text-purple-400 hover:underline">Nemáte účet? Registrácia</button>
+                <h1 class="font-extrabold text-2xl tracking-widest rainbow-text">CODEX ULTRA AI</h1>
+                <p class="text-[10px] text-gray-400 font-mono tracking-widest uppercase mt-1">Initializing Neural Engine...</p>
+            </div>
+            <div class="w-48 bg-gray-900 h-1.5 rounded-full overflow-hidden p-0.5 border border-purple-500/30">
+                <div id="splash-progress" class="h-full rounded-full bg-gradient-to-r from-orange-500 via-purple-500 to-cyan-400 w-0 transition-all duration-1000"></div>
             </div>
         </div>
     </div>
 
-    <!-- MEMORY MODAL -->
-    <div id="memory-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="w-full max-w-md glass-card rounded-2xl p-5 space-y-3">
-            <h3 class="font-bold text-sm text-white">Pridať do pamäte AI</h3>
-            <textarea id="memory-input" rows="3" placeholder="Napr.: Preferujem moderný kód v TypeScript a TailwindCSS." class="w-full bg-[#101426] border border-gray-700 rounded-xl p-2.5 text-xs text-white"></textarea>
-            <div class="flex justify-end space-x-2 text-xs">
-                <button onclick="closeMemoryModal()" class="px-3 py-1.5 bg-gray-800 text-gray-300 rounded-xl">Zrušiť</button>
-                <button onclick="saveMemoryItem()" class="px-3 py-1.5 font-bold bg-purple-600 text-white rounded-xl">Uložiť</button>
+    <!-- MAIN APP CONTAINER -->
+    <div id="app-container" class="flex-1 flex flex-col md:flex-row h-full w-full overflow-hidden bg-[#040509]">
+        
+        <!-- Sidebar -->
+        <aside id="sidebar-panel" class="w-full md:w-72 bg-[#080a12]/95 backdrop-blur-xl border-r border-[#1a1f35] flex flex-col justify-between shrink-0 z-20 overflow-y-auto">
+            <div>
+                <div class="p-4 border-b border-[#1a1f35]/80 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-orange-500 via-purple-600 to-cyan-400 p-0.5 shadow">
+                            <div class="w-full h-full bg-[#080a12] rounded-[10px] flex items-center justify-center">
+                                <i class="fa-solid fa-bolt text-orange-400 text-sm"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <h1 class="font-extrabold text-sm tracking-wider rainbow-text">CODEX ULTRA</h1>
+                            <p class="text-[8px] text-gray-400 font-mono uppercase">Groq + Google + Audio</p>
+                        </div>
+                    </div>
+                    <!-- Fullscreen & Simulator Buttons -->
+                    <div class="flex items-center space-x-1">
+                        <button onclick="toggleMobileSimulator()" class="p-1.5 text-xs text-cyan-400 hover:bg-gray-800 rounded-lg" title="Mobilný Simulátor">
+                            <i class="fa-solid fa-mobile-screen"></i>
+                        </button>
+                        <button onclick="toggleAppFullscreen()" class="p-1.5 text-xs text-purple-400 hover:bg-gray-800 rounded-lg" title="Fullscreen App (Bez lišty webu)">
+                            <i class="fa-solid fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-2.5 border-b border-[#1a1f35]/60 bg-[#0d101d]/40 flex items-center justify-between text-xs">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-7 h-7 rounded-full bg-gradient-to-br from-purple-600 to-indigo-700 flex items-center justify-center text-white font-bold text-[10px]" id="avatar-initials">?</div>
+                        <div>
+                            <p class="font-semibold text-gray-200" id="user-display-name">Neprihlásený</p>
+                            <p class="text-[9px] text-orange-400" id="user-plan-badge">Free Tier</p>
+                        </div>
+                    </div>
+                    <button onclick="openAuthModal()" class="px-2 py-1 bg-purple-600/20 text-purple-300 rounded border border-purple-500/30 text-[10px]"><i class="fa-solid fa-user"></i></button>
+                </div>
+
+                <nav class="p-2 space-y-1">
+                    <button onclick="switchTab('chat')" id="nav-chat" class="w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-medium bg-purple-600/20 text-purple-300 border border-purple-500/30">
+                        <i class="fa-solid fa-comments w-4 text-indigo-400"></i><span>Chat Studio</span>
+                    </button>
+                    <button onclick="switchTab('projects')" id="nav-projects" class="w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-medium text-gray-400 hover:bg-gray-800/40 hover:text-gray-200">
+                        <i class="fa-solid fa-folder-tree w-4 text-blue-400"></i>
+                        <span class="flex-1 text-left">Projekty & Audio</span>
+                        <span id="projects-count-badge" class="text-[10px] bg-blue-500/20 text-blue-300 px-1.5 py-0.2 rounded border border-blue-500/30">0</span>
+                    </button>
+                    <button onclick="switchTab('pricing')" id="nav-pricing" class="w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-medium text-gray-400 hover:bg-gray-800/40 hover:text-gray-200">
+                        <i class="fa-solid fa-gem w-4 text-pink-400"></i><span class="flex-1 text-left">Tarify & Balíčky</span>
+                        <span class="text-[9px] bg-pink-500/20 text-pink-300 px-1 rounded border border-pink-500/30 font-bold">UPGRADE</span>
+                    </button>
+                    <button onclick="switchTab('memory')" id="nav-memory" class="w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-medium text-gray-400 hover:bg-gray-800/40 hover:text-gray-200">
+                        <i class="fa-solid fa-brain w-4 text-purple-400"></i><span>Pamäť AI</span>
+                    </button>
+                    <button onclick="switchTab('calendar')" id="nav-calendar" class="w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-medium text-gray-400 hover:bg-gray-800/40 hover:text-gray-200">
+                        <i class="fa-solid fa-calendar-days w-4 text-cyan-400"></i><span>Kalendár</span>
+                    </button>
+                    <button onclick="switchTab('models')" id="nav-models" class="w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-medium text-gray-400 hover:bg-gray-800/40 hover:text-gray-200">
+                        <i class="fa-solid fa-layer-group w-4 text-emerald-400"></i>
+                        <span class="flex-1 text-left">Všetky Modely</span>
+                        <span id="models-count-badge" class="text-[10px] bg-emerald-500/20 text-emerald-300 px-1 rounded border border-emerald-500/30">0</span>
+                    </button>
+                    <button onclick="switchTab('settings')" id="nav-settings" class="w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-medium text-gray-400 hover:bg-gray-800/40 hover:text-gray-200">
+                        <i class="fa-solid fa-sliders w-4 text-amber-400"></i><span>Nastavenia & API</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="p-3 m-2 rainbow-border">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] font-semibold text-gray-300 flex items-center"><i class="fa-solid fa-bolt text-amber-400 mr-1"></i> Limit</span>
+                    <span class="text-[11px] font-mono font-bold rainbow-text" id="limit-percentage-text">100 %</span>
+                </div>
+                <div class="w-full bg-gray-900 h-1.5 rounded-full overflow-hidden p-0.5 border border-gray-700/40">
+                    <div id="limit-progress-bar" class="h-full rounded-full bg-gradient-to-r from-orange-400 via-purple-500 to-cyan-400" style="width: 100%;"></div>
+                </div>
+                <div class="mt-1.5 flex items-center justify-between text-[9px] text-gray-400">
+                    <span id="limit-plan-name" class="truncate max-w-[100px]">Free Tier</span>
+                    <button onclick="switchTab('pricing')" class="text-cyan-400 hover:underline font-bold">Dobiť</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Panel -->
+        <main class="flex-1 flex flex-col h-full overflow-hidden relative">
+            <div id="limit-exceeded-banner" class="hidden bg-gradient-to-r from-red-950/90 via-pink-950/90 to-purple-950/90 border-b border-red-500/40 p-2 text-center z-30 animate-pulse text-xs text-white flex justify-between items-center">
+                <span>Limit vyčerpaný (0.0 %)! Písanie zablokované.</span>
+                <button onclick="switchTab('pricing')" class="px-2 py-0.5 bg-pink-600 rounded text-[10px] font-bold">Zvýšiť limit</button>
+            </div>
+
+            <!-- TAB 1: CHAT STUDIO -->
+            <section id="tab-chat" class="flex-1 flex flex-col h-full">
+                <header class="p-2.5 bg-[#090b14]/80 backdrop-blur-md border-b border-[#1a1f35] flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center space-x-2">
+                        <select id="model-select" class="bg-[#101424] text-[11px] font-semibold text-cyan-300 border border-purple-500/40 rounded-xl px-2.5 py-1.5 focus:outline-none max-w-[180px] sm:max-w-xs truncate"></select>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-1">
+                        <label class="flex items-center space-x-1 bg-[#101424] border border-[#202740] px-2 py-1 rounded-xl cursor-pointer">
+                            <input type="checkbox" id="toggle-reasoning" checked class="rounded text-purple-600 bg-gray-900 border-gray-700">
+                            <span class="text-[10px] text-purple-300 font-medium"><i class="fa-solid fa-brain mr-1"></i> Uvažovanie</span>
+                        </label>
+                        <button id="toggle-web-search" onclick="toggleSearch('web')" class="px-2 py-1 rounded-xl text-[10px] border border-gray-800 bg-[#101424] text-gray-400"><i class="fa-solid fa-globe"></i></button>
+                        <button id="toggle-yt-search" onclick="toggleSearch('yt')" class="px-2 py-1 rounded-xl text-[10px] border border-gray-800 bg-[#101424] text-gray-400"><i class="fa-brands fa-youtube"></i></button>
+                        <button onclick="clearCurrentChat()" class="p-1 text-xs text-gray-400 hover:text-red-400 bg-[#101424] border border-gray-800 rounded-xl"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                </header>
+
+                <div id="chat-messages" class="flex-1 overflow-y-auto p-3 md:p-5 space-y-3">
+                    <div class="max-w-xl mx-auto rainbow-border p-4 text-center my-2 shadow-xl">
+                        <div class="w-10 h-10 mx-auto mb-2 rounded-xl bg-gradient-to-br from-orange-500 to-cyan-400 flex items-center justify-center text-white text-lg">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </div>
+                        <h2 class="text-base font-extrabold text-white mb-0.5">Codex Ultra Real-Time Studio</h2>
+                        <p class="text-[11px] text-gray-300 mb-2">Groq LPU, Gemini Live Reasoning, MP3/WAV Audio a Fullscreen App mód.</p>
+                    </div>
+                </div>
+
+                <div id="media-preview-container" class="hidden px-3 py-1 bg-[#0a0d1a] border-t border-[#1a1f35] flex items-center space-x-2 overflow-x-auto">
+                    <div id="media-previews-list" class="flex items-center space-x-1.5"></div>
+                </div>
+
+                <div class="p-2.5 bg-[#080a14]/90 backdrop-blur-lg border-t border-[#1a1f35]">
+                    <form id="chat-form" onsubmit="handleChatSubmit(event)" class="max-w-4xl mx-auto relative">
+                        <div class="rainbow-border p-0.5">
+                            <div class="bg-[#0b0e1b] rounded-[0.9rem] p-1.5 flex items-end space-x-1.5">
+                                <input type="file" id="media-file-input" multiple accept="image/*,video/*,audio/*,.mp3,.wav" class="hidden" onchange="handleMediaFilesSelected(event)">
+                                <button type="button" onclick="document.getElementById('media-file-input').click()" class="w-8 h-8 rounded-lg bg-gray-800 border border-gray-700 text-cyan-300 flex items-center justify-center">
+                                    <i class="fa-solid fa-photo-film text-xs"></i>
+                                </button>
+                                <button type="button" onclick="insertProjectPromptTemplate()" class="w-8 h-8 rounded-lg bg-gray-800 border border-gray-700 text-orange-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-cubes text-xs"></i>
+                                </button>
+                                <textarea id="chat-input" rows="2" placeholder="Napíš správu, projekt alebo otázku... (Ctrl+Enter)" class="w-full bg-transparent text-xs text-gray-100 placeholder-gray-500 p-1.5 focus:outline-none resize-none font-sans" onkeydown="handleKeyDown(event)"></textarea>
+                                <button type="submit" id="send-btn" class="w-8 h-8 rounded-lg bg-gradient-to-tr from-orange-500 via-purple-600 to-cyan-400 text-white flex items-center justify-center shadow">
+                                    <i class="fa-solid fa-paper-plane text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- TAB 2: PROJECTS & AUDIO -->
+            <section id="tab-projects" class="hidden flex-1 p-4 overflow-y-auto">
+                <div class="max-w-5xl mx-auto space-y-3">
+                    <div class="flex flex-wrap items-center justify-between border-b border-[#1a1f35] pb-2 gap-2 text-xs">
+                        <h2 class="text-base font-bold text-white"><i class="fa-solid fa-folder-tree text-blue-400 mr-1.5"></i> Projekty & Audio</h2>
+                        <div class="flex space-x-1.5">
+                            <input type="file" id="project-audio-upload" accept="audio/mp3,audio/wav,audio/*" class="hidden" onchange="handleAudioUploadToProject(event)">
+                            <button onclick="document.getElementById('project-audio-upload').click()" class="px-2.5 py-1 bg-orange-600 text-white rounded-lg"><i class="fa-solid fa-music mr-1"></i> Nahrať Audio</button>
+                            <button onclick="downloadAllFilesAsZip()" class="px-2.5 py-1 bg-blue-600 text-white rounded-lg"><i class="fa-solid fa-file-zipper mr-1"></i> ZIP</button>
+                            <button onclick="clearVirtualProject()" class="px-2 py-1 bg-red-950 text-red-300 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="glass-card rounded-xl p-3 border border-[#1a1f35] rainbow-border h-[420px] flex flex-col text-xs font-mono">
+                            <span id="file-tree-count" class="font-bold text-cyan-400 mb-2">0 súborov</span>
+                            <div id="file-explorer-tree" class="flex-1 overflow-y-auto space-y-1"></div>
+                        </div>
+                        <div class="md:col-span-2 glass-card rounded-xl p-3 border border-[#1a1f35] flex flex-col h-[420px] text-xs">
+                            <span class="font-mono text-cyan-300 font-bold mb-1" id="active-filename">Žiadny vybraný súbor</span>
+                            <div id="audio-preview-player" class="hidden my-2 p-2 bg-[#080b18] border border-orange-500/30 rounded-lg">
+                                <span class="text-[10px] text-orange-300 font-bold block mb-1" id="audio-player-title">Audio</span>
+                                <audio id="html5-audio-element" controls class="w-full h-7"></audio>
+                            </div>
+                            <pre class="flex-1 bg-[#060813] border border-gray-800 rounded-lg p-2.5 overflow-auto font-mono text-[11px] text-cyan-300"><code id="active-file-content">// Vyberte kód alebo audio súbor...</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: TARIFY -->
+            <section id="tab-pricing" class="hidden flex-1 p-4 overflow-y-auto">
+                <div class="max-w-4xl mx-auto space-y-4 text-center">
+                    <h2 class="text-xl font-extrabold text-white rainbow-text">Tarify & Balíčky</h2>
+                    <div class="flex justify-center gap-2">
+                        <div class="bg-[#101424] p-1 rounded-lg border border-gray-800 flex space-x-1 text-xs">
+                            <button id="billing-monthly-btn" onclick="setBillingCycle('monthly')" class="px-2.5 py-1 font-bold rounded bg-purple-600 text-white">Mesačne</button>
+                            <button id="billing-yearly-btn" onclick="setBillingCycle('yearly')" class="px-2.5 py-1 font-bold rounded text-gray-400">Ročne (-20%)</button>
+                        </div>
+                        <div class="bg-[#101424] p-1 rounded-lg border border-gray-800 flex space-x-1 text-xs">
+                            <button id="currency-eur-btn" onclick="setCurrency('EUR')" class="px-2.5 py-1 font-bold rounded bg-cyan-600 text-white">EUR (€)</button>
+                            <button id="currency-czk-btn" onclick="setCurrency('CZK')" class="px-2.5 py-1 font-bold rounded text-gray-400">CZK (Kč)</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3" id="pricing-plans-grid"></div>
+                </div>
+            </section>
+
+            <!-- TAB 4: PAMÄŤ -->
+            <section id="tab-memory" class="hidden flex-1 p-4 overflow-y-auto">
+                <div class="max-w-3xl mx-auto space-y-3">
+                    <div class="flex justify-between items-center border-b border-[#1a1f35] pb-2 text-xs">
+                        <h2 class="text-base font-bold text-white"><i class="fa-solid fa-brain text-purple-400 mr-1.5"></i> Dlhodobá Pamäť</h2>
+                        <button onclick="openAddMemoryModal()" class="px-2.5 py-1 bg-purple-600 text-white rounded-lg">+ Pridať</button>
+                    </div>
+                    <div id="memory-list" class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs"></div>
+                </div>
+            </section>
+
+            <!-- TAB 5: KALENDÁR -->
+            <section id="tab-calendar" class="hidden flex-1 p-4 overflow-y-auto">
+                <div class="max-w-4xl mx-auto space-y-3 text-xs">
+                    <div class="flex justify-between items-center border-b border-[#1a1f35] pb-2">
+                        <h2 class="text-base font-bold text-white"><i class="fa-solid fa-calendar text-cyan-400 mr-1.5"></i> Kalendár & Sviatky</h2>
+                        <button onclick="openAddEventModal()" class="px-2.5 py-1 bg-cyan-600 text-white rounded-lg">+ Udalosť</button>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                        <div class="lg:col-span-2 bg-[#0c0f1e] border border-[#1a1f35] rounded-xl p-3 rainbow-border">
+                            <h3 class="font-bold text-gray-200 mb-2" id="calendar-month-year">August 2026</h3>
+                            <div class="grid grid-cols-7 gap-1 text-center font-bold text-purple-400 mb-1 text-[10px]">
+                                <div>Po</div><div>Ut</div><div>St</div><div>Št</div><div>Pi</div><div>So</div><div>Ne</div>
+                            </div>
+                            <div id="calendar-grid" class="grid grid-cols-7 gap-1"></div>
+                        </div>
+                        <div id="upcoming-events-list" class="space-y-1.5"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: VŠETKY MODELY -->
+            <section id="tab-models" class="hidden flex-1 p-4 overflow-y-auto">
+                <div class="max-w-5xl mx-auto space-y-3">
+                    <div class="flex justify-between items-center border-b border-[#1a1f35] pb-2 gap-2">
+                        <input type="text" id="models-search-input" oninput="filterModelsList()" placeholder="Hľadať model (groq, gemini)..." class="bg-[#101426] border border-gray-700 rounded-xl px-3 py-1 text-xs text-cyan-300 w-52 font-mono">
+                        <button onclick="refreshAllModelsList(true)" class="px-2.5 py-1 text-xs bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 rounded-xl"><i class="fa-solid fa-sync mr-1"></i> Sync</button>
+                    </div>
+                    <div id="all-models-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2.5"></div>
+                </div>
+            </section>
+
+            <!-- TAB 7: NASTAVENIA -->
+            <section id="tab-settings" class="hidden flex-1 p-4 overflow-y-auto">
+                <div class="max-w-2xl mx-auto space-y-3 text-xs">
+                    <h2 class="text-base font-bold text-white border-b border-[#1a1f35] pb-2"><i class="fa-solid fa-sliders text-amber-400 mr-1.5"></i> Nastavenia & API</h2>
+                    
+                    <div class="glass-card rounded-xl p-3 space-y-2 rainbow-border">
+                        <span class="font-bold text-orange-300 block"><i class="fa-solid fa-bolt mr-1"></i> Groq Cloud API Kľúč</span>
+                        <input type="password" id="groq-key-input" placeholder="gsk_..." class="w-full bg-[#101426] border border-gray-700 rounded-lg px-2.5 py-1.5 text-orange-300 font-mono">
+                        <button onclick="saveGroqSettings()" class="px-3 py-1 bg-orange-500 text-gray-950 font-bold rounded-lg">Uložiť Groq</button>
+                    </div>
+
+                    <div class="glass-card rounded-xl p-3 space-y-2 rainbow-border">
+                        <span class="font-bold text-amber-300 block"><i class="fa-brands fa-google mr-1"></i> Google Gemini API Kľúč</span>
+                        <input type="password" id="api-key-input" placeholder="AIzaSy..." class="w-full bg-[#101426] border border-gray-700 rounded-lg px-2.5 py-1.5 text-cyan-300 font-mono">
+                        <button onclick="saveApiKey()" class="px-3 py-1 bg-amber-500 text-gray-950 font-bold rounded-lg">Uložiť Gemini</button>
+                    </div>
+
+                    <div class="glass-card rounded-xl p-3 space-y-2">
+                        <span class="font-bold text-cyan-300 block"><i class="fa-solid fa-network-wired mr-1"></i> OpenRouter Endpoint & Kľúč</span>
+                        <input type="text" id="oss-endpoint-input" placeholder="https://openrouter.ai/api/v1" class="w-full bg-[#101426] border border-gray-700 rounded-lg px-2.5 py-1.5 text-cyan-300 font-mono">
+                        <input type="password" id="oss-key-input" placeholder="sk-or-v1-..." class="w-full bg-[#101426] border border-gray-700 rounded-lg px-2.5 py-1.5 text-cyan-300 font-mono">
+                        <button onclick="saveOssSettings()" class="px-3 py-1 bg-cyan-500 text-gray-950 font-bold rounded-lg">Uložiť OpenRouter</button>
+                    </div>
+
+                    <div class="glass-card rounded-xl p-3 space-y-2">
+                        <span class="font-bold text-emerald-300 block"><i class="fa-solid fa-server mr-1"></i> Ollama Host URL</span>
+                        <input type="text" id="ollama-url-input" placeholder="http://localhost:11434" class="w-full bg-[#101426] border border-gray-700 rounded-lg px-2.5 py-1.5 text-emerald-300 font-mono">
+                        <button onclick="saveOllamaSettings()" class="px-3 py-1 bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 rounded-lg">Uložiť Ollama</button>
+                    </div>
+
+                    <button onclick="clearDatabase()" class="w-full py-2 bg-red-950/60 text-red-300 border border-red-800/40 rounded-xl font-bold">Vymazať Všetky Dáta z IndexedDB</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- MODALS -->
+    <div id="payment-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3">
+        <div class="rainbow-border w-full max-w-sm p-4 space-y-3 text-xs">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-1.5">
+                <span class="font-bold text-white"><i class="fa-solid fa-shield-halved text-emerald-400 mr-1"></i> Platobná Brána</span>
+                <button onclick="closePaymentModal()" class="text-gray-400">&times;</button>
+            </div>
+            <div class="p-2 bg-[#0a0d1c] border border-cyan-500/30 rounded-lg flex justify-between items-center">
+                <span id="pay-modal-plan-title" class="font-bold text-white">Pro Studio</span>
+                <span id="pay-modal-price" class="text-cyan-300 font-mono font-bold">19.99 €</span>
+            </div>
+            <form onsubmit="handlePaymentSubmit(event)" class="space-y-2">
+                <input type="text" required placeholder="Číslo karty" class="w-full bg-[#101426] border border-gray-700 rounded-lg p-1.5 text-cyan-300 font-mono">
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" required placeholder="MM/YY" class="w-full bg-[#101426] border border-gray-700 rounded-lg p-1.5 text-cyan-300 font-mono">
+                    <input type="password" required maxlength="4" placeholder="CVC" class="w-full bg-[#101426] border border-gray-700 rounded-lg p-1.5 text-cyan-300 font-mono">
+                </div>
+                <button type="submit" id="pay-submit-btn" class="w-full py-2 bg-gradient-to-r from-emerald-500 to-cyan-500 text-gray-950 font-bold rounded-lg">Potvrdiť Platbu</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="auth-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3">
+        <div class="rainbow-border w-full max-w-xs p-4 space-y-3 text-xs">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-1.5">
+                <h3 class="font-bold text-white" id="auth-modal-title">Prihlásenie</h3>
+                <button onclick="closeAuthModal()" class="text-gray-400">&times;</button>
+            </div>
+            <form onsubmit="handleAuthSubmit(event)" class="space-y-2">
+                <input type="text" id="auth-username" required placeholder="Meno" class="w-full bg-[#101426] border border-gray-700 rounded-lg p-1.5 text-white">
+                <input type="password" id="auth-password" required placeholder="Heslo" class="w-full bg-[#101426] border border-gray-700 rounded-lg p-1.5 text-white">
+                <button type="submit" id="auth-submit-btn" class="w-full py-1.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-bold rounded-lg">Prihlásiť sa</button>
+            </form>
+            <button onclick="toggleAuthMode()" id="auth-toggle-btn" class="text-[10px] text-purple-400 block text-center w-full">Nemáte účet? Registrácia</button>
+        </div>
+    </div>
+
+    <div id="memory-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3">
+        <div class="w-full max-w-sm glass-card rounded-xl p-4 space-y-2 text-xs">
+            <h3 class="font-bold text-white">Pridať do pamäte AI</h3>
+            <textarea id="memory-input" rows="3" placeholder="Napr.: Preferujem moderný kód v TypeScript..." class="w-full bg-[#101426] border border-gray-700 rounded-lg p-2 text-white"></textarea>
+            <div class="flex justify-end space-x-1.5">
+                <button onclick="closeMemoryModal()" class="px-2.5 py-1 bg-gray-800 text-gray-300 rounded-lg">Zrušiť</button>
+                <button onclick="saveMemoryItem()" class="px-2.5 py-1 bg-purple-600 font-bold text-white rounded-lg">Uložiť</button>
             </div>
         </div>
     </div>
 
-    <!-- EVENT MODAL -->
-    <div id="event-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-        <div class="w-full max-w-md glass-card rounded-2xl p-5 space-y-3 text-xs">
-            <h3 class="font-bold text-sm text-white">Pridať Udalosť / Narodeniny</h3>
-            <input type="text" id="event-title-input" placeholder="Názov udalosti" class="w-full bg-[#101426] border border-gray-700 rounded-xl p-2 text-white">
-            <input type="date" id="event-date-input" class="w-full bg-[#101426] border border-gray-700 rounded-xl p-2 text-white">
-            <select id="event-type-input" class="w-full bg-[#101426] border border-gray-700 rounded-xl p-2 text-cyan-300">
-                <option value="birthday">🎂 Narodeniny</option>
-                <option value="holiday">🎉 Sviatok / Oslava</option>
-                <option value="event">📌 Dôležitá Udalosť</option>
+    <div id="event-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-3">
+        <div class="w-full max-w-sm glass-card rounded-xl p-4 space-y-2 text-xs">
+            <h3 class="font-bold text-white">Pridať Udalosť / Dátum</h3>
+            <input type="text" id="event-title-input" placeholder="Názov" class="w-full bg-[#101426] border border-gray-700 rounded-lg p-1.5 text-white">
+            <input type="date" id="event-date-input" class="w-full bg-[#101426] border border-gray-700 rounded-lg p-1.5 text-white">
+            <select id="event-type-input" class="w-full bg-[#101426] border border-gray-700 rounded-lg p-1.5 text-cyan-300">
+                <option value="birthday">🎂 Narodeniny</option><option value="holiday">🎉 Sviatok</option><option value="event">📌 Udalosť</option>
             </select>
-            <div class="flex justify-end space-x-2">
-                <button onclick="closeEventModal()" class="px-3 py-1.5 bg-gray-800 text-gray-300 rounded-xl">Zrušiť</button>
-                <button onclick="saveEventItem()" class="px-3 py-1.5 font-bold bg-cyan-600 text-white rounded-xl">Uložiť</button>
+            <div class="flex justify-end space-x-1.5">
+                <button onclick="closeEventModal()" class="px-2.5 py-1 bg-gray-800 text-gray-300 rounded-lg">Zrušiť</button>
+                <button onclick="saveEventItem()" class="px-2.5 py-1 bg-cyan-600 font-bold text-white rounded-lg">Uložiť</button>
             </div>
         </div>
     </div>
 
     <script>
-        const DB_NAME = 'CodexUltraDB_v3';
+        const DB_NAME = 'CodexUltraDB_v5';
         const DB_VERSION = 1;
         let db = null;
 
+        const BASE_GROQ_MODELS = [
+            { id: 'groq:llama-3.3-70b-versatile', name: 'Groq: Llama 3.3 70B', provider: 'groq', cost: 0.1, desc: 'Bleskový LPU model pre promptné kódovanie a architektúru.', badge: 'Groq LPU' },
+            { id: 'groq:deepseek-r1-distill-llama-70b', name: 'Groq: DeepSeek R1 70B', provider: 'groq', cost: 0.15, desc: 'Ultra-rýchle deduktívne uvažovanie v reálnom čase.', badge: 'Groq Reasoning' },
+            { id: 'groq:llama-3.1-8b-instant', name: 'Groq: Llama 3.1 8B Instant', provider: 'groq', cost: 0.05, desc: 'Okamžitá odozva s minimálnym limitom.', badge: 'Groq Instant' }
+        ];
+
         const BASE_OSS_MODELS = [
-            { id: 'oss:deepseek/deepseek-r1', name: 'DeepSeek R1 (Deep Reasoning)', provider: 'oss', cost: 0.2, desc: 'Špičkový model s pokročilým uvažovaním a kódovacou logikou.', badge: 'DeepSeek' },
-            { id: 'oss:anthropic/claude-3.7-sonnet', name: 'Claude 3.7 Sonnet', provider: 'oss', cost: 0.5, desc: 'Kódovací model pre rozsiahle multi-file projekty.', badge: 'Claude 3.7' },
-            { id: 'oss:meta-llama/llama-3.3-70b-instruct', name: 'Meta Llama 3.3 70B', provider: 'oss', cost: 0.2, desc: 'Vlajkový model Meta AI pre programovanie.', badge: 'Llama 3.3' },
-            { id: 'oss:qwen/qwen-2.5-coder-32b-instruct', name: 'Qwen 2.5 Coder 32B', provider: 'oss', cost: 0.2, desc: 'Model špecializovaný na generovanie a refaktoring kódu.', badge: 'Qwen' }
+            { id: 'oss:deepseek/deepseek-r1', name: 'DeepSeek R1 (OSS Cloud)', provider: 'oss', cost: 0.2, desc: 'Pokročilé uvažovanie a bezchybné kódovanie.', badge: 'DeepSeek' },
+            { id: 'oss:anthropic/claude-3.7-sonnet', name: 'Claude 3.7 Sonnet', provider: 'oss', cost: 0.5, desc: 'Kódovací model pre multi-file projekty.', badge: 'Claude 3.7' }
         ];
 
         const BASE_GEMINI_MODELS = [
-            { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', provider: 'gemini', cost: 1.5, desc: 'Bleskový kódovací model od Google.', badge: 'Google Flash' },
-            { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', provider: 'gemini', cost: 4.5, desc: 'Najvýkonnejší logický a multi-file model od Google.', badge: 'Google Pro' },
-            { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', provider: 'gemini', cost: 1.2, desc: 'Univerzálny model pre vývoj.', badge: 'Google 2.0' }
+            { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', provider: 'gemini', cost: 1.5, desc: 'Bleskový kódovací model Google s premýšľaním.', badge: 'Google Flash' },
+            { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', provider: 'gemini', cost: 4.5, desc: 'Najvýkonnejší logický a multi-file model Google.', badge: 'Google Pro' }
         ];
 
         const BASE_OLLAMA_MODELS = [
-            { id: 'ollama:deepseek-r1', name: 'Ollama: DeepSeek R1 (Local)', provider: 'ollama', cost: 0.1, desc: 'Lokálny model bežiaci cez Ollama.', badge: 'Ollama' }
+            { id: 'ollama:deepseek-r1', name: 'Ollama: DeepSeek R1', provider: 'ollama', cost: 0.1, desc: 'Lokálny model bežiaci cez Ollama.', badge: 'Ollama' }
         ];
 
         const PRICING_PLANS = {
             monthly: [
-                { id: 'starter_m', name: 'Starter Developer', priceEUR: 9.99, priceCZK: 249, period: '/ mes.', limitBonus: '1 500 promptov', features: ['OpenRouter & Gemini modely', 'Multi-file projekty', 'Upload fotiek a videí'], highlight: false },
-                { id: 'pro_m', name: 'Pro Studio Architect', priceEUR: 19.99, priceCZK: 499, period: '/ mes.', limitBonus: '5 000 promptov', features: ['Neobmedzené DeepSeek R1 & Claude', 'Plný ZIP export projektov', 'Prioritné uvažovanie AI', 'VIP Podpora'], highlight: true },
-                { id: 'ultra_m', name: 'Ultimate Ultra', priceEUR: 39.99, priceCZK: 999, period: '/ mes.', limitBonus: 'Neobmedzený Boost', features: ['Plný prístup ku všetkým modelom', 'Zero-Bug AI Architecture', 'CI/CD export'], highlight: false }
+                { id: 'starter_m', name: 'Starter', priceEUR: 9.99, priceCZK: 249, period: '/ mes.', limitBonus: '1 500 promptov', features: ['Groq, Gemini & OSS', 'Multi-file & MP3 Audio', 'Mobile App Mód'], highlight: false },
+                { id: 'pro_m', name: 'Pro Studio', priceEUR: 19.99, priceCZK: 499, period: '/ mes.', limitBonus: '5 000 promptov', features: ['Neobmedzené DeepSeek & Groq', 'ZIP export & Audio banka', 'Live Reasoning v Chate'], highlight: true },
+                { id: 'ultra_m', name: 'Ultimate Ultra', priceEUR: 39.99, priceCZK: 999, period: '/ mes.', limitBonus: 'Neobmedzený Boost', features: ['Plný prístup ku všetkým modelom', 'Zero-Bug AI Architecture', 'VIP Priorita'], highlight: false }
             ],
             yearly: [
-                { id: 'starter_y', name: 'Starter (Ročný)', priceEUR: 95.90, priceCZK: 2390, period: '/ rok', limitBonus: '20 000 promptov', features: ['Ušetrite 20%', 'Všetky modely', 'Neobmedzená pamäť'], highlight: false },
-                { id: 'pro_y', name: 'Pro Studio (Ročný)', priceEUR: 189.90, priceCZK: 4790, period: '/ rok', limitBonus: '70 000 promptov', features: ['Najobľúbenejší balíček', 'Neobmedzené projekty', 'Všetky Gemini & OSS modely'], highlight: true },
+                { id: 'starter_y', name: 'Starter (Ročný)', priceEUR: 95.90, priceCZK: 2390, period: '/ rok', limitBonus: '20 000 promptov', features: ['Ušetrite 20%', 'Všetky modely & Groq Cloud', 'Mobile Fullscreen'], highlight: false },
+                { id: 'pro_y', name: 'Pro (Ročný)', priceEUR: 189.90, priceCZK: 4790, period: '/ rok', limitBonus: '70 000 promptov', features: ['Najobľúbenejší balíček', 'Neobmedzené projekty & Audio', 'Všetky Gemini & Groq modely'], highlight: true },
                 { id: 'ultra_y', name: 'Ultimate (Ročný)', priceEUR: 379.90, priceCZK: 9590, period: '/ rok', limitBonus: 'Neobmedzený Ročný', features: ['Maximálna priorita na API', 'Kompletný cloudový archív'], highlight: false }
             ]
         };
 
         const state = {
             apiKey: '',
+            groqApiKey: '',
             ossEndpoint: 'https://openrouter.ai/api/v1',
             ossApiKey: '',
             ollamaUrl: 'http://localhost:11434',
             currentUser: null,
             limitRemaining: 100.0,
             activePlan: 'Free Tier',
-            selectedModel: 'oss:deepseek/deepseek-r1',
+            selectedModel: 'groq:llama-3.3-70b-versatile',
             enableWebSearch: false,
             enableYtSearch: false,
             currentMonth: new Date().getMonth(),
@@ -522,18 +468,49 @@
             activeFile: null,
             billingCycle: 'monthly',
             currency: 'EUR',
-            pendingPayment: null
+            pendingPayment: null,
+            isSimulator: false
         };
 
         const SLOVAK_HOLIDAYS = [
-            { date: '01-01', title: 'Deň vzniku SR' }, { date: '01-06', title: 'Traja králi' },
+            { date: '01-01', title: 'Vznik SR' }, { date: '01-06', title: 'Traja králi' },
             { date: '05-01', title: 'Sviatok práce' }, { date: '05-08', title: 'Deň víťazstva' },
             { date: '07-05', title: 'Cyril a Metod' }, { date: '08-29', title: 'Výročie SNP' },
-            { date: '09-01', title: 'Deň Ústavy SR' }, { date: '09-15', title: 'Sedembolestná Panna Mária' },
-            { date: '11-01', title: 'Všetkých svätých' }, { date: '11-17', title: 'Deň boja za slobodu' },
+            { date: '09-01', title: 'Deň Ústavy SR' }, { date: '09-15', title: 'Sedembolestná P. Mária' },
+            { date: '11-01', title: 'Všetkých svätých' }, { date: '11-17', title: 'Boj za slobodu' },
             { date: '12-24', title: 'Štedrý deň' }, { date: '12-25', title: '1. sviatok vianočný' },
             { date: '12-26', title: '2. sviatok vianočný' }
         ];
+
+        // FULLSCREEN APP & MOBILE AUTO-DETECTION & INTRO
+        function initMobileAndIntro() {
+            const progress = document.getElementById('splash-progress');
+            progress.style.width = '100%';
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0';
+                setTimeout(() => splash.remove(), 700);
+            }, 1000);
+
+            // Auto-detekcia mobilu
+            const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+            if (isMobileDevice) {
+                document.body.classList.add('mobile-detected');
+            }
+        }
+
+        function toggleAppFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+
+        function toggleMobileSimulator() {
+            state.isSimulator = !state.isSimulator;
+            document.body.classList.toggle('simulator-active', state.isSimulator);
+        }
 
         function initDB() {
             return new Promise((resolve, reject) => {
@@ -595,9 +572,11 @@
         }
 
         window.onload = async function() {
+            initMobileAndIntro();
             try {
                 await initDB();
                 state.apiKey = (await getDB('settings', 'apiKey')) || '';
+                state.groqApiKey = (await getDB('settings', 'groqApiKey')) || '';
                 state.ossEndpoint = (await getDB('settings', 'ossEndpoint')) || 'https://openrouter.ai/api/v1';
                 state.ossApiKey = (await getDB('settings', 'ossApiKey')) || '';
                 state.ollamaUrl = (await getDB('settings', 'ollamaUrl')) || 'http://localhost:11434';
@@ -610,6 +589,7 @@
                 if (sProj && typeof sProj === 'object') state.virtualProjectFiles = sProj;
 
                 document.getElementById('api-key-input').value = state.apiKey;
+                document.getElementById('groq-key-input').value = state.groqApiKey;
                 document.getElementById('oss-endpoint-input').value = state.ossEndpoint;
                 document.getElementById('oss-key-input').value = state.ossApiKey;
                 document.getElementById('ollama-url-input').value = state.ollamaUrl;
@@ -627,39 +607,39 @@
             } catch(e) { console.error(e); }
         };
 
-        // SYNCHRONIZÁCIA GOOGLE GEMINI + OPENROUTER + OLLAMA
+        // MODEL SYNC (GROQ + GEMINI + OPENROUTER + OLLAMA)
         async function refreshAllModelsList(showNotification = false) {
             let combined = [];
 
-            // 1. Synchronizácia Google Gemini API modelov
+            if (state.groqApiKey) {
+                try {
+                    const gRes = await fetch('https://api.groq.com/openai/v1/models', { headers: { 'Authorization': `Bearer ${state.groqApiKey}` } });
+                    if (gRes.ok) {
+                        const gData = await gRes.json();
+                        if (gData.data && Array.isArray(gData.data)) {
+                            combined.push(...gData.data.map(m => ({ id: `groq:${m.id}`, name: `Groq: ${m.id}`, provider: 'groq', desc: `Groq LPU model (${m.id})`, cost: m.id.includes('70b') ? 0.15 : 0.05, badge: 'Groq LPU' })));
+                        }
+                    }
+                } catch(e) { console.warn(e); }
+            }
+            if (!combined.some(m => m.provider === 'groq')) combined.push(...BASE_GROQ_MODELS);
+
             if (state.apiKey) {
                 try {
                     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${state.apiKey}`);
                     if (res.ok) {
                         const data = await res.json();
                         if (data.models && Array.isArray(data.models)) {
-                            const dynamicGemini = data.models
-                                .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent'))
-                                .map(m => {
-                                    const cleanId = m.name.replace(/^models\//, '');
-                                    const isPro = cleanId.includes('pro');
-                                    return {
-                                        id: cleanId,
-                                        name: m.displayName || cleanId,
-                                        provider: 'gemini',
-                                        desc: m.description ? m.description.slice(0, 110) + '...' : 'Oficiálny Google Gemini Model',
-                                        cost: isPro ? 4.5 : 1.2,
-                                        badge: 'Google API'
-                                    };
-                                });
-                            combined.push(...dynamicGemini);
+                            combined.push(...data.models.filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent')).map(m => {
+                                const cleanId = m.name.replace(/^models\//, '');
+                                return { id: cleanId, name: m.displayName || cleanId, provider: 'gemini', desc: m.description || 'Google Model', cost: cleanId.includes('pro') ? 4.5 : 1.2, badge: 'Google Gemini' };
+                            }));
                         }
                     }
-                } catch(e) { console.warn("Gemini sync error:", e); }
+                } catch(e) { console.warn(e); }
             }
             if (!combined.some(m => m.provider === 'gemini')) combined.push(...BASE_GEMINI_MODELS);
 
-            // 2. Synchronizácia OpenRouter katalógu modelov
             try {
                 const headers = { 'Content-Type': 'application/json' };
                 if (state.ossApiKey) headers['Authorization'] = `Bearer ${state.ossApiKey}`;
@@ -667,69 +647,48 @@
                 if (oRes.ok) {
                     const oData = await oRes.json();
                     if (oData.data && Array.isArray(oData.data)) {
-                        const dynamicOss = oData.data.map(m => ({
-                            id: `oss:${m.id}`,
-                            name: m.name || m.id,
-                            provider: 'oss',
-                            desc: m.description ? m.description.slice(0, 110) + '...' : `OpenRouter (${m.id})`,
-                            cost: m.id.includes('claude') || m.id.includes('gpt-4o') ? 0.5 : 0.2,
-                            badge: m.id.split('/')[0] || 'OpenRouter'
-                        }));
-                        combined.push(...dynamicOss);
+                        combined.push(...oData.data.slice(0, 30).map(m => ({ id: `oss:${m.id}`, name: m.name || m.id, provider: 'oss', desc: `OpenRouter (${m.id})`, cost: 0.2, badge: 'OpenRouter' })));
                     }
                 }
-            } catch(e) { console.warn("OpenRouter sync error:", e); }
+            } catch(e) { console.warn(e); }
             if (!combined.some(m => m.provider === 'oss')) combined.push(...BASE_OSS_MODELS);
 
-            // 3. Pridanie lokálnej Ollama
             combined.push(...BASE_OLLAMA_MODELS);
-
             state.loadedModels = combined;
             populateModelsUI(state.loadedModels);
-
-            if (showNotification) alert(`Synchronizácia dokončená: ${state.loadedModels.length} modelov pripravených (Google + OpenRouter).`);
+            if (showNotification) alert(`Synchronizácia hotová: ${state.loadedModels.length} modelov pripravených.`);
         }
 
         function populateModelsUI(models) {
             const select = document.getElementById('model-select');
             const container = document.getElementById('all-models-container');
             const countBadge = document.getElementById('models-count-badge');
-
-            select.innerHTML = '';
-            container.innerHTML = '';
+            select.innerHTML = ''; container.innerHTML = '';
             if (countBadge) countBadge.textContent = state.loadedModels.length;
 
             state.loadedModels.slice(0, 100).forEach(m => {
                 const opt = document.createElement('option');
                 opt.value = m.id;
-                opt.textContent = `${m.provider === 'gemini' ? '⚡' : m.provider === 'ollama' ? '🦙' : '🌐'} ${m.name} (${m.cost}%)`;
+                opt.textContent = `${m.provider === 'groq' ? '⚡' : m.provider === 'gemini' ? '✨' : '🌐'} ${m.name} (${m.cost}%)`;
                 select.appendChild(opt);
             });
 
-            models.slice(0, 75).forEach(m => {
+            models.slice(0, 60).forEach(m => {
                 const card = document.createElement('div');
-                const isOss = m.provider === 'oss';
-                const isGemini = m.provider === 'gemini';
-                card.className = 'glass-card border border-gray-800 p-3.5 space-y-2 rounded-xl relative rainbow-border text-xs';
+                card.className = 'glass-card border border-gray-800 p-3 space-y-1.5 rounded-xl rainbow-border text-xs';
                 card.innerHTML = `
-                    <div class="flex items-center justify-between">
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${isGemini ? 'bg-amber-950/70 text-amber-300 border border-amber-500/40' : isOss ? 'bg-cyan-950/70 text-cyan-300 border border-cyan-500/40' : 'bg-emerald-950/70 text-emerald-300'}">
-                            <i class="${isGemini ? 'fa-brands fa-google' : isOss ? 'fa-solid fa-network-wired' : 'fa-solid fa-server'} mr-1"></i>${m.badge}
-                        </span>
-                        <span class="font-mono text-cyan-400 font-bold">${m.cost}% limit</span>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-cyan-950/70 text-cyan-300 border border-cyan-500/40">${m.badge}</span>
+                        <span class="font-mono text-cyan-400 font-bold">${m.cost}%</span>
                     </div>
-                    <div>
-                        <h4 class="font-bold text-white truncate" title="${m.name}">${m.name}</h4>
-                        <p class="text-[11px] text-gray-400 line-clamp-2 mt-0.5">${m.desc}</p>
-                    </div>
-                    <div class="pt-1.5 border-t border-white/5 flex justify-between items-center font-mono text-[10px]">
-                        <span class="text-cyan-400 truncate max-w-[130px]">${m.id}</span>
+                    <h4 class="font-bold text-white truncate">${m.name}</h4>
+                    <div class="pt-1 border-t border-white/5 flex justify-between items-center font-mono text-[10px]">
+                        <span class="text-cyan-400 truncate max-w-[120px]">${m.id}</span>
                         <button onclick="selectModelDirectly('${m.id}')" class="px-2 py-0.5 bg-cyan-600/30 border border-cyan-500/40 text-cyan-200 rounded">Vybrať</button>
                     </div>
                 `;
                 container.appendChild(card);
             });
-
             select.value = state.selectedModel;
             select.onchange = (e) => { state.selectedModel = e.target.value; };
         }
@@ -753,22 +712,21 @@
                 if (el && nav) {
                     if (t === tId) {
                         el.classList.remove('hidden');
-                        nav.className = 'w-full flex items-center space-x-3 px-3.5 py-2 rounded-xl text-xs font-medium bg-purple-600/20 text-purple-300 border border-purple-500/30 shadow-sm';
+                        nav.className = 'w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-medium bg-purple-600/20 text-purple-300 border border-purple-500/30 shadow-sm';
                     } else {
                         el.classList.add('hidden');
-                        nav.className = 'w-full flex items-center space-x-3 px-3.5 py-2 rounded-xl text-xs font-medium text-gray-400 hover:bg-gray-800/40 hover:text-gray-200';
+                        nav.className = 'w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-medium text-gray-400 hover:bg-gray-800/40 hover:text-gray-200';
                     }
                 }
             });
         }
 
-        // MULTIMEDIA UPLOAD (OBRÁZKY A VIDEÁ)
+        // MEDIA & AUDIO UPLOAD
         function handleMediaFilesSelected(e) {
-            const files = Array.from(e.target.files);
-            files.forEach(f => {
+            Array.from(e.target.files).forEach(f => {
                 const r = new FileReader();
                 r.onload = (ev) => {
-                    state.attachedMedia.push({ name: f.name, type: f.type, dataUrl: ev.target.result, isVideo: f.type.startsWith('video/') });
+                    state.attachedMedia.push({ name: f.name, type: f.type, dataUrl: ev.target.result, isAudio: f.type.startsWith('audio/') || f.name.endsWith('.mp3') || f.name.endsWith('.wav'), isVideo: f.type.startsWith('video/') });
                     renderMediaPreviews();
                 };
                 r.readAsDataURL(f);
@@ -784,30 +742,363 @@
             cont.classList.remove('hidden');
             state.attachedMedia.forEach((m, idx) => {
                 const d = document.createElement('div');
-                d.className = 'relative shrink-0 rounded overflow-hidden border border-purple-500/40 w-10 h-10 bg-black flex items-center justify-center';
-                d.innerHTML = m.isVideo ? `<i class="fa-solid fa-video text-pink-400 text-xs"></i>` : `<img src="${m.dataUrl}" class="w-full h-full object-cover">`;
+                d.className = 'relative shrink-0 rounded overflow-hidden border border-purple-500/40 w-9 h-9 bg-black flex items-center justify-center';
+                d.innerHTML = m.isAudio ? `<i class="fa-solid fa-music text-orange-400 text-xs"></i>` : m.isVideo ? `<i class="fa-solid fa-video text-pink-400 text-xs"></i>` : `<img src="${m.dataUrl}" class="w-full h-full object-cover">`;
                 const btn = document.createElement('button');
-                btn.className = 'absolute top-0 right-0 bg-red-600 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center';
+                btn.className = 'absolute top-0 right-0 bg-red-600 text-white text-[8px] w-3 h-3 flex items-center justify-center';
                 btn.innerHTML = '&times;';
                 btn.onclick = () => { state.attachedMedia.splice(idx, 1); renderMediaPreviews(); };
-                d.appendChild(btn);
-                list.appendChild(d);
+                d.appendChild(btn); list.appendChild(d);
             });
         }
 
-        // TARIFY & PLATOBNÁ BRÁNA
+        function handleAudioUploadToProject(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const r = new FileReader();
+            r.onload = (ev) => {
+                state.virtualProjectFiles[file.name] = { type: 'audio', mime: file.type, content: ev.target.result };
+                setDB('projects', 'currentProject', state.virtualProjectFiles);
+                renderProjectExplorer(); selectActiveFile(file.name);
+                alert(`Audio "${file.name}" uložené v IndexedDB!`);
+            };
+            r.readAsDataURL(file); e.target.value = '';
+        }
+
+        // PROJEKTY & AUDIO PREHRÁVAČ
+        function extractFilesFromAIResponse(text) {
+            const r = /(?:```(?:[\w-]+)?:?([a-zA-Z0-9_\-\.\/]+\.[a-zA-Z0-9]+)\n([\s\S]*?)```)|(?:\/\/\s*FILE:\s*([a-zA-Z0-9_\-\.\/]+)\n([\s\S]*?)(?=\/\/\s*FILE:|$))/gi;
+            let m, found = false;
+            while ((m = r.exec(text)) !== null) {
+                const f = m[1] || m[3]; const c = m[2] || m[4];
+                if (f && c) { state.virtualProjectFiles[f.trim()] = { type: 'code', content: c.trim() }; found = true; }
+            }
+            if (found) { setDB('projects', 'currentProject', state.virtualProjectFiles); renderProjectExplorer(); }
+        }
+
+        function renderProjectExplorer() {
+            const tree = document.getElementById('file-explorer-tree');
+            const count = document.getElementById('file-tree-count');
+            const badge = document.getElementById('projects-count-badge');
+            const keys = Object.keys(state.virtualProjectFiles);
+            if (count) count.textContent = `${keys.length} súborov`;
+            if (badge) badge.textContent = keys.length;
+
+            tree.innerHTML = '';
+            if (!keys.length) { tree.innerHTML = `<div class="text-gray-500 text-center py-4">Žiadne súbory.</div>`; return; }
+
+            keys.forEach(k => {
+                const f = state.virtualProjectFiles[k];
+                const isAudio = f.type === 'audio' || k.endsWith('.mp3') || k.endsWith('.wav');
+                const d = document.createElement('div');
+                d.className = `p-1 rounded cursor-pointer flex justify-between items-center ${state.activeFile === k ? 'bg-purple-900/50 text-white' : 'hover:bg-gray-800/50 text-gray-300'}`;
+                d.innerHTML = `<span class="truncate"><i class="${isAudio ? 'fa-solid fa-music text-orange-400' : 'fa-solid fa-file-code text-cyan-400'} mr-1"></i>${k}</span><button onclick="deleteVirtualFile('${k}', event)" class="text-gray-500 hover:text-red-400">&times;</button>`;
+                d.onclick = () => selectActiveFile(k);
+                tree.appendChild(d);
+            });
+            if (!state.activeFile && keys.length) selectActiveFile(keys[0]);
+        }
+
+        function selectActiveFile(k) {
+            state.activeFile = k;
+            document.getElementById('active-filename').textContent = k;
+            const f = state.virtualProjectFiles[k];
+            const isAudio = f?.type === 'audio' || k.endsWith('.mp3') || k.endsWith('.wav');
+            const aCont = document.getElementById('audio-preview-player');
+            const aEl = document.getElementById('html5-audio-element');
+            const cBlock = document.getElementById('active-file-content');
+
+            if (isAudio) {
+                aCont.classList.remove('hidden');
+                document.getElementById('audio-player-title').textContent = `${k} (IndexedDB Audio)`;
+                aEl.src = f.content || f;
+                cBlock.textContent = `// Audio Súbor: ${k}\n// Uložený v databáze IndexedDB.`;
+            } else {
+                aCont.classList.add('hidden'); aEl.pause();
+                cBlock.textContent = typeof f === 'object' ? (f.content || '') : (f || '');
+            }
+            renderProjectExplorer();
+        }
+
+        function deleteVirtualFile(k, e) {
+            e.stopPropagation();
+            delete state.virtualProjectFiles[k];
+            if (state.activeFile === k) { state.activeFile = null; document.getElementById('audio-preview-player').classList.add('hidden'); }
+            setDB('projects', 'currentProject', state.virtualProjectFiles);
+            renderProjectExplorer();
+        }
+
+        function clearVirtualProject() {
+            if (confirm("Vymazať súbory projektu?")) {
+                state.virtualProjectFiles = {}; state.activeFile = null;
+                document.getElementById('audio-preview-player').classList.add('hidden');
+                setDB('projects', 'currentProject', {});
+                renderProjectExplorer();
+            }
+        }
+
+        function copyActiveFileContent() {
+            if (!state.activeFile) return;
+            const f = state.virtualProjectFiles[state.activeFile];
+            navigator.clipboard.writeText(typeof f === 'object' ? f.content : f);
+            alert("Obsah skopírovaný!");
+        }
+
+        function downloadActiveFile() {
+            if (!state.activeFile) return;
+            const f = state.virtualProjectFiles[state.activeFile];
+            const isAudio = f?.type === 'audio' || state.activeFile.endsWith('.mp3') || state.activeFile.endsWith('.wav');
+            let blob;
+            if (isAudio) {
+                const b64 = (f.content || f).split(',')[1];
+                const bArr = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+                blob = new Blob([bArr], { type: f.mime || 'audio/mp3' });
+            } else {
+                blob = new Blob([f.content || f], { type: 'text/plain;charset=utf-8' });
+            }
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = state.activeFile.split('/').pop(); a.click();
+        }
+
+        async function downloadAllFilesAsZip() {
+            const keys = Object.keys(state.virtualProjectFiles);
+            if (!keys.length) return alert("Projekt je prázdny.");
+            const zip = new JSZip();
+            keys.forEach(k => {
+                const f = state.virtualProjectFiles[k];
+                if (f?.type === 'audio' || k.endsWith('.mp3') || k.endsWith('.wav')) {
+                    zip.file(k, (f.content || f).split(',')[1], { base64: true });
+                } else {
+                    zip.file(k, typeof f === 'object' ? f.content : f);
+                }
+            });
+            const b = await zip.generateAsync({ type: 'blob' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `project-${Date.now()}.zip`; a.click();
+        }
+
+        function insertProjectPromptTemplate() {
+            document.getElementById('chat-input').value = `Naplánuj architektúru dopredu a vytvor kompletný projekt bez chýb s týmito požiadavkami:\n- Názov: \n- Technológie: HTML5, TailwindCSS, JS\n- Súbory označ presne ako: \`\`\`html:index.html, \`\`\`js:app.js`;
+            document.getElementById('chat-input').focus();
+        }
+
+        // API VOLANIA (GROQ, GEMINI, OPENROUTER, OLLAMA)
+        async function callGroqAPI(mId, sPrompt, hist, uText) {
+            if (!state.groqApiKey) throw new Error("Zadajte Groq API kľúč v Nastaveniach.");
+            const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${state.groqApiKey}` },
+                body: JSON.stringify({ model: mId.replace(/^groq:/, ''), messages: [{ role: 'system', content: sPrompt }, ...hist.slice(-8).map(m => ({ role: m.role, content: m.text })), { role: 'user', content: uText }], temperature: 0.3 })
+            });
+            const d = await res.json();
+            if (!res.ok) throw new Error(d.error?.message || `Groq HTTP ${res.status}`);
+            return d.choices?.[0]?.message?.content || "Bez odpovede.";
+        }
+
+        async function callOpenSourceEndpoint(mId, sPrompt, hist, uText, media) {
+            const url = (state.ossEndpoint || 'https://openrouter.ai/api/v1').replace(/\/+$/, '') + '/chat/completions';
+            let content = uText;
+            if (media && media.length) {
+                content = [{ type: 'text', text: uText }];
+                media.forEach(m => { if (!m.isAudio) content.push({ type: 'image_url', image_url: { url: m.dataUrl } }); });
+            }
+            const headers = { 'Content-Type': 'application/json', 'HTTP-Referer': 'https://codexultra.studio', 'X-Title': 'Codex Ultra' };
+            if (state.ossApiKey) headers['Authorization'] = `Bearer ${state.ossApiKey}`;
+            const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify({ model: mId.replace(/^oss:/, ''), messages: [{ role: 'system', content: sPrompt }, ...hist.slice(-8).map(m => ({ role: m.role, content: m.text })), { role: 'user', content }], temperature: 0.4 }) });
+            const d = await res.json();
+            if (!res.ok) throw new Error(d.error?.message || `OpenRouter HTTP ${res.status}`);
+            return d.choices?.[0]?.message?.content || "Bez odpovede.";
+        }
+
+        async function callGeminiDirectAPI(mId, sPrompt, hist, uText, media) {
+            if (!state.apiKey) throw new Error("Chýba Google Gemini API kľúč.");
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${mId.replace(/^models\//, '')}:generateContent?key=${state.apiKey}`;
+            const contents = [];
+            hist.slice(-8).forEach(m => contents.push({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.text }] }));
+            const userParts = [{ text: uText }];
+            if (media && media.length) {
+                media.forEach(m => userParts.push({ inlineData: { mimeType: m.dataUrl.split(';')[0].split(':')[1], data: m.dataUrl.split(',')[1] } }));
+            }
+            contents.push({ role: 'user', parts: userParts });
+            const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents, systemInstruction: { parts: [{ text: sPrompt }] } }) });
+            const d = await res.json();
+            if (!res.ok) throw new Error(d.error?.message || `Gemini HTTP ${res.status}`);
+            return d.candidates?.[0]?.content?.parts?.[0]?.text || "Bez textu.";
+        }
+
+        async function callOllamaAPI(mId, sPrompt, hist, uText) {
+            const res = await fetch(`${(state.ollamaUrl || 'http://localhost:11434').replace(/\/+$/, '')}/api/chat`, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ model: mId.replace(/^ollama:/, ''), messages: [{ role: 'system', content: sPrompt }, ...hist.slice(-8).map(m => ({ role: m.role, content: m.text })), { role: 'user', content: uText }], stream: false })
+            });
+            const d = await res.json();
+            return d.message?.content || d.response || "Ollama bez odpovede.";
+        }
+
+        // CHAT SUBMIT S LIVE UVAŽOVANÍM V CHATE
+        async function handleChatSubmit(e) {
+            e.preventDefault();
+            if (state.limitRemaining <= 0) return alert("Limit je 0.0 %.");
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            const media = [...state.attachedMedia];
+            if (!text && !media.length) return;
+
+            input.value = ''; state.attachedMedia = []; renderMediaPreviews();
+            appendMessage('user', text, media);
+            deductLimitForModel(state.selectedModel);
+
+            const isReasoning = document.getElementById('toggle-reasoning').checked;
+            let reasoningBlockId = null;
+            if (isReasoning) {
+                reasoningBlockId = 'reasoning-' + Date.now();
+                appendLiveThinkingPlaceholder(reasoningBlockId, state.selectedModel);
+            }
+
+            const memories = await getAllDB('memories');
+            const customEvents = await getAllDB('calendar');
+            let ctx = `Dnešný dátum je: ${new Date().toLocaleDateString('sk-SK')}.\n`;
+            if (memories.length) ctx += `Pamäť AI:\n` + memories.map(m => `- ${m.content}`).join('\n') + '\n';
+            if (customEvents.length) ctx += `Udalosti:\n` + customEvents.map(ev => `- ${ev.title} (${ev.date})`).join('\n') + '\n';
+
+            const sPrompt = `Si Codex Ultra Real-Time AI Studio s Groq Engine a Gemini uvažovaním.\n1. Naplánuj architektúru dopredu a vytvor funkčný kód bez chýb.\n2. Všetky súbory označ ako \`\`\`html:index.html, \`\`\`js:app.js.\n${ctx}`;
+
+            try {
+                let reply = '';
+                if (state.selectedModel.startsWith('groq:')) reply = await callGroqAPI(state.selectedModel, sPrompt, state.chatHistory, text);
+                else if (state.selectedModel.startsWith('oss:')) reply = await callOpenSourceEndpoint(state.selectedModel, sPrompt, state.chatHistory, text, media);
+                else if (state.selectedModel.startsWith('ollama:')) reply = await callOllamaAPI(state.selectedModel, sPrompt, state.chatHistory, text);
+                else reply = await callGeminiDirectAPI(state.selectedModel, sPrompt, state.chatHistory, text, media);
+
+                if (reasoningBlockId) resolveLiveThinkingPlaceholder(reasoningBlockId, reply);
+                else appendMessage('assistant', reply);
+                extractFilesFromAIResponse(reply);
+            } catch(err) {
+                if (reasoningBlockId) removeLiveThinkingPlaceholder(reasoningBlockId);
+                appendMessage('assistant', `⚠️ **Chyba**: ${err.message}`);
+            }
+        }
+
+        function appendLiveThinkingPlaceholder(id, modelId) {
+            const c = document.getElementById('chat-messages');
+            const d = document.createElement('div');
+            d.id = id; d.className = `flex justify-start max-w-4xl mx-auto`;
+            d.innerHTML = `
+                <div class="flex space-x-2 max-w-3xl">
+                    <div class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 text-xs bg-gradient-to-tr from-orange-500 via-purple-600 to-cyan-400 text-white">
+                        <i class="fa-solid fa-brain fa-spin text-[10px]"></i>
+                    </div>
+                    <div class="bg-[#0d101d] border border-[#1e243c] rounded-xl p-2.5 text-xs text-gray-200 shadow w-full space-y-1">
+                        <span class="font-mono text-purple-300 font-bold flex items-center text-[11px]"><span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping mr-1.5"></span>Gemini Live Reasoning (${modelId})</span>
+                        <div class="text-[10px] text-gray-400 font-mono italic animate-pulse">Analyzujem požiadavku a štruktúru súborov...</div>
+                    </div>
+                </div>
+            `;
+            c.appendChild(d); c.scrollTop = c.scrollHeight;
+        }
+
+        function resolveLiveThinkingPlaceholder(id, fullReply) {
+            const el = document.getElementById(id);
+            if (!el) return appendMessage('assistant', fullReply);
+            let thoughtProcess = "Prebehla analýza syntaxe a rozloženie projektu na súbory.";
+            let cleanResponse = fullReply;
+            const thinkMatch = fullReply.match(/<think>([\s\S]*?)<\/think>/i);
+            if (thinkMatch) { thoughtProcess = thinkMatch[1].trim(); cleanResponse = fullReply.replace(/<think>[\s\S]*?<\/think>/i, '').trim(); }
+
+            el.innerHTML = `
+                <div class="flex space-x-2 max-w-3xl">
+                    <div class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 text-xs bg-gradient-to-tr from-orange-500 to-cyan-400 text-white">
+                        <i class="fa-solid fa-robot text-[10px]"></i>
+                    </div>
+                    <div class="bg-[#0d101d] border border-[#1e243c] rounded-xl p-2.5 text-xs text-gray-200 shadow w-full space-y-1.5">
+                        <details class="bg-[#080b18] border border-purple-500/30 rounded p-1.5 group" open>
+                            <summary class="cursor-pointer font-mono text-[10px] text-purple-300 font-bold flex justify-between select-none">
+                                <span><i class="fa-solid fa-brain text-cyan-400 mr-1"></i> Uvažovanie AI v reálnom čase</span>
+                                <i class="fa-solid fa-chevron-down text-gray-500 group-open:rotate-180 transition text-[9px]"></i>
+                            </summary>
+                            <div class="mt-1 pt-1 border-t border-gray-800 text-[10px] text-gray-400 font-mono whitespace-pre-wrap">${escapeHtml(thoughtProcess)}</div>
+                        </details>
+                        <div class="prose prose-invert max-w-none text-xs leading-relaxed">${marked.parse(cleanResponse)}</div>
+                    </div>
+                </div>
+            `;
+            state.chatHistory.push({ role: 'assistant', text: cleanResponse });
+            setDB('chats', 'currentChat', state.chatHistory);
+            enhanceCodeBlocks(el);
+        }
+
+        function removeLiveThinkingPlaceholder(id) { const el = document.getElementById(id); if (el) el.remove(); }
+
+        function appendMessage(role, text, media = []) {
+            const c = document.getElementById('chat-messages');
+            state.chatHistory.push({ role, text, media });
+            const isUser = role === 'user';
+            const d = document.createElement('div');
+            d.className = `flex ${isUser ? 'justify-end' : 'justify-start'} max-w-4xl mx-auto`;
+
+            let mHtml = '';
+            if (media && media.length) {
+                mHtml = `<div class="flex flex-wrap gap-1 mb-1">` + media.map(m => m.isAudio ? `<span class="px-1.5 py-0.5 bg-orange-900/60 rounded text-[9px] text-orange-300 font-mono"><i class="fa-solid fa-music mr-1"></i>${m.name}</span>` : m.isVideo ? `<span class="px-1.5 py-0.5 bg-purple-900/60 rounded text-[9px] text-pink-300 font-mono"><i class="fa-solid fa-video mr-1"></i>${m.name}</span>` : `<img src="${m.dataUrl}" class="w-12 h-12 object-cover rounded border border-purple-500/40">`).join('') + `</div>`;
+            }
+
+            d.innerHTML = `
+                <div class="flex space-x-2 max-w-3xl ${isUser ? 'flex-row-reverse space-x-reverse' : ''}">
+                    <div class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 text-xs font-bold ${isUser ? 'bg-purple-600' : 'bg-gradient-to-tr from-orange-500 to-indigo-600'} text-white">
+                        <i class="fa-solid ${isUser ? 'fa-user' : 'fa-robot'} text-[10px]"></i>
+                    </div>
+                    <div class="${isUser ? 'bg-purple-950/40 border border-purple-800/50' : 'bg-[#0d101d] border border-[#1e243c]'} rounded-xl p-2.5 text-xs text-gray-200 shadow">
+                        ${mHtml}
+                        <div class="prose prose-invert max-w-none text-xs leading-relaxed">${isUser ? escapeHtml(text).replace(/\n/g, '<br>') : marked.parse(text)}</div>
+                    </div>
+                </div>
+            `;
+            c.appendChild(d); c.scrollTop = c.scrollHeight;
+            enhanceCodeBlocks(d);
+            setDB('chats', 'currentChat', state.chatHistory);
+        }
+
+        function enhanceCodeBlocks(parent) {
+            parent.querySelectorAll('pre').forEach(pre => {
+                const code = pre.querySelector('code');
+                if (!code) return;
+                const wrap = document.createElement('div');
+                wrap.className = 'code-block-wrapper';
+                wrap.innerHTML = `<div class="code-header"><span><i class="fa-solid fa-code text-cyan-400 mr-1"></i>Code</span><button onclick="copyCode(this)" class="hover:text-cyan-300"><i class="fa-regular fa-copy mr-1"></i>Kopírovať</button></div><div class="code-content">${code.textContent}</div>`;
+                pre.parentNode.replaceChild(wrap, pre);
+            });
+        }
+
+        function copyCode(btn) {
+            navigator.clipboard.writeText(btn.closest('.code-block-wrapper').querySelector('.code-content').textContent);
+            btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400 mr-1"></i>Skopírované!`;
+            setTimeout(() => btn.innerHTML = `<i class="fa-regular fa-copy mr-1"></i>Kopírovať`, 2000);
+        }
+
+        async function loadChatHistory() {
+            const h = await getDB('chats', 'currentChat');
+            if (h && Array.isArray(h)) { state.chatHistory = []; h.forEach(m => appendMessage(m.role, m.text, m.media)); }
+        }
+
+        function clearCurrentChat() { state.chatHistory = []; document.getElementById('chat-messages').innerHTML = ''; setDB('chats', 'currentChat', []); }
+
+        function toggleSearch(t) {
+            if (t === 'web') state.enableWebSearch = !state.enableWebSearch;
+            else state.enableYtSearch = !state.enableYtSearch;
+            document.getElementById(`toggle-${t === 'web' ? 'web' : 'yt'}-search`).classList.toggle('text-cyan-300', t === 'web' && state.enableWebSearch);
+        }
+
+        function handleKeyDown(e) { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); handleChatSubmit(e); } }
+
+        // TARIFY, BALÍČKY & LIMIT
         function setBillingCycle(c) {
             state.billingCycle = c;
-            document.getElementById('billing-monthly-btn').className = c === 'monthly' ? 'px-3 py-1 font-bold rounded-lg bg-purple-600 text-white' : 'px-3 py-1 font-bold rounded-lg text-gray-400';
-            document.getElementById('billing-yearly-btn').className = c === 'yearly' ? 'px-3 py-1 font-bold rounded-lg bg-purple-600 text-white' : 'px-3 py-1 font-bold rounded-lg text-gray-400';
+            document.getElementById('billing-monthly-btn').className = c === 'monthly' ? 'px-2.5 py-1 font-bold rounded bg-purple-600 text-white' : 'px-2.5 py-1 font-bold rounded text-gray-400';
+            document.getElementById('billing-yearly-btn').className = c === 'yearly' ? 'px-2.5 py-1 font-bold rounded bg-purple-600 text-white' : 'px-2.5 py-1 font-bold rounded text-gray-400';
             renderPricingGrid();
         }
 
         function setCurrency(cur) {
             state.currency = cur;
-            document.getElementById('currency-eur-btn').className = cur === 'EUR' ? 'px-3 py-1 font-bold rounded-lg bg-cyan-600 text-white' : 'px-3 py-1 font-bold rounded-lg text-gray-400';
-            document.getElementById('currency-czk-btn').className = cur === 'CZK' ? 'px-3 py-1 font-bold rounded-lg bg-cyan-600 text-white' : 'px-3 py-1 font-bold rounded-lg text-gray-400';
-            document.querySelectorAll('.currency-label-topup').forEach(e => e.textContent = cur === 'EUR' ? '4.99 €' : '125 Kč');
+            document.getElementById('currency-eur-btn').className = cur === 'EUR' ? 'px-2.5 py-1 font-bold rounded bg-cyan-600 text-white' : 'px-2.5 py-1 font-bold rounded text-gray-400';
+            document.getElementById('currency-czk-btn').className = cur === 'CZK' ? 'px-2.5 py-1 font-bold rounded bg-cyan-600 text-white' : 'px-2.5 py-1 font-bold rounded text-gray-400';
             renderPricingGrid();
         }
 
@@ -817,22 +1108,15 @@
             PRICING_PLANS[state.billingCycle].forEach(p => {
                 const formattedPrice = state.currency === 'EUR' ? `${p.priceEUR.toFixed(2)} €` : `${p.priceCZK} Kč`;
                 const c = document.createElement('div');
-                c.className = `glass-card rounded-xl p-5 border flex flex-col justify-between text-xs ${p.highlight ? 'border-purple-500 rainbow-border scale-105' : 'border-gray-800'}`;
+                c.className = `glass-card rounded-xl p-4 border flex flex-col justify-between text-xs ${p.highlight ? 'border-purple-500 rainbow-border' : 'border-gray-800'}`;
                 c.innerHTML = `
                     <div>
-                        <h3 class="text-base font-bold text-white mb-0.5">${p.name}</h3>
+                        <h3 class="font-bold text-white mb-0.5">${p.name}</h3>
                         <p class="text-cyan-400 font-mono font-semibold">${p.limitBonus}</p>
-                        <div class="my-3">
-                            <span class="text-2xl font-extrabold text-white font-mono">${formattedPrice}</span>
-                            <span class="text-gray-400">${p.period}</span>
-                        </div>
-                        <ul class="space-y-1.5 text-gray-300 mb-4">
-                            ${p.features.map(f => `<li class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-1.5 text-[10px]"></i>${f}</li>`).join('')}
-                        </ul>
+                        <div class="my-2"><span class="text-xl font-extrabold text-white font-mono">${formattedPrice}</span> <span class="text-gray-400">${p.period}</span></div>
+                        <ul class="space-y-1 text-gray-300 mb-3">${p.features.map(f => `<li class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-1 text-[9px]"></i>${f}</li>`).join('')}</ul>
                     </div>
-                    <button onclick="openPaymentGateway('${p.name}', '${p.id}', ${p.priceEUR}, ${p.priceCZK})" class="w-full py-2 rounded-lg font-bold ${p.highlight ? 'bg-gradient-to-r from-purple-600 to-cyan-500 text-white' : 'bg-gray-800 text-gray-200'}">
-                        Aktivovať
-                    </button>
+                    <button onclick="openPaymentGateway('${p.name}', '${p.id}', ${p.priceEUR}, ${p.priceCZK})" class="w-full py-1.5 rounded-lg font-bold ${p.highlight ? 'bg-gradient-to-r from-purple-600 to-cyan-500 text-white' : 'bg-gray-800 text-gray-200'}">Aktivovať</button>
                 `;
                 g.appendChild(c);
             });
@@ -849,7 +1133,7 @@
         async function handlePaymentSubmit(e) {
             e.preventDefault();
             const btn = document.getElementById('pay-submit-btn');
-            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Spracovávam...`;
+            btn.innerHTML = `Spracovávam...`;
             setTimeout(async () => {
                 btn.innerHTML = `Potvrdiť Platbu`;
                 state.limitRemaining = 100.0;
@@ -858,332 +1142,48 @@
                     await setDB('settings', 'activePlan', state.activePlan);
                 }
                 await setDB('settings', 'limitRemaining', 100.0);
-                updateLimitUI();
-                closePaymentModal();
+                updateLimitUI(); closePaymentModal();
                 alert("🎉 Platba úspešná! Váš limit bol navýšený na 100.0 %.");
-            }, 1000);
+            }, 800);
         }
 
         function updateLimitUI() {
             const bar = document.getElementById('limit-progress-bar');
             const txt = document.getElementById('limit-percentage-text');
             const banner = document.getElementById('limit-exceeded-banner');
-            const input = document.getElementById('chat-input');
-            const btn = document.getElementById('send-btn');
-            const pBadge = document.getElementById('user-plan-badge');
-            const pName = document.getElementById('limit-plan-name');
-
             const val = Math.max(0, state.limitRemaining);
             txt.textContent = `${val.toFixed(1)} %`;
             bar.style.width = `${val}%`;
-            if (pBadge) pBadge.textContent = `Balíček: ${state.activePlan}`;
-            if (pName) pName.textContent = state.activePlan;
+            document.getElementById('user-plan-badge').textContent = state.activePlan;
+            document.getElementById('limit-plan-name').textContent = state.activePlan;
 
             if (val <= 0) {
                 banner.classList.remove('hidden');
-                input.disabled = true;
-                btn.disabled = true;
+                document.getElementById('chat-input').disabled = true;
+                document.getElementById('send-btn').disabled = true;
             } else {
                 banner.classList.add('hidden');
-                input.disabled = false;
-                btn.disabled = false;
+                document.getElementById('chat-input').disabled = false;
+                document.getElementById('send-btn').disabled = false;
             }
         }
 
         function deductLimitForModel(mId) {
-            const m = state.loadedModels.find(x => x.id === mId) || { cost: 0.2 };
+            const m = state.loadedModels.find(x => x.id === mId) || { cost: 0.1 };
             state.limitRemaining = Math.max(0, state.limitRemaining - m.cost);
             setDB('settings', 'limitRemaining', state.limitRemaining);
             updateLimitUI();
-        }
-
-        // PROJEKTY & SÚBORY
-        function extractFilesFromAIResponse(text) {
-            const r = /(?:```(?:[\w-]+)?:?([a-zA-Z0-9_\-\.\/]+\.[a-zA-Z0-9]+)\n([\s\S]*?)```)|(?:\/\/\s*FILE:\s*([a-zA-Z0-9_\-\.\/]+)\n([\s\S]*?)(?=\/\/\s*FILE:|$))/gi;
-            let m, found = false;
-            while ((m = r.exec(text)) !== null) {
-                const f = m[1] || m[3];
-                const c = m[2] || m[4];
-                if (f && c) {
-                    state.virtualProjectFiles[f.trim()] = c.trim();
-                    found = true;
-                }
-            }
-            if (found) {
-                setDB('projects', 'currentProject', state.virtualProjectFiles);
-                renderProjectExplorer();
-            }
-        }
-
-        function renderProjectExplorer() {
-            const tree = document.getElementById('file-explorer-tree');
-            const count = document.getElementById('file-tree-count');
-            const badge = document.getElementById('projects-count-badge');
-            const keys = Object.keys(state.virtualProjectFiles);
-            if (count) count.textContent = keys.length;
-            if (badge) badge.textContent = keys.length;
-
-            tree.innerHTML = '';
-            if (!keys.length) {
-                tree.innerHTML = `<div class="text-gray-500 text-center py-6">Žiadne súbory. Požiadajte AI v chate o vytvorenie projektu.</div>`;
-                return;
-            }
-            keys.forEach(k => {
-                const d = document.createElement('div');
-                d.className = `p-1.5 rounded cursor-pointer flex justify-between items-center ${state.activeFile === k ? 'bg-purple-900/50 text-white' : 'hover:bg-gray-800/50 text-gray-300'}`;
-                d.innerHTML = `<span class="truncate"><i class="fa-solid fa-file-code text-cyan-400 mr-1"></i>${k}</span><button onclick="deleteVirtualFile('${k}', event)" class="text-gray-500 hover:text-red-400">&times;</button>`;
-                d.onclick = () => selectActiveFile(k);
-                tree.appendChild(d);
-            });
-            if (!state.activeFile && keys.length) selectActiveFile(keys[0]);
-        }
-
-        function selectActiveFile(k) {
-            state.activeFile = k;
-            document.getElementById('active-filename').textContent = k;
-            document.getElementById('active-file-content').textContent = state.virtualProjectFiles[k] || '';
-            renderProjectExplorer();
-        }
-
-        function deleteVirtualFile(k, e) {
-            e.stopPropagation();
-            delete state.virtualProjectFiles[k];
-            if (state.activeFile === k) state.activeFile = null;
-            setDB('projects', 'currentProject', state.virtualProjectFiles);
-            renderProjectExplorer();
-        }
-
-        function clearVirtualProject() {
-            if (confirm("Vymazať všetky súbory projektu?")) {
-                state.virtualProjectFiles = {};
-                state.activeFile = null;
-                setDB('projects', 'currentProject', {});
-                renderProjectExplorer();
-                document.getElementById('active-filename').textContent = 'Žiadny súbor';
-                document.getElementById('active-file-content').textContent = '// Vymazané';
-            }
-        }
-
-        function copyActiveFileContent() {
-            if (state.activeFile) {
-                navigator.clipboard.writeText(state.virtualProjectFiles[state.activeFile]);
-                alert("Súbor skopírovaný!");
-            }
-        }
-
-        function downloadActiveFile() {
-            if (!state.activeFile) return;
-            const b = new Blob([state.virtualProjectFiles[state.activeFile]], { type: 'text/plain;charset=utf-8' });
-            const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = state.activeFile.split('/').pop(); a.click();
-        }
-
-        async function downloadAllFilesAsZip() {
-            const keys = Object.keys(state.virtualProjectFiles);
-            if (!keys.length) return alert("Projekt je prázdny.");
-            const zip = new JSZip();
-            keys.forEach(k => zip.file(k, state.virtualProjectFiles[k]));
-            const b = await zip.generateAsync({ type: 'blob' });
-            const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = `project-${Date.now()}.zip`; a.click();
-        }
-
-        function insertProjectPromptTemplate() {
-            document.getElementById('chat-input').value = `Naplánuj architektúru a vytvor kompletný funkčný projekt bez syntaktických chýb s týmito požiadavkami:\n- Názov: \n- Technológie: HTML5, TailwindCSS, JS\n- Súbory formátuj ako: \`\`\`html:index.html, \`\`\`js:app.js`;
-            document.getElementById('chat-input').focus();
-        }
-
-        // VOLANIA API
-        async function callOpenSourceEndpoint(mId, sPrompt, hist, uText, media) {
-            const model = mId.replace(/^oss:/, '');
-            const base = (state.ossEndpoint || 'https://openrouter.ai/api/v1').replace(/\/+$/, '');
-            const url = base.includes('/chat/completions') ? base : `${base}/chat/completions`;
-
-            let content = uText;
-            if (media && media.length) {
-                content = [{ type: 'text', text: uText }];
-                media.forEach(m => content.push({ type: 'image_url', image_url: { url: m.dataUrl } }));
-            }
-
-            const messages = [
-                { role: 'system', content: sPrompt },
-                ...hist.slice(-8).map(m => ({ role: m.role, content: m.text })),
-                { role: 'user', content }
-            ];
-
-            const headers = { 'Content-Type': 'application/json', 'HTTP-Referer': 'https://codexultra.studio', 'X-Title': 'Codex Ultra' };
-            if (state.ossApiKey) headers['Authorization'] = `Bearer ${state.ossApiKey}`;
-
-            const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify({ model, messages, temperature: 0.4 }) });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error?.message || `OpenRouter HTTP ${res.status}`);
-            return data.choices?.[0]?.message?.content || "Žiadna odpoveď.";
-        }
-
-        async function callGeminiDirectAPI(mId, sPrompt, hist, uText, media) {
-            if (!state.apiKey) throw new Error("Chýba Google Gemini API kľúč. Vložte ho v Nastaveniach.");
-            const cleanModel = mId.replace(/^models\//, '');
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${state.apiKey}`;
-
-            const contents = [];
-            hist.slice(-8).forEach(m => contents.push({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.text }] }));
-
-            const userParts = [{ text: uText }];
-            if (media && media.length) {
-                media.forEach(m => userParts.push({ inlineData: { mimeType: m.dataUrl.split(';')[0].split(':')[1], data: m.dataUrl.split(',')[1] } }));
-            }
-            contents.push({ role: 'user', parts: userParts });
-
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ contents, systemInstruction: { parts: [{ text: sPrompt }] } })
-            });
-            const data = await res.json();
-            if (!res.ok) throw new Error(data.error?.message || `Gemini HTTP ${res.status}`);
-            return data.candidates?.[0]?.content?.parts?.[0]?.text || "Model nevrátil text.";
-        }
-
-        async function callOllamaAPI(mId, sPrompt, hist, uText) {
-            const base = (state.ollamaUrl || 'http://localhost:11434').replace(/\/+$/, '');
-            const res = await fetch(`${base}/api/chat`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    model: mId.replace(/^ollama:/, ''),
-                    messages: [{ role: 'system', content: sPrompt }, ...hist.slice(-8).map(m => ({ role: m.role, content: m.text })), { role: 'user', content: uText }],
-                    stream: false
-                })
-            });
-            const data = await res.json();
-            return data.message?.content || data.response || "Ollama bez odpovede.";
-        }
-
-        async function handleChatSubmit(e) {
-            e.preventDefault();
-            if (state.limitRemaining <= 0) return alert("Limit je 0.0 %. Dobite si limit.");
-            const input = document.getElementById('chat-input');
-            const text = input.value.trim();
-            const media = [...state.attachedMedia];
-            if (!text && !media.length) return;
-
-            input.value = '';
-            state.attachedMedia = [];
-            renderMediaPreviews();
-
-            appendMessage('user', text, media);
-            deductLimitForModel(state.selectedModel);
-
-            const isReasoning = document.getElementById('toggle-reasoning').checked;
-            const ind = document.getElementById('reasoning-indicator');
-            if (isReasoning) {
-                ind.classList.remove('hidden');
-                document.getElementById('reasoning-stage-text').textContent = "ARCHITEKTONICKÝ NÁVRH & PLÁNOVANIE SÚBOROV...";
-            }
-
-            const memories = await getAllDB('memories');
-            const customEvents = await getAllDB('calendar');
-            let ctx = `Dnešný dátum je: ${new Date().toLocaleDateString('sk-SK')}.\n`;
-            if (memories.length) ctx += `Pamäť AI:\n` + memories.map(m => `- ${m.content}`).join('\n') + '\n';
-            if (customEvents.length) ctx += `Udalosti:\n` + customEvents.map(ev => `- ${ev.title} (${ev.date})`).join('\n') + '\n';
-
-            const sPrompt = `Si Codex Ultra AI Studio - expertný programátor.\n1. Plánuj vopred architektúru.\n2. Vytváraj kompletné súbory bez chýb a bez 'TODO'.\n3. Každý súbor označ ako \`\`\`html:subor.html alebo \`\`\`js:subor.js.\n${ctx}`;
-
-            try {
-                let reply = '';
-                if (state.selectedModel.startsWith('oss:')) reply = await callOpenSourceEndpoint(state.selectedModel, sPrompt, state.chatHistory, text, media);
-                else if (state.selectedModel.startsWith('ollama:')) reply = await callOllamaAPI(state.selectedModel, sPrompt, state.chatHistory, text);
-                else reply = await callGeminiDirectAPI(state.selectedModel, sPrompt, state.chatHistory, text, media);
-
-                ind.classList.add('hidden');
-                appendMessage('assistant', reply);
-                extractFilesFromAIResponse(reply);
-            } catch(err) {
-                ind.classList.add('hidden');
-                appendMessage('assistant', `⚠️ **Chyba**: ${err.message}`);
-            }
-        }
-
-        function appendMessage(role, text, media = []) {
-            const c = document.getElementById('chat-messages');
-            state.chatHistory.push({ role, text, media });
-            const isUser = role === 'user';
-            const d = document.createElement('div');
-            d.className = `flex ${isUser ? 'justify-end' : 'justify-start'} max-w-4xl mx-auto`;
-
-            let mediaHtml = '';
-            if (media && media.length) {
-                mediaHtml = `<div class="flex flex-wrap gap-1.5 mb-1.5">` + media.map(m => m.isVideo ? `<span class="px-2 py-0.5 bg-purple-900/60 rounded text-[10px] text-pink-300 font-mono"><i class="fa-solid fa-video mr-1"></i>${m.name}</span>` : `<img src="${m.dataUrl}" class="w-14 h-14 object-cover rounded border border-purple-500/40">`).join('') + `</div>`;
-            }
-
-            d.innerHTML = `
-                <div class="flex space-x-2.5 max-w-3xl ${isUser ? 'flex-row-reverse space-x-reverse' : ''}">
-                    <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-xs font-bold ${isUser ? 'bg-purple-600' : 'bg-gradient-to-tr from-cyan-500 to-indigo-600'} text-white">
-                        <i class="fa-solid ${isUser ? 'fa-user' : 'fa-robot'}"></i>
-                    </div>
-                    <div class="${isUser ? 'bg-purple-950/40 border border-purple-800/50' : 'bg-[#0d101d] border border-[#1e243c]'} rounded-xl p-3 text-xs text-gray-200 shadow">
-                        ${mediaHtml}
-                        <div class="prose prose-invert max-w-none text-xs">${isUser ? escapeHtml(text).replace(/\n/g, '<br>') : marked.parse(text)}</div>
-                    </div>
-                </div>
-            `;
-            c.appendChild(d);
-            c.scrollTop = c.scrollHeight;
-            enhanceCodeBlocks(d);
-            setDB('chats', 'currentChat', state.chatHistory);
-        }
-
-        function enhanceCodeBlocks(parent) {
-            parent.querySelectorAll('pre').forEach(pre => {
-                const code = pre.querySelector('code');
-                if (!code) return;
-                const wrap = document.createElement('div');
-                wrap.className = 'code-block-wrapper';
-                wrap.innerHTML = `
-                    <div class="code-header"><span><i class="fa-solid fa-code text-cyan-400 mr-1"></i>Code</span><button onclick="copyCode(this)" class="hover:text-cyan-300"><i class="fa-regular fa-copy mr-1"></i>Kopírovať</button></div>
-                    <div class="code-content">${code.textContent}</div>
-                `;
-                pre.parentNode.replaceChild(wrap, pre);
-            });
-        }
-
-        function copyCode(btn) {
-            navigator.clipboard.writeText(btn.closest('.code-block-wrapper').querySelector('.code-content').textContent);
-            btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400 mr-1"></i>Skopírované!`;
-            setTimeout(() => btn.innerHTML = `<i class="fa-regular fa-copy mr-1"></i>Kopírovať`, 2000);
-        }
-
-        async function loadChatHistory() {
-            const h = await getDB('chats', 'currentChat');
-            if (h && Array.isArray(h)) {
-                state.chatHistory = [];
-                h.forEach(m => appendMessage(m.role, m.text, m.media));
-            }
-        }
-
-        function clearCurrentChat() {
-            state.chatHistory = [];
-            document.getElementById('chat-messages').innerHTML = '';
-            setDB('chats', 'currentChat', []);
-        }
-
-        function toggleSearch(t) {
-            if (t === 'web') state.enableWebSearch = !state.enableWebSearch;
-            else state.enableYtSearch = !state.enableYtSearch;
-            document.getElementById(`toggle-${t === 'web' ? 'web' : 'yt'}-search`).classList.toggle('text-cyan-300', t === 'web' && state.enableWebSearch);
-        }
-
-        function handleKeyDown(e) {
-            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); handleChatSubmit(e); }
         }
 
         // PAMÄŤ, KALENDÁR, AUTH & NASTAVENIA
         async function renderMemories() {
             const c = document.getElementById('memory-list');
             const mems = await getAllDB('memories');
-            c.innerHTML = mems.length ? '' : `<div class="col-span-2 text-center text-xs text-gray-500 py-6">Žiadne spomienky.</div>`;
+            c.innerHTML = mems.length ? '' : `<div class="col-span-2 text-center text-gray-500 py-4">Žiadne spomienky.</div>`;
             mems.forEach(m => {
                 const el = document.createElement('div');
-                el.className = 'glass-card border border-[#1a1f35] rounded-xl p-3 flex justify-between items-start text-xs';
-                el.innerHTML = `<div><p class="text-purple-200">${escapeHtml(m.content)}</p></div><button onclick="deleteMemory('${m.id}')" class="text-gray-500 hover:text-red-400 p-1">&times;</button>`;
+                el.className = 'glass-card border border-[#1a1f35] rounded-lg p-2 flex justify-between items-start';
+                el.innerHTML = `<div><p class="text-purple-200">${escapeHtml(m.content)}</p></div><button onclick="deleteMemory('${m.id}')" class="text-gray-500 hover:text-red-400">&times;</button>`;
                 c.appendChild(el);
             });
         }
@@ -1197,10 +1197,9 @@
 
         async function renderCalendar() {
             const g = document.getElementById('calendar-grid');
-            const mHead = document.getElementById('calendar-month-year');
             const up = document.getElementById('upcoming-events-list');
             const monthNames = ["Január", "Február", "Marec", "Apríl", "Máj", "Jún", "Júl", "August", "September", "Október", "November", "December"];
-            mHead.textContent = `${monthNames[state.currentMonth]} ${state.currentYear}`;
+            document.getElementById('calendar-month-year').textContent = `${monthNames[state.currentMonth]} ${state.currentYear}`;
             g.innerHTML = '';
 
             let firstDay = new Date(state.currentYear, state.currentMonth, 1).getDay() - 1;
@@ -1214,7 +1213,7 @@
             for (let d = 1; d <= days; d++) {
                 const cell = document.createElement('div');
                 const isToday = today.getDate() === d && today.getMonth() === state.currentMonth && today.getFullYear() === state.currentYear;
-                cell.className = `h-8 border border-gray-800/40 rounded p-1 flex justify-between text-[10px] ${isToday ? 'bg-purple-900/40 border-purple-500' : ''}`;
+                cell.className = `h-7 border border-gray-800/40 rounded p-1 flex justify-between text-[9px] ${isToday ? 'bg-purple-900/40 border-purple-500' : ''}`;
                 cell.innerHTML = `<span>${d}</span>`;
                 g.appendChild(cell);
             }
@@ -1222,23 +1221,18 @@
             up.innerHTML = '';
             SLOVAK_HOLIDAYS.forEach(h => {
                 const el = document.createElement('div');
-                el.className = 'p-2 bg-[#101426] border border-gray-800 rounded-lg flex justify-between text-xs';
-                el.innerHTML = `<span><i class="fa-solid fa-flag text-pink-400 mr-1.5"></i>${h.title}</span><span class="font-mono text-gray-500">${h.date}</span>`;
+                el.className = 'p-1.5 bg-[#101426] border border-gray-800 rounded flex justify-between';
+                el.innerHTML = `<span><i class="fa-solid fa-flag text-pink-400 mr-1"></i>${h.title}</span><span class="font-mono text-gray-500">${h.date}</span>`;
                 up.appendChild(el);
             });
             events.forEach(ev => {
                 const el = document.createElement('div');
-                el.className = 'p-2 bg-[#101426] border border-cyan-900/40 rounded-lg flex justify-between text-xs';
-                el.innerHTML = `<span><i class="fa-solid fa-cake-candles text-amber-400 mr-1.5"></i>${escapeHtml(ev.title)}</span><button onclick="deleteEvent('${ev.id}')" class="text-gray-500 hover:text-red-400">&times;</button>`;
+                el.className = 'p-1.5 bg-[#101426] border border-cyan-900/40 rounded flex justify-between';
+                el.innerHTML = `<span><i class="fa-solid fa-cake-candles text-amber-400 mr-1"></i>${escapeHtml(ev.title)}</span><button onclick="deleteEvent('${ev.id}')" class="text-gray-500">&times;</button>`;
                 up.appendChild(el);
             });
         }
-        function changeMonth(d) {
-            state.currentMonth += d;
-            if (state.currentMonth < 0) { state.currentMonth = 11; state.currentYear--; }
-            if (state.currentMonth > 11) { state.currentMonth = 0; state.currentYear++; }
-            renderCalendar();
-        }
+
         function openAddEventModal() { document.getElementById('event-modal').classList.remove('hidden'); }
         function closeEventModal() { document.getElementById('event-modal').classList.add('hidden'); }
         async function saveEventItem() {
@@ -1262,8 +1256,7 @@
             if (u) {
                 state.currentUser = { id: 'usr_' + Date.now(), username: u };
                 await setDB('settings', 'currentUser', state.currentUser);
-                updateUserUI();
-                closeAuthModal();
+                updateUserUI(); closeAuthModal();
             }
         }
         function updateUserUI() {
@@ -1273,10 +1266,14 @@
             }
         }
 
+        async function saveGroqSettings() {
+            state.groqApiKey = document.getElementById('groq-key-input').value.trim();
+            await setDB('settings', 'groqApiKey', state.groqApiKey);
+            await refreshAllModelsList(true);
+        }
         async function saveApiKey() {
-            const k = document.getElementById('api-key-input').value.trim();
-            state.apiKey = k;
-            await setDB('settings', 'apiKey', k);
+            state.apiKey = document.getElementById('api-key-input').value.trim();
+            await setDB('settings', 'apiKey', state.apiKey);
             await refreshAllModelsList(true);
         }
         async function saveOssSettings() {
@@ -1292,7 +1289,7 @@
             await refreshAllModelsList(true);
         }
         async function clearDatabase() {
-            if (confirm("Naozaj vymazať celú databázu IndexedDB?")) {
+            if (confirm("Vymazať celú databázu IndexedDB?")) {
                 indexedDB.deleteDatabase(DB_NAME);
                 location.reload();
             }
